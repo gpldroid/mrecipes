@@ -1,0 +1,62 @@
+name: Generate one recipe image (Gemini)
+
+on:
+  workflow_dispatch:
+    inputs:
+      recipe_slug:
+        description: "One recipe slug only (pilot default: classic-pancakes)"
+        required: true
+        default: "classic-pancakes"
+        type: string
+      force_regenerate:
+        description: "Replace an existing generated image (may incur API cost)"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gemini-recipe-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate-one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require a feature branch (never write to main)
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "Run this workflow from a feature branch, not main."
+            exit 1
+          fi
+      - name: Checkout selected branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Generate and validate exactly one image
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          RECIPE_SLUG: ${{ inputs.recipe_slug }}
+          FORCE_REGENERATE: ${{ inputs.force_regenerate }}
+          GEMINI_IMAGE_MODEL: gemini-2.5-flash-image
+        run: python scripts/generate_recipe_image.py
+      - name: Commit generated image and page reference
+        shell: bash
+        run: |
+          if git diff --quiet && git diff --cached --quiet && [[ -z "$(git ls-files --others --exclude-standard)" ]]; then
+            echo "No changes to commit (the image may already exist)."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "assets/images/recipes/" "recipes/"
+          git commit -m "Generate Gemini image for ${{ inputs.recipe_slug }}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
