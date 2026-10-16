@@ -1,51 +1,47 @@
 # MRecipes
 
-A lightweight, static recipe website published with GitHub Pages. The production domain is **https://mrecipes.online/**.
+A mobile-first, English-language recipe website for **https://mrecipes.online/** with crawlable HTML pages, shared navigation/footer, SEO metadata, and optional Supabase-backed recipe data.
 
-## Current site structure
+## Required project structure
 
 - `index.html` — homepage and featured recipes
 - `recipes.html` — recipe collection
-- `recipes/*.html` — individual recipe pages with Recipe JSON-LD structured data
-- `about.html`, `contact.html`, `privacy-policy.html`, `terms.html`, `disclaimer.html` — information and policy pages
+- `recipes/*.html` — individual crawlable recipe pages with Recipe JSON-LD
+- `about.html`, `contact.html`, `privacy-policy.html`, `terms.html`, `disclaimer.html` — information and legal pages
 - `404.html` — not-found page
 - `assets/css/style.css` — shared responsive styling
-- `assets/js/header.js`, `footer.js`, `main.js` — shared navigation, footer, search, and page behavior
+- `assets/js/header.js` — shared desktop/mobile navigation
+- `assets/js/footer.js` — shared footer and author attribution
+- `assets/js/main.js` — site behavior, search, scroll-to-top, and optional Supabase queries
+- `assets/images/` — locally hosted, optimized site and recipe images
+- `supabase/schema.sql` — database tables and row-level security policies
 - `sitemap.xml`, `robots.txt`, `CNAME` — crawl and custom-domain configuration
-- `.github/workflows/pages.yml` — pre-deployment checks and GitHub Pages deployment
+- `.github/workflows/pages.yml` — validation and GitHub Pages deployment
 
-This is currently a static website; Supabase and a content-management dashboard are not required to publish it. Avoid adding a second CSS/JS architecture without first consolidating the existing files.
+All pages use the same injected header and footer. Every page/article must credit **Imad Limrani**. Keep the public site in English and mobile-first, with the mobile tab bar and desktop navigation.
 
-## Deployment
+## Supabase setup (Free Tier)
 
-The workflow runs on every push to `main` and can also be started manually from the Actions tab.
+1. Create a Supabase project on the Free plan.
+2. Open **SQL Editor** and run `supabase/schema.sql`.
+3. In `assets/js/main.js`, replace `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` with the Project URL and publishable key (the legacy anon key also works). These are public browser credentials; never use a secret/service_role key in the website.
+4. Add recipe records in the Supabase table editor. Public pages only query rows where `status = 'published'`. The homepage and recipe collection use database cards only when configured and published rows exist; otherwise their static HTML cards remain visible.
+5. Comments can be submitted with `MRecipesData.submitComment({ slug, displayName, body })`. New comments are held as `pending`; only approved comments are public. No public comment update/delete policy is granted.
 
-1. Open **Settings → Pages** in this repository.
-2. Set **Build and deployment → Source** to **GitHub Actions**.
-3. Ensure GitHub Pages is enabled for this repository. The workflow token cannot enable Pages when GitHub denies the required repository permission, so this initial setting may need to be saved by a repository owner.
-4. Wait for the **Deploy MRecipes to GitHub Pages** workflow to finish successfully.
-5. Confirm the custom domain is `mrecipes.online` and that HTTPS is enabled after DNS has propagated.
+The site remains usable if Supabase is not configured or unavailable. The schema does not provide a full admin dashboard; content moderation can be done in the Supabase dashboard until the separately specified admin UI is implemented.
+
+## GitHub Pages deployment
+
+1. Open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**.
+2. Wait for **Deploy MRecipes to GitHub Pages** to finish successfully.
+3. Confirm the custom domain is `mrecipes.online` and HTTPS is ready after DNS propagation.
 
 Workflow: https://github.com/gpldroid/mrecipes/actions/workflows/pages.yml
 
-## Pre-deployment validation
+## Automated checks
 
-Before deployment, the workflow checks:
-
-- required site files and custom-domain configuration;
-- page titles, meta descriptions, and canonical URLs (except the 404 response);
-- JSON-LD structured data on individual recipe pages;
-- local CSS/JavaScript references;
-- sitemap XML validity, canonical-domain URLs, and that listed pages exist.
-
-A passing validation step does not by itself mean deployment succeeded; the **Configure GitHub Pages** and **Deploy** steps must also pass.
-
-## Custom-domain DNS
-
-For an apex domain such as `mrecipes.online`, configure the DNS records recommended in the official GitHub Pages documentation. Remove conflicting records, and only enable HTTPS once GitHub reports the certificate is ready.
-
-Official guide: https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
+The workflow validates required files, page titles, meta descriptions, canonical URLs, recipe JSON-LD, local CSS/JS references, and sitemap targets. Passing validation does not itself mean deployment succeeded; the Configure Pages and Deploy steps must also pass.
 
 ## Content quality before monetization
 
-The current recipe illustrations include emoji placeholders. Replace them with properly licensed, optimized food photography and ensure every recipe contains tested, original instructions, clear ingredient quantities, helpful notes, and accurate structured data before applying for advertising approval. Legal pages should reflect the site's actual data collection and services.
+Replace emoji placeholders with properly licensed, optimized food photography. Use original, tested instructions, accurate quantities, helpful notes, and structured data that matches visible content. Review legal pages to reflect actual data collection and services.
