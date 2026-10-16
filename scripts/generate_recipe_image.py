@@ -79,7 +79,7 @@ def main():
         return
 
     match = re.search(
-        r'<script\b[^>]*type=["\\']application/ld\\+json["\\'][^>]*>(.*?)</script>',
+        r"""<script\b[^>]*type=["']application/ld\+json["'][^>]*>(.*?)</script>""",
         source, re.I | re.S
     )
     if not match:
@@ -126,7 +126,7 @@ def main():
     if updated == source:
         fail(f"No image reference for {slug} was found in the recipe page; image not saved.")
     updated_match = re.search(
-        r'<script\b[^>]*type=["\\']application/ld\\+json["\\'][^>]*>(.*?)</script>',
+        r"""<script\b[^>]*type=["']application/ld\+json["'][^>]*>(.*?)</script>""",
         updated, re.I | re.S
     )
     try:
