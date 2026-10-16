@@ -6,8 +6,6 @@ import json
 import os
 import re
 import sys
-import urllib.error
-import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,25 +15,6 @@ SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 def fail(message):
     print(f"ERROR: {message}", file=sys.stderr)
     raise SystemExit(1)
-
-
-def request_json(url, payload, api_key):
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=180) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        # Do not print request headers or secrets.
-        detail = exc.read().decode("utf-8", "replace")[:1200]
-        fail(f"Gemini API returned HTTP {exc.code}: {detail}")
-    except (urllib.error.URLError, TimeoutError) as exc:
-        fail(f"Gemini API request failed: {exc}")
 
 
 def main():
@@ -88,25 +67,34 @@ def main():
         "safe margins for responsive cropping. No text, no letters, no watermark, no logo, no collage, "
         "no hands, no packaging, no decorative ingredients that contradict the recipe."
     )
-    model = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image").strip()
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    result = request_json(endpoint, {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"responseModalities": ["IMAGE"]},
-    }, api_key)
+    model = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-3.1-flash-lite-image").strip()
+    # Use the current Interactions API; Gemini 2.5 Flash Image is deprecated.
+    try:
+        from google import genai
+        client = genai.Client(api_key=api_key)
+        interaction = client.interactions.create(
+            model=model,
+            input=prompt,
+            response_format={
+                "type": "image",
+                "mime_type": "image/png",
+                "aspect_ratio": "16:9",
+                "image_size": "1K",
+            },
+        )
+    except Exception as exc:
+        detail = str(exc).replace(api_key, "[REDACTED]")[:1200]
+        fail(f"Gemini API request failed ({type(exc).__name__}): {detail}")
 
-    candidates = result.get("candidates") or []
-    parts = (candidates[0].get("content") or {}).get("parts") or [] if candidates else []
-    image_part = next((p.get("inlineData") or p.get("inline_data")
-                       for p in parts if p.get("inlineData") or p.get("inline_data")), None)
-    if not image_part:
+    generated_image = getattr(interaction, "output_image", None)
+    if not generated_image or not getattr(generated_image, "data", None):
         fail("Gemini returned no image data. No files were changed.")
-    mime = image_part.get("mimeType") or image_part.get("mime_type") or ""
+    mime = getattr(generated_image, "mime_type", None) or "image/png"
     if mime not in ("image/png", "image/jpeg", "image/webp"):
         fail(f"Unexpected image MIME type: {mime or 'missing'}. No files were changed.")
     try:
-        image_bytes = base64.b64decode(image_part["data"], validate=True)
-    except (KeyError, ValueError):
+        image_bytes = base64.b64decode(generated_image.data, validate=True)
+    except (ValueError, TypeError):
         fail("Gemini image payload was invalid. No files were changed.")
     signatures = {
         "image/png": b"\x89PNG\r\n\x1a\n",
