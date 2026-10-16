@@ -86,8 +86,8 @@ def main():
         )
 
     signatures = {
-        "image/png": b"\\x89PNG\\r\\n\\x1a\\n",
-        "image/jpeg": b"\\xff\\xd8\\xff",
+        "image/png": b"\x89PNG\r\n\x1a\n",
+        "image/jpeg": b"\xff\xd8\xff",
         "image/webp": b"RIFF",
     }
     if len(image_bytes) < 10 or not image_bytes.startswith(signatures[mime]):
