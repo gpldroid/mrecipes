@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://mrecipes.online/</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/</loc><lastmod>2026-10-16</lastmod></url>
   <url><loc>https://mrecipes.online/recipes.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/about.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/contact.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/privacy-policy.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/terms.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/disclaimer.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/about.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/contact.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/privacy-policy.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/terms.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/disclaimer.html</loc><lastmod>2026-10-16</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/creamy-garlic-chicken.html</loc><lastmod>2026-10-16</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/classic-pancakes.html</loc><lastmod>2026-10-16</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/mediterranean-pasta.html</loc><lastmod>2026-10-16</lastmod></url>
