@@ -219,3 +219,91 @@ button,input,textarea,select{max-width:100%}
 @media(prefers-reduced-motion:reduce){
   .recipe-card,.theme-toggle{transition:none!important}
 }
+
+
+/* Shared footer layout: stable wrapping and spacing at every viewport */
+.site-footer {
+  width: 100%;
+  min-width: 0;
+  margin-top: clamp(28px, 5vw, 52px);
+  padding: clamp(32px, 5vw, 54px) max(16px, calc((100% - var(--content)) / 2)) 24px;
+  overflow: hidden;
+}
+.footer-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(20px, 3vw, 40px);
+  padding-bottom: clamp(24px, 3.5vw, 36px);
+}
+.footer-grid > div,
+.footer-brand,
+.footer-links,
+.footer-bottom > span {
+  min-width: 0;
+  max-width: 100%;
+}
+.footer-brand p {
+  margin: 12px 0 0;
+  max-width: 36ch;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.footer-grid h2 {
+  margin: 4px 0 14px;
+  line-height: 1.4;
+}
+.footer-grid ul {
+  gap: 10px;
+}
+.footer-grid li,
+.footer-grid li a {
+  min-width: 0;
+  max-width: 100%;
+}
+.footer-grid li a {
+  display: inline-block;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.footer-bottom {
+  align-items: flex-start;
+  gap: 10px 24px;
+  line-height: 1.6;
+}
+.footer-bottom > span {
+  flex: 1 1 240px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .site-footer {
+    padding-top: 34px;
+    padding-bottom: 22px;
+  }
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 18px;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+  .footer-bottom > span {
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 359px) {
+  .footer-grid {
+    gap: 22px 12px;
+  }
+  .footer-grid h2 {
+    font-size: .84rem;
+  }
+  .footer-grid li a {
+    font-size: .82rem;
+  }
+  .footer-bottom {
+    font-size: .74rem;
+  }
+}
