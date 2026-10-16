@@ -9,7 +9,7 @@ Mobile-first recipe website for **https://mrecipes.online/**. Preserve the exist
 - `recipes/recipe-template.html` — noindex editorial starter; replace placeholders before creating a recipe
 - `recipes/*.html` — crawlable recipe pages with Recipe JSON-LD
 - `pages/about.html`, `pages/contact.html`, `pages/privacy-policy.html`, `pages/terms.html`, `pages/disclaimer.html` — organized information/legal pages
-- Root-level legal pages remain for backward compatibility with existing inbound links.
+- Informational and legal pages live only under `pages/`; keep canonical URLs and navigation links aligned with these paths.
 - `assets/css/main.css` — shared site styling
 - `assets/css/mobile-nav.css` — mobile navigation accessibility and safe-area rules
 - `assets/js/components/header.js` and `assets/js/components/footer.js` — shared header/footer
