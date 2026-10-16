@@ -33,7 +33,9 @@
     themeButton.setAttribute("aria-pressed", String(dark));
     themeButton.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
     themeIcon.textContent = dark ? "☀" : "☾";
-    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute("content", dark ? "#171420" : "#fcf9ff"));
+    let themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (!themeMeta) { themeMeta = document.createElement("meta"); themeMeta.name = "theme-color"; document.head.appendChild(themeMeta); }
+    themeMeta.setAttribute("content", dark ? "#171420" : "#fcf9ff");
     if (persist) {
       try { localStorage.setItem("mrecipes-theme", dark ? "dark" : "light"); } catch (_) {}
     }
