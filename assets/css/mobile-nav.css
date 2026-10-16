@@ -1,0 +1,7 @@
+/* Mobile navigation enhancements. Core layout remains in main.css. */
+@media (max-width: 760px) {
+  .primary-nav.is-open { display: flex; }
+  .primary-nav a { min-height: 44px; display: flex; align-items: center; }
+  .menu-toggle:focus-visible, .mobile-tab-bar a:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+  body { padding-bottom: calc(62px + env(safe-area-inset-bottom)); }
+}
