@@ -162,7 +162,7 @@ def main():
     updated = source
     for extension in old_extensions:
         updated = updated.replace(f"{slug}.{extension}", f"{slug}.svg")
-    if updated == source and not image_path.exists():
+    if updated == source and not image_path.exists() and f"{slug}.svg" not in source:
         fail(f"No image reference for {slug} was found in recipes/{slug}.html; image not saved.")
     updated_match = re.search(
         r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
