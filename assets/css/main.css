@@ -1,9 +1,7 @@
 /* MRecipes — Culinary Studio master stylesheet
-   Single source of truth for global layout, typography, cards, articles, footer and themes.
-   Keep shared header/footer markup in assets/js/components; this file styles their shared UI.
+   Single source of truth for layout, typography, cards, articles, footer and themes.
+   Shared header/footer markup remains in assets/js/components/header.js and footer.js.
 */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
-
 /* 1. Tokens and predictable sizing */
 :root {
   color-scheme: light;
@@ -562,4 +560,184 @@ html[data-theme="dark"] .article-content img { box-shadow: 0 8px 26px rgba(0, 0,
 /* 10. Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* 11. Final typography and responsive stability pass
+   Keep these rules at the end so every page uses the same predictable scale.
+*/
+:root {
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-reading: 1.125rem;
+  --h1: clamp(2rem, 1.45rem + 2.4vw, 3.25rem);
+  --h2: clamp(1.55rem, 1.2rem + 1.45vw, 2.2rem);
+  --h3: clamp(1.25rem, 1.05rem + .8vw, 1.65rem);
+  --content: 1160px;
+}
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+@supports not (overflow-x: clip) {
+  html, body { overflow-x: hidden; }
+}
+main, #main-content, [role="main"], .container, .header-inner, .section,
+.content-page, .post-body, .article-body, .recipe-body, .entry-content,
+.article-content, .recipe-grid, .footer-grid {
+  min-width: 0;
+  max-width: 100%;
+}
+.container {
+  width: min(var(--content), calc(100% - 2rem));
+}
+:where(h1,h2,h3,h4,h5,h6) {
+  max-width: 100%;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+h1 { font-size: var(--h1); line-height: 1.15; }
+h2 { font-size: var(--h2); line-height: 1.2; }
+h3 { font-size: var(--h3); line-height: 1.28; }
+h4 { font-size: 1.125rem; line-height: 1.35; font-weight: 600; }
+h5 { font-size: 1rem; line-height: 1.4; font-weight: 600; }
+h6 { font-size: .875rem; line-height: 1.45; font-weight: 600; }
+
+.post-title,
+.article-title,
+.recipe-title,
+.post-header h1,
+.article-header h1,
+.recipe-header h1,
+.content-page > h1 {
+  width: 100%;
+  max-width: 22ch;
+  margin: 0 auto 1.25rem;
+  font-size: clamp(2rem, 1.45rem + 2.4vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.post-body, .article-body, .recipe-body, .entry-content, .article-content {
+  width: 100%;
+  max-width: 72ch;
+  margin-inline: auto;
+  font-size: clamp(1.0625rem, 1.02rem + .2vw, 1.125rem);
+  line-height: 1.75;
+  letter-spacing: 0;
+}
+.post-body p, .article-body p, .recipe-body p, .entry-content p, .article-content p,
+.content-page p {
+  margin-block: 0 1.35rem;
+  font-size: 1em;
+  line-height: 1.75;
+  letter-spacing: 0;
+}
+.post-body h2, .article-body h2, .recipe-body h2, .entry-content h2, .article-content h2 {
+  margin-block: 2rem .75rem;
+  line-height: 1.22;
+}
+.post-body h3, .article-body h3, .recipe-body h3, .entry-content h3, .article-content h3 {
+  margin-block: 1.6rem .625rem;
+  line-height: 1.28;
+}
+.post-body :where(ul,ol), .article-body :where(ul,ol), .recipe-body :where(ul,ol),
+.entry-content :where(ul,ol), .article-content :where(ul,ol) {
+  margin-block: 0 1.4rem;
+  padding-inline-start: 1.5rem;
+}
+.post-body :where(li), .article-body :where(li), .recipe-body :where(li),
+.entry-content :where(li), .article-content :where(li) {
+  margin-block-end: .5rem;
+  line-height: 1.7;
+}
+.post-body :where(img,video,svg,canvas), .article-body :where(img,video,svg,canvas),
+.recipe-body :where(img,video,svg,canvas), .entry-content :where(img,video,svg,canvas),
+.article-content :where(img,video,svg,canvas) {
+  max-width: 100%;
+  height: auto;
+}
+.post-body img, .article-body img, .recipe-body img, .entry-content img, .article-content img {
+  display: block;
+  margin: 2rem auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+}
+.post-body iframe, .article-body iframe, .recipe-body iframe, .entry-content iframe, .article-content iframe {
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+}
+:where(.primary-nav a, .mobile-tab-bar a, .footer-grid a, .theme-toggle, .menu-toggle, .button) {
+  touch-action: manipulation;
+}
+.primary-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.menu-toggle, .theme-toggle {
+  min-width: 40px;
+  min-height: 40px;
+}
+.mobile-tab-bar a { min-height: 44px; }
+.site-footer {
+  font-size: .875rem;
+  line-height: 1.6;
+}
+.footer-brand p, .footer-grid li a {
+  font-size: .875rem;
+  line-height: 1.6;
+}
+.footer-grid h2 { font-size: .875rem; }
+.footer-bottom { font-size: .8125rem; line-height: 1.55; }
+.footer-grid, .footer-grid > div, .footer-grid li, .footer-grid a,
+.footer-bottom, .footer-bottom > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+img, video, iframe, embed, object, table, pre {
+  max-width: 100%;
+}
+pre, code, table { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .post-title, .article-title, .recipe-title, .post-header h1, .article-header h1, .recipe-header h1 {
+    max-width: 100%;
+    font-size: clamp(1.9rem, 6.8vw, 2.55rem);
+    line-height: 1.15;
+  }
+  .post-body, .article-body, .recipe-body, .entry-content, .article-content {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  .post-body p, .article-body p, .recipe-body p, .entry-content p, .article-content p {
+    margin-bottom: 1.2rem;
+  }
+  .post-body h2, .article-body h2, .recipe-body h2, .entry-content h2, .article-content h2 {
+    margin-top: 1.75rem;
+  }
+}
+@media (max-width: 420px) {
+  .container, .header-inner { width: calc(100% - 1.5rem); }
+  .post-title, .article-title, .recipe-title, .post-header h1, .article-header h1, .recipe-header h1 {
+    font-size: clamp(1.75rem, 7.5vw, 2.1rem);
+    letter-spacing: -.025em;
+  }
+  .site-footer { padding-inline: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
