@@ -48,3 +48,60 @@ html[data-theme="dark"] .theme-toggle{background:var(--surface);color:var(--ink)
 html[data-theme="dark"] .skip-link{background:#6d5a9c}
 html[data-theme="dark"] .hero-plate{box-shadow:0 24px 50px #0005}
 @media(prefers-reduced-motion:reduce){.theme-toggle,.recipe-card{transition:none!important}}
+
+
+/* Unified Culinary Studio typography scale — consistent across every page */
+:root{
+  --font-body: 'DM Sans', Arial, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --text-xs: .75rem;
+  --text-sm: .875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --heading-1: clamp(2.25rem,4.4vw,3.75rem);
+  --heading-2: clamp(1.75rem,2.8vw,2.375rem);
+  --heading-3: clamp(1.125rem,1.45vw,1.3125rem);
+}
+html{font-size:16px}
+body{font-family:var(--font-body);font-size:var(--text-base);line-height:1.7}
+h1,h2,h3{font-family:var(--font-display);line-height:1.18;letter-spacing:-.025em}
+h1,.hero-panel h1,.page-hero h1{font-size:var(--heading-1);line-height:1.12}
+h2,.content-page h2,.section-heading h2,.newsletter h2{font-size:var(--heading-2);line-height:1.2}
+h3,.recipe-content h3{font-size:var(--heading-3);line-height:1.35}
+p,li{font-size:var(--text-base);line-height:1.75}
+.eyebrow{font-size:.75rem;line-height:1.4;letter-spacing:.1em}
+.primary-nav a{font-size:.9rem;line-height:1.4}
+.brand{font-size:1.25rem;line-height:1.2}
+.brand-mark{font-size:1.4rem;line-height:1}
+.header-search input{font-size:.875rem;line-height:1.4}
+.button{font-size:.9375rem;line-height:1.35}
+.recipe-meta{font-size:.78rem;line-height:1.45}
+.recipe-content p,.footer-brand p,.footer-grid li a{font-size:.9rem;line-height:1.65}
+.pill{font-size:.75rem;line-height:1.4}
+.footer-grid h2{font-family:var(--font-body);font-size:.9rem;line-height:1.4}
+.footer-bottom{font-size:.8rem;line-height:1.55}
+.content-page h2{margin-top:2rem}
+.content-page p,.content-page li{color:var(--muted)}
+[data-search-status]{font-size:.9375rem;line-height:1.65}
+.theme-toggle{font-size:1.125rem;line-height:1}
+.mobile-tab-bar small{font-size:.7rem;line-height:1.35}
+@media(max-width:760px){
+  :root{--heading-1:clamp(2rem,8vw,3rem);--heading-2:clamp(1.55rem,6vw,2rem);--heading-3:1.0625rem}
+  body{font-size:1rem;line-height:1.65}
+  .hero-panel h1,.page-hero h1,h1{font-size:var(--heading-1);line-height:1.12}
+  .hero-copy p,.section-intro,.page-hero p{font-size:1rem;line-height:1.7}
+  .section-heading h2,.content-page h2,h2{font-size:var(--heading-2);line-height:1.2}
+  .recipe-content h3,h3{font-size:var(--heading-3);line-height:1.35}
+  .recipe-content p{font-size:.875rem;line-height:1.6}
+  .recipe-meta{font-size:.75rem;line-height:1.4}
+  .primary-nav a{font-size:1rem;line-height:1.45}
+  .brand{font-size:1.2rem}
+  .button{font-size:.9375rem}
+}
+@media(max-width:420px){
+  :root{--heading-1:clamp(1.875rem,8vw,2.5rem);--heading-2:clamp(1.5rem,6vw,1.75rem);--heading-3:1rem}
+  .recipe-content h3,h3{font-size:1rem;line-height:1.35}
+  .recipe-content p{font-size:.8125rem;line-height:1.55}
+  .recipe-meta{font-size:.7rem}
+  .footer-bottom{font-size:.75rem}
+}
