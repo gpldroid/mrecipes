@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: gemini-recipe-image-${{ github.ref }}
+  group: gemini-recipe-image-pilot
   cancel-in-progress: false
 
 jobs:
@@ -26,17 +26,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Require a feature branch (never write to main)
-        shell: bash
-        run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "Run this workflow from a feature branch, not main."
-            exit 1
-          fi
-      - name: Checkout selected branch
+      - name: Checkout isolated image-generation branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          # Always generate on the feature branch, even when Run workflow is
+          # launched from main. Never commit generated assets directly to main.
+          ref: feat/gemini-recipe-image-pilot
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -59,4 +54,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "assets/images/recipes/" "recipes/"
           git commit -m "Generate Gemini image for ${{ inputs.recipe_slug }}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:feat/gemini-recipe-image-pilot"
