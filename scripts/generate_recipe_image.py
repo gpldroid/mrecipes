@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate one recipe image using Gemini, then update only that recipe page."""
+"""Generate one recipe image with Cloudflare Workers AI and update its page."""
 import base64
 import html
 import json
@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+MODEL_DEFAULT = "@cf/black-forest-labs/flux-1-schnell"
 
 
 def fail(message):
@@ -19,47 +20,66 @@ def fail(message):
     raise SystemExit(1)
 
 
-def request_json(url, payload, api_key):
+def request_image(url, payload, token):
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         url,
         data=data,
-        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        },
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=180) as response:
-            return json.loads(response.read().decode("utf-8"))
+        with urllib.request.urlopen(req, timeout=240) as response:
+            result = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        # Do not print request headers or secrets.
-        detail = exc.read().decode("utf-8", "replace")[:1200]
-        fail(f"Gemini API returned HTTP {exc.code}: {detail}")
+        detail = exc.read().decode("utf-8", "replace")[:1000]
+        if token:
+            detail = detail.replace(token, "[REDACTED]")
+        fail(f"Cloudflare Workers AI returned HTTP {exc.code}: {detail}")
     except (urllib.error.URLError, TimeoutError) as exc:
-        fail(f"Gemini API request failed: {exc}")
+        fail(f"Cloudflare Workers AI request failed: {exc}")
+
+    if not result.get("success", False):
+        errors = json.dumps(result.get("errors", []), ensure_ascii=False)[:1000]
+        fail(f"Cloudflare Workers AI reported an error: {errors}")
+    image_data = (result.get("result") or {}).get("image")
+    if not isinstance(image_data, str) or not image_data:
+        fail("Cloudflare returned no image data. No files were changed.")
+    try:
+        image_bytes = base64.b64decode(image_data, validate=True)
+    except ValueError:
+        fail("Cloudflare returned invalid base64 image data. No files were changed.")
+    if len(image_bytes) < 10 or not image_bytes.startswith(b"\xff\xd8\xff"):
+        fail("Cloudflare image bytes were not a valid JPEG signature. No files were changed.")
+    return image_bytes
 
 
 def main():
     slug = os.environ.get("RECIPE_SLUG", "classic-pancakes").strip()
     force = os.environ.get("FORCE_REGENERATE", "false").lower() == "true"
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    token = os.environ.get("CLOUDFLARE_API_TOKEN", "").strip()
+    account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "").strip()
     if not SLUG_RE.fullmatch(slug):
         fail("RECIPE_SLUG must be a lowercase recipe slug, e.g. classic-pancakes.")
-    if not api_key:
-        fail("Missing GEMINI_API_KEY. Add it in GitHub repository Actions secrets.")
+    if not token or not account_id:
+        fail("Missing CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID GitHub Actions secret.")
     page = ROOT / "recipes" / f"{slug}.html"
     if not page.is_file():
         fail(f"Recipe page not found: recipes/{slug}.html")
 
     image_dir = ROOT / "assets" / "images" / "recipes"
     image_dir.mkdir(parents=True, exist_ok=True)
-    image_path = image_dir / f"{slug}.png"
+    image_path = image_dir / f"{slug}.jpg"
     source = page.read_text(encoding="utf-8")
     if image_path.exists() and not force:
         print(f"SKIP: {image_path.relative_to(ROOT)} already exists; set FORCE_REGENERATE=true to replace it.")
         return
 
     match = re.search(
-        r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        r'<script\b[^>]*type=["\\']application/ld\\+json["\\'][^>]*>(.*?)</script>',
         source, re.I | re.S
     )
     if not match:
@@ -69,7 +89,7 @@ def main():
     except json.JSONDecodeError as exc:
         fail(f"Recipe JSON-LD is invalid: {exc}")
     if isinstance(recipe, list):
-        recipe = next((item for item in recipe if item.get("@type") == "Recipe"), None)
+        recipe = next((item for item in recipe if isinstance(item, dict) and item.get("@type") == "Recipe"), None)
     if not isinstance(recipe, dict) or recipe.get("@type") != "Recipe":
         fail("JSON-LD does not contain a top-level Recipe object.")
 
@@ -84,52 +104,29 @@ def main():
         f"Dish: {name}. Description: {description}. Ingredients: {ingredients_text}. "
         "Show only the finished edible dish, accurately reflecting the named recipe and ingredients. "
         "Natural soft window light, appetizing realistic food texture, tasteful neutral tabletop, "
-        "professional food photography, 16:7 wide landscape composition with the dish centered and "
+        "professional food photography, wide landscape composition with the dish centered and "
         "safe margins for responsive cropping. No text, no letters, no watermark, no logo, no collage, "
         "no hands, no packaging, no decorative ingredients that contradict the recipe."
     )
-    model = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image").strip()
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    result = request_json(endpoint, {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"responseModalities": ["IMAGE"]},
-    }, api_key)
+    model = os.environ.get("CLOUDFLARE_IMAGE_MODEL", MODEL_DEFAULT).strip()
+    endpoint = (
+        "https://api.cloudflare.com/client/v4/accounts/"
+        f"{account_id}/ai/run/{model}"
+    )
+    print(f"Generating one image with Cloudflare Workers AI model {model}...")
+    image_bytes = request_image(endpoint, {"prompt": prompt, "steps": 4}, token)
 
-    candidates = result.get("candidates") or []
-    parts = (candidates[0].get("content") or {}).get("parts") or [] if candidates else []
-    image_part = next((p.get("inlineData") or p.get("inline_data")
-                       for p in parts if p.get("inlineData") or p.get("inline_data")), None)
-    if not image_part:
-        fail("Gemini returned no image data. No files were changed.")
-    mime = image_part.get("mimeType") or image_part.get("mime_type") or ""
-    if mime not in ("image/png", "image/jpeg", "image/webp"):
-        fail(f"Unexpected image MIME type: {mime or 'missing'}. No files were changed.")
-    try:
-        image_bytes = base64.b64decode(image_part["data"], validate=True)
-    except (KeyError, ValueError):
-        fail("Gemini image payload was invalid. No files were changed.")
-    signatures = {
-        "image/png": b"\x89PNG\r\n\x1a\n",
-        "image/jpeg": b"\xff\xd8\xff",
-        "image/webp": b"RIFF",
-    }
-    if len(image_bytes) < 10 or not image_bytes.startswith(signatures[mime]):
-        fail("Image bytes failed signature validation. No files were changed.")
-    # Normalize the extension to the actual returned format.
-    extension = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp"}[mime]
-    target = image_dir / f"{slug}.{extension}"
+    target = image_dir / f"{slug}.jpg"
     if target.exists() and not force:
         fail(f"Refusing to overwrite existing {target.relative_to(ROOT)} without FORCE_REGENERATE=true.")
-    old_extensions = ("svg", "png", "jpg", "jpeg", "webp")
-    old_refs = [f"{slug}.{ext}" for ext in old_extensions]
+    old_refs = [f"{slug}.{ext}" for ext in ("svg", "png", "jpg", "jpeg", "webp")]
     updated = source
     for old_ref in old_refs:
-        updated = updated.replace(old_ref, f"{slug}.{extension}")
+        updated = updated.replace(old_ref, f"{slug}.jpg")
     if updated == source:
         fail(f"No image reference for {slug} was found in the recipe page; image not saved.")
-    # Validate JSON-LD remains parseable after changing the image reference.
     updated_match = re.search(
-        r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        r'<script\b[^>]*type=["\\']application/ld\\+json["\\'][^>]*>(.*?)</script>',
         updated, re.I | re.S
     )
     try:
@@ -137,11 +134,10 @@ def main():
     except (AttributeError, json.JSONDecodeError) as exc:
         fail(f"Updated recipe metadata failed validation: {exc}")
 
-    # Only write after generation and all validation checks succeed.
-    image_path = target
-    image_path.write_bytes(image_bytes)
+    # Write only after successful generation and all validation checks.
+    target.write_bytes(image_bytes)
     page.write_text(updated, encoding="utf-8")
-    print(f"SUCCESS: generated {image_path.relative_to(ROOT)} ({len(image_bytes)} bytes)")
+    print(f"SUCCESS: generated {target.relative_to(ROOT)} ({len(image_bytes)} bytes)")
     print(f"SUCCESS: updated image references in recipes/{slug}.html")
     print("Review the image before merging the pull request.")
 
