@@ -41,12 +41,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install Gemini SDK
+        run: python -m pip install --upgrade google-genai
       - name: Generate and validate exactly one image
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           RECIPE_SLUG: ${{ inputs.recipe_slug }}
           FORCE_REGENERATE: ${{ inputs.force_regenerate }}
-          GEMINI_IMAGE_MODEL: gemini-2.5-flash-image
+          GEMINI_IMAGE_MODEL: gemini-3.1-flash-lite-image
         run: python scripts/generate_recipe_image.py
       - name: Commit generated image and page reference
         shell: bash
