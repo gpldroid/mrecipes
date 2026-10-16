@@ -1,10 +1,15 @@
 (() => {
   "use strict";
+  // Public browser credentials only. Never place a Supabase secret/service_role key here.
+  const SUPABASE_URL = "https://YOUR_PROJECT_REF.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
   const search = new URLSearchParams(location.search).get("search")?.trim().toLowerCase();
-  const input = document.querySelector('#header-search-input');
+  const input = document.querySelector("#header-search-input");
   if (input && search) input.value = search;
-  const cards = [...document.querySelectorAll("[data-recipe-card]")];
-  if (search && cards.length) {
+
+  const applySearch = () => {
+    const cards = [...document.querySelectorAll("[data-recipe-card]")];
+    if (!search || !cards.length) return;
     let count = 0;
     cards.forEach(card => {
       const matches = card.textContent.toLowerCase().includes(search) || (card.dataset.tags || "").toLowerCase().includes(search);
@@ -13,9 +18,86 @@
     });
     const status = document.querySelector("[data-search-status]");
     if (status) status.textContent = count ? `${count} recipe${count === 1 ? "" : "s"} found for “${search}”.` : `No recipes found for “${search}”. Try another search.`;
-  }
+  };
+  applySearch();
   document.querySelectorAll("[data-current-year]").forEach(el => el.textContent = new Date().getFullYear());
-  document.querySelectorAll("[data-scroll-top]").forEach(button => {
-    button.addEventListener("click", () => window.scrollTo({top: 0, behavior: "smooth"}));
+  document.querySelectorAll("[data-scroll-top]").forEach(button => button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" })));
+
+  const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL)
+    && !SUPABASE_URL.includes("YOUR_PROJECT_REF")
+    && SUPABASE_PUBLISHABLE_KEY
+    && !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_SUPABASE");
+
+  const loadClient = () => new Promise((resolve, reject) => {
+    if (window.supabase?.createClient) return resolve(window.supabase);
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+    script.async = true;
+    script.onload = () => window.supabase?.createClient ? resolve(window.supabase) : reject(new Error("Supabase client unavailable"));
+    script.onerror = reject;
+    document.head.appendChild(script);
   });
+  const str = value => String(value ?? "");
+  const renderCards = (container, recipes) => {
+    const fragment = document.createDocumentFragment();
+    recipes.forEach(recipe => {
+      const card = document.createElement("article");
+      card.className = "recipe-card";
+      card.dataset.recipeCard = "";
+      card.dataset.tags = [recipe.title, recipe.category, recipe.excerpt].join(" ").toLowerCase();
+      const imageLink = document.createElement("a");
+      imageLink.className = "recipe-image";
+      imageLink.href = `/recipes/${encodeURIComponent(recipe.slug)}.html`;
+      imageLink.setAttribute("aria-label", str(recipe.title));
+      if (recipe.image_url) {
+        const img = document.createElement("img");
+        img.src = recipe.image_url; img.alt = str(recipe.title); img.loading = "lazy"; img.decoding = "async";
+        imageLink.appendChild(img);
+      } else imageLink.textContent = "🍽️";
+      const content = document.createElement("div"); content.className = "recipe-content";
+      const meta = document.createElement("div"); meta.className = "recipe-meta";
+      const time = document.createElement("span"); time.textContent = `${Number(recipe.prep_minutes || 0) + Number(recipe.cook_minutes || 0)} min`;
+      const category = document.createElement("span"); category.textContent = str(recipe.category || "Recipe");
+      meta.append(time, category);
+      const h3 = document.createElement("h3"); const title = document.createElement("a");
+      title.href = imageLink.href; title.textContent = str(recipe.title); h3.appendChild(title);
+      const excerpt = document.createElement("p"); excerpt.textContent = str(recipe.excerpt);
+      content.append(meta, h3, excerpt); card.append(imageLink, content); fragment.appendChild(card);
+    });
+    container.replaceChildren(fragment);
+  };
+
+  if (!configured) {
+    window.MRecipesData = Object.freeze({ enabled: false, reason: "Configure the Supabase URL and publishable key in assets/js/main.js." });
+    return;
+  }
+  loadClient().then(library => {
+    const client = library.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    window.MRecipesData = Object.freeze({
+      enabled: true,
+      async getPublishedRecipes() {
+        const { data, error } = await client.from("recipes").select("slug,title,excerpt,category,image_url,prep_minutes,cook_minutes,published_at").eq("status", "published").order("published_at", { ascending: false }).limit(60);
+        if (error) throw error;
+        return data || [];
+      },
+      async getApprovedComments(slug) {
+        const { data, error } = await client.from("recipe_comments").select("display_name,body,created_at,recipes!inner(slug)").eq("status", "approved").eq("recipes.slug", slug).order("created_at", { ascending: false });
+        if (error) throw error;
+        return data || [];
+      },
+      async submitComment({ slug, displayName, body }) {
+        const name = str(displayName).trim(), comment = str(body).trim();
+        if (name.length < 2 || name.length > 80 || comment.length < 5 || comment.length > 2000) throw new Error("Name must be 2–80 characters and comment 5–2000 characters.");
+        const { data: recipe, error: lookupError } = await client.from("recipes").select("id").eq("slug", slug).eq("status", "published").single();
+        if (lookupError) throw lookupError;
+        const { error } = await client.from("recipe_comments").insert({ recipe_id: recipe.id, display_name: name, body: comment, status: "pending" });
+        if (error) throw error;
+      }
+    });
+    const container = document.querySelector("[data-supabase-recipes]");
+    if (!container) return;
+    window.MRecipesData.getPublishedRecipes().then(recipes => {
+      if (recipes.length) { renderCards(container, recipes); applySearch(); }
+    }).catch(error => console.error("Supabase query failed; keeping static recipe cards.", error));
+  }).catch(error => console.error("Supabase client failed to load; keeping static content.", error));
 })();
