@@ -1,0 +1,55 @@
+name: Deploy MRecipes to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate required site files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f index.html
+          test -f recipes.html
+          test -f assets/css/style.css
+          test -f assets/js/header.js
+          test -f assets/js/footer.js
+          test -f assets/js/main.js
+          test -f CNAME
+          test -f sitemap.xml
+          test -f robots.txt
+          for file in recipes/creamy-garlic-chicken.html recipes/classic-pancakes.html recipes/mediterranean-pasta.html recipes/chocolate-chip-cookies.html recipes/homemade-margherita-pizza.html recipes/fresh-greek-salad.html; do
+            test -f "$file"
+          done
+          echo "Required MRecipes site files are present."
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
