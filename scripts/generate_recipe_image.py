@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Generate one recipe image using Gemini, then update only that recipe page."""
-import base64
+"""Generate one recipe image through Hugging Face Inference Providers, then update one page."""
+import io
 import html
 import json
 import os
 import re
 import sys
-import urllib.error
-import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,33 +17,14 @@ def fail(message):
     raise SystemExit(1)
 
 
-def request_json(url, payload, api_key):
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=180) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        # Do not print request headers or secrets.
-        detail = exc.read().decode("utf-8", "replace")[:1200]
-        fail(f"Gemini API returned HTTP {exc.code}: {detail}")
-    except (urllib.error.URLError, TimeoutError) as exc:
-        fail(f"Gemini API request failed: {exc}")
-
-
 def main():
     slug = os.environ.get("RECIPE_SLUG", "classic-pancakes").strip()
     force = os.environ.get("FORCE_REGENERATE", "false").lower() == "true"
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    api_key = os.environ.get("HF_TOKEN", "").strip()
     if not SLUG_RE.fullmatch(slug):
         fail("RECIPE_SLUG must be a lowercase recipe slug, e.g. classic-pancakes.")
     if not api_key:
-        fail("Missing GEMINI_API_KEY. Add it in GitHub repository Actions secrets.")
+        fail("Missing HF_TOKEN. Add a Hugging Face token with Inference Providers permission in GitHub Actions secrets.")
     page = ROOT / "recipes" / f"{slug}.html"
     if not page.is_file():
         fail(f"Recipe page not found: recipes/{slug}.html")
@@ -88,26 +67,24 @@ def main():
         "safe margins for responsive cropping. No text, no letters, no watermark, no logo, no collage, "
         "no hands, no packaging, no decorative ingredients that contradict the recipe."
     )
-    model = os.environ.get("GEMINI_IMAGE_MODEL", "gemini-2.5-flash-image").strip()
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    result = request_json(endpoint, {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"responseModalities": ["IMAGE"]},
-    }, api_key)
-
-    candidates = result.get("candidates") or []
-    parts = (candidates[0].get("content") or {}).get("parts") or [] if candidates else []
-    image_part = next((p.get("inlineData") or p.get("inline_data")
-                       for p in parts if p.get("inlineData") or p.get("inline_data")), None)
-    if not image_part:
-        fail("Gemini returned no image data. No files were changed.")
-    mime = image_part.get("mimeType") or image_part.get("mime_type") or ""
-    if mime not in ("image/png", "image/jpeg", "image/webp"):
-        fail(f"Unexpected image MIME type: {mime or 'missing'}. No files were changed.")
+    model = os.environ.get("HF_IMAGE_MODEL", "black-forest-labs/FLUX.1-schnell").strip()
+    # Hugging Face's included monthly credits apply to routed Inference Provider calls.
+    # No provider-side API key or paid fallback is configured.
     try:
-        image_bytes = base64.b64decode(image_part["data"], validate=True)
-    except (KeyError, ValueError):
-        fail("Gemini image payload was invalid. No files were changed.")
+        from huggingface_hub import InferenceClient
+        client = InferenceClient(provider="fal-ai", api_key=api_key, timeout=180)
+        generated_image = client.text_to_image(prompt=prompt, model=model)
+        image_buffer = io.BytesIO()
+        generated_image.save(image_buffer, format="PNG")
+        image_bytes = image_buffer.getvalue()
+        mime = "image/png"
+    except Exception as exc:
+        detail = str(exc).replace(api_key, "[REDACTED]")[:1200]
+        fail(
+            f"Hugging Face image request failed ({type(exc).__name__}): {detail}. "
+            "No files were changed. Check your monthly free credits and model availability."
+        )
+
     signatures = {
         "image/png": b"\x89PNG\r\n\x1a\n",
         "image/jpeg": b"\xff\xd8\xff",
@@ -115,7 +92,6 @@ def main():
     }
     if len(image_bytes) < 10 or not image_bytes.startswith(signatures[mime]):
         fail("Image bytes failed signature validation. No files were changed.")
-    # Normalize the extension to the actual returned format.
     extension = {"image/png": "png", "image/jpeg": "jpg", "image/webp": "webp"}[mime]
     target = image_dir / f"{slug}.{extension}"
     if target.exists() and not force:
@@ -127,7 +103,6 @@ def main():
         updated = updated.replace(old_ref, f"{slug}.{extension}")
     if updated == source:
         fail(f"No image reference for {slug} was found in the recipe page; image not saved.")
-    # Validate JSON-LD remains parseable after changing the image reference.
     updated_match = re.search(
         r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
         updated, re.I | re.S
@@ -137,11 +112,10 @@ def main():
     except (AttributeError, json.JSONDecodeError) as exc:
         fail(f"Updated recipe metadata failed validation: {exc}")
 
-    # Only write after generation and all validation checks succeed.
-    image_path = target
-    image_path.write_bytes(image_bytes)
+    # Write files only after generation and all validation checks succeed.
+    target.write_bytes(image_bytes)
     page.write_text(updated, encoding="utf-8")
-    print(f"SUCCESS: generated {image_path.relative_to(ROOT)} ({len(image_bytes)} bytes)")
+    print(f"SUCCESS: generated {target.relative_to(ROOT)} ({len(image_bytes)} bytes)")
     print(f"SUCCESS: updated image references in recipes/{slug}.html")
     print("Review the image before merging the pull request.")
 
