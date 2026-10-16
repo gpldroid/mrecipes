@@ -124,8 +124,8 @@ jobs:
                   if not url.startswith("https://mrecipes.online/"):
                       errors.append(f"sitemap.xml: URL outside canonical domain: {url}")
                   else:
-                      path = url.removeprefix("https://mrecipes.online/")
-                      target = root / path if path else root / "index.html"
+                      path = url.removeprefix("https://mrecipes.online/").strip("/")
+                      target = (root / path / "index.html") if path and url.endswith("/") else (root / path if path else root / "index.html")
                       if not target.is_file():
                           errors.append(f"sitemap.xml: URL points to missing file: {url}")
           except Exception as exc:
