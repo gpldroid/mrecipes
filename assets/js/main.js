@@ -340,3 +340,60 @@
     }).catch(error => console.error('Supabase query failed; keeping static recipe cards.', error));
   }).catch(error => console.error('Supabase client failed to load; keeping static content.', error));
 })();
+
+/* Accessible floating controls for scrolling to the top or bottom of any page. */
+(() => {
+  'use strict';
+  const locale = (document.documentElement.lang || 'en').toLowerCase().split('-')[0];
+  const copy = {
+    en: { top: 'Scroll to top', bottom: 'Scroll to bottom' },
+    ar: { top: 'الانتقال إلى أعلى الصفحة', bottom: 'الانتقال إلى أسفل الصفحة' },
+    es: { top: 'Ir al inicio', bottom: 'Ir al final' },
+    fr: { top: 'Aller en haut', bottom: 'Aller en bas' },
+    ru: { top: 'Прокрутить вверх', bottom: 'Прокрутить вниз' }
+  }[locale] || { top: 'Scroll to top', bottom: 'Scroll to bottom' };
+
+  const controls = document.createElement('nav');
+  controls.className = 'mrecipes-scroll-controls';
+  controls.setAttribute('aria-label', locale === 'ar' ? 'أدوات التنقل في الصفحة' : 'Page scroll controls');
+
+  const makeButton = (direction, symbol, label, action) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'mrecipes-scroll-button mrecipes-scroll-' + direction;
+    button.textContent = symbol;
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.addEventListener('click', action);
+    controls.appendChild(button);
+    return button;
+  };
+
+  const topButton = makeButton('top', '↑', copy.top, () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  const bottomButton = makeButton('bottom', '↓', copy.bottom, () => {
+    window.scrollTo({ top: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight), behavior: 'smooth' });
+  });
+  document.body.appendChild(controls);
+
+  let scheduled = false;
+  const updateVisibility = () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    topButton.hidden = scrollTop < 120;
+    bottomButton.hidden = maxScroll - scrollTop < 120;
+    controls.classList.toggle('is-visible', !topButton.hidden || !bottomButton.hidden);
+    scheduled = false;
+  };
+  const scheduleUpdate = () => {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(updateVisibility);
+  };
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate, { passive: true });
+  window.addEventListener('load', scheduleUpdate, { once: true });
+  updateVisibility();
+})();
+
