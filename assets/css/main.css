@@ -741,3 +741,26 @@ pre, code, table { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+
+/* Progressive recipe browsing */
+.load-more-button {
+  display: flex;
+  width: fit-content;
+  min-width: 12rem;
+  margin: 1.75rem auto .5rem;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.load-more-button[hidden], .pagination-status[hidden] { display: none; }
+.pagination-status {
+  margin: .5rem 0 0;
+  color: var(--muted);
+  font-size: .875rem;
+  text-align: center;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .load-more-button { transition: transform .18s ease, background-color .18s ease; }
+  .load-more-button:hover { transform: translateY(-1px); }
+}
