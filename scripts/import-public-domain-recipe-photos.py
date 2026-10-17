@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch public-domain recipe photos and switch local SVG illustration references to local WebP files."""
+"""Fetch public-domain food photography and replace recipe image assets/references."""
 from pathlib import Path
 from urllib.request import Request, urlopen
 import re
@@ -11,18 +11,19 @@ DEST = ROOT / "assets/images/recipes"
 # The upstream repository explicitly dedicates its content to the public domain (Unlicense).
 # Every source filename below exists in its static/pix directory.
 PHOTO_MAP = {
+    # Exact or closest available dish photo from the upstream Unlicense/public-domain collection.
     "avocado-toast": "guacamole.webp",
     "beef-vegetable-stir-fry": "teriyaki-beef.webp",
     "blueberry-muffins": "banana-muffins.webp",
     "cauliflower-cheese-bake": "baked-pasta-with-broccoli.webp",
-    "chicken-broccoli-mash": "lemon-and-oregano-chicken-traybake.webp",
+    "chicken-broccoli-mash": "pan-seared-chicken.webp",
     "chicken-curry-rice": "butter-chicken-masala.webp",
     "chicken-fried-rice": "arroz-chaufa.webp",
     "chicken-tomato-stew": "apple-chicken.webp",
     "chocolate-chip-cookies": "chocolate-chip-cookies.webp",
     "classic-pancakes": "pancake.webp",
-    "creamy-garlic-chicken": "pan-seared-chicken.webp",
-    "creamy-garlic-parmesan-chicken": "pan-seared-chicken.webp",
+    "creamy-garlic-chicken": "lemon-and-oregano-chicken-traybake.webp",
+    "creamy-garlic-parmesan-chicken": "asian-style-chicken-sticky-sauce.webp",
     "creamy-pasta": "cacio-e-pepe.webp",
     "creamy-tomato-tortellini-soup": "stracciatella-soup.webp",
     "crispy-baked-chicken-thighs": "honey-sriracha-chicken-thighs.webp",
@@ -37,11 +38,11 @@ PHOTO_MAP = {
     "juicy-baked-chicken-breast": "pan-seared-chicken.webp",
     "lemon-garlic-shrimp-pasta": "pasta-navy-style.webp",
     "lemon-herb-lentil-salad": "lenten-lentil-curry.webp",
-    "marry-me-chicken": "lemon-and-oregano-chicken-traybake.webp",
+    "marry-me-chicken": "chicken-pasta-casserole.webp",
     "mediterranean-pasta": "baked-mostaccioli.webp",
     "moist-banana-bread": "coconutbread-lufemas.webp",
     "no-bake-chocolate-oat-bars": "tahini-short-bread.webp",
-    "one-pot-chicken-orzo": "chicken-pasta-casserole.webp",
+    "one-pot-chicken-orzo": "baked-rice.webp",
     "overnight-oats": "hearty-breakfast-oatmeal.webp",
     "roasted-chickpea-bowl": "hummus.webp",
     "roasted-vegetable-salad": "stuffed-vegetables.webp",
@@ -55,13 +56,14 @@ def main():
     DEST.mkdir(parents=True, exist_ok=True)
     for slug, source_name in PHOTO_MAP.items():
         target = DEST / f"{slug}.webp"
-        if not target.exists():
-            req = Request(BASE + source_name, headers={"User-Agent": "MRecipes-image-import/1.0"})
-            with urlopen(req, timeout=30) as response:
-                data = response.read()
-            if not data.startswith(b"RIFF") or data[8:12] != b"WEBP":
-                raise RuntimeError(f"Downloaded file is not valid WebP: {source_name}")
-            target.write_bytes(data)
+        # Always refresh the local copy so correcting the recipe/photo map also
+        # replaces stale or previously mismatched images already in the repo.
+        req = Request(BASE + source_name, headers={"User-Agent": "MRecipes-image-import/1.0"})
+        with urlopen(req, timeout=30) as response:
+            data = response.read()
+        if not data.startswith(b"RIFF") or data[8:12] != b"WEBP":
+            raise RuntimeError(f"Downloaded file is not valid WebP: {source_name}")
+        target.write_bytes(data)
         if target.stat().st_size < 1000:
             raise RuntimeError(f"Image unexpectedly small: {target}")
 
@@ -82,7 +84,7 @@ def main():
         if updated != original:
             page.write_text(updated, encoding="utf-8")
 
-    print(f"Downloaded/verified {len(PHOTO_MAP)} public-domain WebP recipe photos and rewrote local references.")
+    print(f"Downloaded/replaced {len(PHOTO_MAP)} public-domain WebP recipe photos and rewrote local references.")
 
 if __name__ == "__main__":
     main()
