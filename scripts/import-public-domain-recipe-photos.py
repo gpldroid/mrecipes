@@ -17,6 +17,18 @@ DEST = ROOT / "assets/images/recipes"
 
 # The upstream repository explicitly dedicates its content to the public domain (Unlicense).
 # Every source filename below exists in its static/pix directory.
+# Exact or closely matching image filenames confirmed in based.cooking's
+# recipe Markdown; all are served from its public-domain /pix collection.
+SECONDARY_PHOTO_MAP = {
+    "chicken-curry-rice": "butter-chicken-masala.webp",
+    "chocolate-chip-cookies": "chocolate-chip-cookies.webp",
+    "creamy-garlic-chicken": "lemon-and-oregano-chicken-traybake.webp",
+    "crispy-baked-chicken-thighs": "honey-sriracha-chicken-thighs.webp",
+    "easy-chickpea-curry": "fall-vegetable-and-chickpea-curry.webp",
+    "overnight-oats": "hearty-breakfast-oatmeal.webp",
+    "stuffed-bell-peppers": "ardei-umpluti.webp",
+}
+
 PHOTO_MAP = {
     # Exact or closest available dish photo from the upstream Unlicense/public-domain collection.
     "avocado-toast": "guacamole.webp",
@@ -68,6 +80,8 @@ def main():
         # direct slug in the first collection. Failed candidates never break the
         # build while a valid mapped image is available.
         candidates = [base + f"{slug}.webp" for base in EXACT_PHOTO_SOURCES[:2]]
+        if slug in SECONDARY_PHOTO_MAP:
+            candidates.extend(base + SECONDARY_PHOTO_MAP[slug] for base in EXACT_PHOTO_SOURCES[:2])
         candidates.extend([BASE + source_name, BASE + f"{slug}.webp"])
         data = None
         failures = []
