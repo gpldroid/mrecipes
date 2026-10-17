@@ -7,6 +7,20 @@
   const input = document.querySelector("#header-search-input");
   if (input && search) input.value = search;
 
+  // Contact form uses the configured mailto action. Do not intercept submit:
+  // the browser opens the visitor's mail client so the visitor explicitly sends.
+  const contactForm = document.querySelector("[data-contact-form]");
+  if (contactForm) {
+    const status = contactForm.querySelector("[data-contact-status]");
+    contactForm.addEventListener("submit", event => {
+      if (!contactForm.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+      if (status) status.textContent = "Your email app should open with the message addressed to info@larache.xyz. Please review and send it there.";
+    });
+  }
+
   const PAGE_SIZE = 9;
   const gridState = new WeakMap();
   const getGridState = grid => {
@@ -65,8 +79,7 @@
   document.querySelectorAll("[data-current-year]").forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll("[data-scroll-top]").forEach(button => button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" })));
 
-
-  // Related recipes: six cards, two columns on mobile and three on desktop.
+  // Related recipe cards: six cards; responsive two-column mobile, three-column desktop.
   const relatedRecipes = [
     { slug: "creamy-garlic-chicken", title: "Creamy Garlic Chicken", category: "Easy dinner", description: "Tender chicken in a silky garlic cream sauce." },
     { slug: "classic-pancakes", title: "Fluffy Classic Pancakes", category: "Breakfast", description: "Golden, soft pancakes for a cozy morning." },
@@ -125,21 +138,6 @@
     });
     section.append(heading, grid);
     articleMain.appendChild(section);
-  }
-
-  // Contact form provides accessible client-side validation. Delivery is activated
-  // only after a real inbox/provider is configured, rather than silently discarding messages.
-  const contactForm = document.querySelector("[data-contact-form]");
-  if (contactForm) {
-    const status = contactForm.querySelector("[data-contact-status]");
-    contactForm.addEventListener("submit", event => {
-      event.preventDefault();
-      if (!contactForm.reportValidity()) return;
-      if (status) {
-        status.textContent = "Your details are ready, but message delivery has not been configured yet. Please use the contact link shown on this page for now.";
-        status.classList.add("contact-form__status--notice");
-      }
-    });
   }
 
   const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL)
