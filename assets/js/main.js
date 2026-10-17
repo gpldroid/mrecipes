@@ -269,14 +269,25 @@
       imageLink.className = 'recipe-image';
       imageLink.href = `${recipeBase}${encodeURIComponent(recipe.slug)}.html`;
       imageLink.setAttribute('aria-label', str(recipe.title));
-      if (recipe.image_url) {
+      {
         const img = document.createElement('img');
-        img.src = recipe.image_url;
+        // Prefer the site-owned image named after this recipe. Supabase's
+        // image_url is only a fallback for recipes without a local photo.
+        img.src = `/assets/images/recipes/${encodeURIComponent(recipe.slug)}.webp`;
         img.alt = str(recipe.title);
         img.loading = 'lazy';
         img.decoding = 'async';
+        img.onerror = () => {
+          if (recipe.image_url && img.dataset.fallbackUsed !== 'true') {
+            img.dataset.fallbackUsed = 'true';
+            img.src = recipe.image_url;
+          } else {
+            img.remove();
+            imageLink.textContent = '🍽️';
+          }
+        };
         imageLink.appendChild(img);
-      } else imageLink.textContent = '🍽️';
+      }
       const content = document.createElement('div');
       content.className = 'recipe-content';
       const meta = document.createElement('div');
