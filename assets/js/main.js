@@ -29,6 +29,96 @@
     ru: { more: 'Загрузить ещё рецепты', shown: (a, b) => `Показано ${a} из ${b} рецептов`, empty: 'Нет рецептов для отображения.' }
   }[locale];
 
+
+  // Build the desktop sidebar from the same recipe cards as the main feed.
+  // This keeps links, titles, categories, and images in sync with static or Supabase content.
+  const sidebarLabels = {
+    en: { all: 'View all', empty: 'More recipes coming soon' },
+    ar: { all: 'عرض الكل', empty: 'وصفات جديدة قريبًا' },
+    es: { all: 'Ver todas', empty: 'Próximamente más recetas' },
+    fr: { all: 'Tout voir', empty: 'D’autres recettes bientôt' },
+    ru: { all: 'Все рецепты', empty: 'Скоро появятся новые рецепты' }
+  }[locale];
+  const renderSidebar = () => {
+    const latest = document.querySelector('[data-sidebar-latest]');
+    const categoriesRoot = document.querySelector('[data-sidebar-categories]');
+    const sourceGrid = document.querySelector('[data-supabase-recipes]');
+    if (!latest || !categoriesRoot || !sourceGrid) return;
+    const cards = [...sourceGrid.querySelectorAll('[data-recipe-card]')];
+    const toSidebarCard = card => {
+      const titleLink = card.querySelector('.recipe-content h3 a');
+      const imageLink = card.querySelector('.recipe-image');
+      if (!titleLink) return null;
+      const meta = card.querySelector('.recipe-meta');
+      const spans = meta ? [...meta.querySelectorAll('span')] : [];
+      const category = (spans[1]?.textContent || (card.dataset.tags || '').split(/\\s+/)[0] || 'Recipes').trim();
+      const article = document.createElement('article');
+      article.className = 'sidebar-recipe-card';
+      const image = document.createElement('a');
+      image.className = 'sidebar-recipe-image';
+      image.href = titleLink.href;
+      image.setAttribute('aria-label', titleLink.textContent.trim());
+      const img = imageLink?.querySelector('img');
+      if (img) {
+        const copy = document.createElement('img');
+        copy.src = img.currentSrc || img.src;
+        copy.alt = img.alt || titleLink.textContent.trim();
+        copy.loading = 'lazy';
+        copy.decoding = 'async';
+        image.appendChild(copy);
+      } else image.textContent = imageLink?.textContent.trim() || '🍽️';
+      const copy = document.createElement('div');
+      copy.className = 'sidebar-recipe-copy';
+      if (meta) copy.appendChild(meta.cloneNode(true));
+      const heading = document.createElement('h3');
+      const link = document.createElement('a');
+      link.href = titleLink.href;
+      link.textContent = titleLink.textContent.trim();
+      heading.appendChild(link);
+      copy.appendChild(heading);
+      article.append(image, copy);
+      return { article, category };
+    };
+    const entries = cards.map(toSidebarCard).filter(Boolean);
+    const createList = items => {
+      const list = document.createElement('div');
+      list.className = 'sidebar-category-cards';
+      items.forEach(item => list.appendChild(item.article));
+      return list;
+    };
+    latest.replaceChildren();
+    const latestItems = entries.slice(0, 4).map(item => ({...item, article: item.article.cloneNode(true)}));
+    if (latestItems.length) latest.appendChild(createList(latestItems));
+    else {
+      const empty = document.createElement('p');
+      empty.className = 'sidebar-empty';
+      empty.textContent = sidebarLabels.empty;
+      latest.appendChild(empty);
+    }
+    categoriesRoot.replaceChildren();
+    const grouped = new Map();
+    entries.forEach(item => {
+      const key = item.category || 'Recipes';
+      if (!grouped.has(key)) grouped.set(key, []);
+      if (grouped.get(key).length < 2) grouped.get(key).push({...item, article: item.article.cloneNode(true)});
+    });
+    grouped.forEach((items, category) => {
+      if (!items.length) return;
+      const panel = document.createElement('section');
+      panel.className = 'sidebar-category-panel';
+      const heading = document.createElement('div');
+      heading.className = 'sidebar-category-heading';
+      const title = document.createElement('h2');
+      title.textContent = category;
+      const more = document.createElement('a');
+      more.href = locale === 'en' ? '/recipes.html' : `/${locale}/recipes.html`;
+      more.textContent = sidebarLabels.all;
+      heading.append(title, more);
+      panel.append(heading, createList(items));
+      categoriesRoot.appendChild(panel);
+    });
+  };
+
   const gridState = new WeakMap();
 
   const getGridState = grid => {
@@ -99,6 +189,7 @@
 
   if (isHomePage) document.querySelectorAll('[data-supabase-recipes]').forEach(getGridState);
   applySearch();
+  renderSidebar();
   document.querySelectorAll('[data-current-year]').forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll('[data-scroll-top]').forEach(button => button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })));
 
@@ -196,6 +287,7 @@
       if (recipes.length) {
         renderCards(container, recipes);
         applySearch();
+        renderSidebar();
       }
     }).catch(error => console.error('Supabase query failed; keeping static recipe cards.', error));
   }).catch(error => console.error('Supabase client failed to load; keeping static content.', error));
