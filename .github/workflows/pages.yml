@@ -22,103 +22,77 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Build SEO metadata, hreflang, TOC and sitemap
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/seo-build-v2.py
-
+          python3 scripts/seo-description-fix.py
       - name: Validate site structure, SEO and local links
         shell: bash
         run: |
           set -euo pipefail
           test "$(tr -d '\r\n' < CNAME)" = "mrecipes.online"
-          test -f index.html
-          test -f recipes.html
-          test -f assets/css/main.css
-          test -f assets/css/mobile-nav.css
-          test -f assets/css/seo-enhancements.css
-          test -f assets/js/components/header.js
-          test -f assets/js/components/footer.js
-          test -f assets/js/main.js
-          test -f recipes/recipe-template.html
-          test -f sitemap.xml
-          test -f robots.txt
-
+          test -f index.html && test -f recipes.html
+          test -f assets/css/main.css && test -f assets/css/mobile-nav.css && test -f assets/css/seo-enhancements.css
+          test -f assets/js/components/header.js && test -f assets/js/components/footer.js && test -f assets/js/main.js
+          test -f recipes/recipe-template.html && test -f sitemap.xml && test -f robots.txt
           python3 <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
           from urllib.parse import urlparse
           import sys, xml.etree.ElementTree as ET
-
-          root=Path('.')
-          errors=[]
-          html_files=sorted(p for p in root.rglob('*.html') if '.git' not in p.parts)
-
+          root=Path('.'); errors=[]; html_files=sorted(p for p in root.rglob('*.html') if '.git' not in p.parts)
           class P(HTMLParser):
               def __init__(self):
-                  super().__init__(convert_charrefs=True); self.title=''; self.in_title=False; self.buf=[]; self.meta={}; self.canon=[]; self.alts=[]; self.links=[]; self.schema=False
+                  super().__init__(convert_charrefs=True); self.title=''; self.on=False; self.buf=[]; self.meta={}; self.canon=[]; self.links=[]; self.schema=False
               def handle_starttag(self,t,a):
                   d=dict(a); rel=d.get('rel','').lower()
-                  if t=='title': self.in_title=True; self.buf=[]
+                  if t=='title': self.on=True; self.buf=[]
                   if t=='meta' and d.get('name','').lower() in ('description','robots','keywords'): self.meta[d.get('name','').lower()]=d.get('content','') or ''
                   if t=='link' and rel=='canonical': self.canon.append(d.get('href',''))
-                  if t=='link' and rel=='alternate' and d.get('hreflang'): self.alts.append((d['hreflang'],d.get('href','')))
                   if t=='script' and d.get('type')=='application/ld+json': self.schema=True
                   if t=='a' and d.get('href'): self.links.append(d['href'])
                   if t in ('script','link'):
                       key='src' if t=='script' else 'href'
                       if d.get(key): self.links.append(d[key])
               def handle_endtag(self,t):
-                  if t=='title': self.title=''.join(self.buf).strip(); self.in_title=False
+                  if t=='title': self.title=''.join(self.buf).strip(); self.on=False
               def handle_data(self,d):
-                  if self.in_title:self.buf.append(d)
-
+                  if self.on:self.buf.append(d)
           for page in html_files:
               if page.name=='404.html': continue
               p=P(); p.feed(page.read_text(encoding='utf-8')); label=str(page)
               if not p.title: errors.append(f'{label}: missing title')
-              if not (50 <= len(p.meta.get('description','')) <= 160): errors.append(f'{label}: meta description must be 50-160 characters')
+              if not 50 <= len(p.meta.get('description','')) <= 160: errors.append(f'{label}: meta description must be 50-160 characters')
               robots=p.meta.get('robots','').lower()
-              if 'noindex' in robots or 'nofollow' in robots: errors.append(f'{label}: robots blocks indexing/following')
-              if 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
+              if 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
               if len(p.canon)!=1 or not p.canon[0].startswith('https://mrecipes.online/'): errors.append(f'{label}: invalid canonical')
               if page.parent.name=='recipes' and page.name!='recipe-template.html' and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
               for href in p.links:
                   if href.startswith(('#','mailto:','tel:','javascript:','data:','http://','https://','//')): continue
-                  clean=urlparse(href).path
-                  if clean.startswith('/'):
-                      target=root/clean.lstrip('/')
-                  else:
-                      target=(page.parent/clean).resolve()
+                  clean=urlparse(href).path; target=root/clean.lstrip('/') if clean.startswith('/') else (page.parent/clean).resolve()
                   if target.is_dir(): target=target/'index.html'
                   if not target.is_file(): errors.append(f'{label}: broken local link/asset {href}')
-
           try:
               tree=ET.parse(root/'sitemap.xml'); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}; urls=[]
               for loc in tree.findall('.//s:loc',ns):
-                  url=(loc.text or '').strip(); u=urlparse(url)
-                  if u.scheme!='https' or u.netloc!='mrecipes.online': errors.append(f'sitemap: invalid URL {url}')
+                  u=urlparse((loc.text or '').strip())
+                  if u.scheme!='https' or u.netloc!='mrecipes.online': errors.append(f'sitemap: invalid URL {loc.text}')
                   urls.append(u.path)
               if len(urls)!=len(set(urls)): errors.append('sitemap: duplicate URLs')
           except Exception as exc: errors.append(f'sitemap parse error: {exc}')
-
-          if errors:
-              print('\n'.join('ERROR: '+e for e in errors)); sys.exit(1)
-          print(f'Validation passed: {len(html_files)} HTML files, metadata, robots, canonical, hreflang, JSON-LD, local links and sitemap.')
+          if errors: print('\n'.join('ERROR: '+e for e in errors)); sys.exit(1)
+          print(f'Validation passed: {len(html_files)} HTML files, metadata, robots, canonical, JSON-LD, local links and sitemap.')
           PY
-
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-
   deploy:
     if: github.event_name != 'pull_request'
     environment:
