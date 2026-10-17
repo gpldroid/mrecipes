@@ -70,18 +70,12 @@ root.innerHTML = `
   <div class="header-inner">
     <a class="brand" href="${l.home}" aria-label="MRecipes ${t.home}"><span class="brand-mark" aria-hidden="true">M</span><span>MRecipes<span class="brand-dot">.</span></span></a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="${localeKey === 'ar' ? 'فتح القائمة' : 'Open navigation'}"><span></span><span></span><span></span></button>
-    <nav class="primary-nav" id="primary-nav" aria-label="${t.nav}">${navHtml}</nav>
+    <nav class="primary-nav" id="primary-nav" aria-label="${t.nav}">${navHtml}<div class="language-menu"><button class="language-trigger" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="language-options" aria-label="${t.openLanguage}" title="${t.language}"><span aria-hidden="true">◎</span><strong>${locales[localeKey].label}</strong><span class="language-chevron" aria-hidden="true">⌄</span></button><div class="language-options" id="language-options" role="menu" aria-label="${t.language}">${languageHtml}</div></div></nav>
     <form class="header-search" action="${l.recipes}" role="search">
       <label class="visually-hidden" for="header-search-input">${t.search}</label>
       <input id="header-search-input" name="search" type="search" placeholder="${t.placeholder}" autocomplete="off"/>
       <button type="submit" aria-label="${t.search}">⌕</button>
     </form>
-    <div class="language-menu">
-      <button class="language-trigger" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="language-options" aria-label="${t.openLanguage}" title="${t.language}">
-        <span aria-hidden="true">◎</span><strong>${locales[localeKey].label}</strong><span class="language-chevron" aria-hidden="true">⌄</span>
-      </button>
-      <div class="language-options" id="language-options" role="menu" aria-label="${t.language}">${languageHtml}</div>
-    </div>
     <button class="theme-toggle" type="button" aria-label="${t.theme}" aria-pressed="false" title="${t.theme}"><span aria-hidden="true">☾</span></button>
   </div>
 </header>
@@ -94,6 +88,17 @@ style.textContent = `
 @media(max-width:760px){.header-inner{min-height:4.5rem}.primary-nav{position:absolute;left:1.25rem;right:1.25rem;top:calc(100% + .35rem);display:none;flex-direction:column;align-items:stretch;gap:.15rem;padding:.65rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 16px 38px rgba(48,37,69,.14)}.primary-nav.is-open{display:flex}.primary-nav a{padding:.65rem .75rem;border-radius:10px}.primary-nav a:hover,.primary-nav a[aria-current="page"]{background:color-mix(in srgb,var(--lime) 60%,var(--surface))}.menu-toggle{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;padding:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.menu-toggle span{display:block;width:20px;height:2px;margin:2px 0;background:var(--ink);border-radius:9px}.header-search{flex:1 1 auto;width:auto;max-width:240px}.language-options{right:auto;left:0}.theme-toggle{flex-basis:40px;width:40px;height:40px}.language-trigger{height:40px;padding:0 .55rem}.language-trigger strong{font-size:.75rem}.language-trigger>span:first-child{display:none}}
 @media(max-width:430px){.header-inner{width:calc(100% - 1.25rem);gap:.4rem}.brand{font-size:1.05rem;gap:.4rem}.brand-mark{width:2.05rem;height:2.05rem;font-size:1.15rem}.header-search{max-width:none}.header-search input{font-size:.78rem}.language-trigger{min-width:48px}.language-chevron{display:none}.theme-toggle{display:none}}
 `;
+
+.primary-nav>.language-menu{display:flex;align-items:center}
+@media(max-width:760px){
+  .primary-nav .language-menu{display:block;width:100%;padding:.35rem .65rem .45rem;margin-top:.3rem;border-top:1px solid var(--line)}
+  .primary-nav .language-trigger{display:flex;width:100%;height:auto;min-height:42px;justify-content:flex-start;padding:.6rem .2rem;border:0;border-radius:10px;background:transparent}
+  .primary-nav .language-trigger>span:first-child{display:inline}
+  .primary-nav .language-options{position:static;display:none;width:100%;margin-top:.25rem;padding:.3rem;border:0;border-radius:10px;background:color-mix(in srgb,var(--line) 25%,var(--surface));box-shadow:none;opacity:1;visibility:visible;transform:none}
+  .primary-nav .language-menu.is-open .language-options{display:grid}
+  .primary-nav .language-option{grid-template-columns:38px minmax(0,1fr) 20px}
+  .header-inner>.language-menu{display:none}
+}
 document.head.appendChild(style);
 
 const themeButton = root.querySelector('.theme-toggle');
