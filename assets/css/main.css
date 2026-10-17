@@ -885,3 +885,13 @@ pre, code, table { overflow-wrap: anywhere; }
 @media(max-width:760px){.home-content-layout{display:block}.home-primary .recipe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.home-primary .recipe-grid{grid-template-columns:minmax(0,1fr)}}
 
+
+
+/* Sidebar is reserved for wide desktop screens; keep tablets and phones uncluttered. */
+.home-content-layout{display:grid;grid-template-areas:"content sidebar";grid-template-columns:minmax(0,1fr) 300px;gap:clamp(1.25rem,2.5vw,2rem);direction:ltr}
+.home-primary{grid-area:content;direction:inherit}
+.home-sidebar{grid-area:sidebar;direction:inherit}
+html[dir="rtl"] .home-content-layout{grid-template-areas:"sidebar content";grid-template-columns:300px minmax(0,1fr)}
+html[dir="rtl"] .home-primary,html[dir="rtl"] .home-sidebar{direction:rtl}
+@media(max-width:1199px){.home-content-layout{display:block}.home-sidebar{display:none}}
+@media(min-width:1200px){.home-content-layout{display:grid}.home-sidebar{display:grid}.home-primary .recipe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
