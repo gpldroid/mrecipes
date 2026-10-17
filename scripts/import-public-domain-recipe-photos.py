@@ -9,8 +9,8 @@ BASE = "https://raw.githubusercontent.com/ronaldl29/public-domain-recipes/main/s
 # Both upstream recipe-photo collections are public domain (Unlicense). Prefer a
 # filename matching the recipe slug; fall back to the curated source map if absent.
 EXACT_PHOTO_SOURCES = (
-    "https://raw.githubusercontent.com/lukesmithxyz/based.cooking/master/pix/",
-    "https://raw.githubusercontent.com/lukesmithxyz/based.cooking/main/pix/",
+    "https://raw.githubusercontent.com/lukesmithxyz/based.cooking/master/static/pix/",
+    "https://raw.githubusercontent.com/lukesmithxyz/based.cooking/main/static/pix/",
     BASE,
 )
 DEST = ROOT / "assets/images/recipes"
