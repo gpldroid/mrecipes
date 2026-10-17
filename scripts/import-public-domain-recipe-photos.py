@@ -89,8 +89,8 @@ def main():
     # Make real photos visible in recipe cards throughout the site, not only on
     # the full recipe article. Filenames always use the local recipe slug.
     card_pattern = re.compile(
-        r"(<a\\b(?=[^>]*class=['\"][^'\"]*\\brecipe-image\\b[^'\"]*['\"])"
-        r"(?=[^>]*href=['\"][^'\"]*/recipes/([^/'\"]+)\\.html['\"])[^>]*>)(.*?)(</a>)",
+        r"(<a\b(?=[^>]*class=['\"][^'\"]*\brecipe-image\b[^'\"]*['\"])"
+        r"(?=[^>]*href=['\"][^'\"]*/recipes/([^/'\"]+)\.html['\"])[^>]*>)(.*?)(</a>)",
         re.I | re.S,
     )
     for page in ROOT.rglob("*.html"):
@@ -106,7 +106,7 @@ def main():
                 return match.group(0)
             label_match = re.search(r"aria-label=['\"]([^'\"]+)['\"]", opening, re.I)
             alt = label_match.group(1) if label_match else slug.replace("-", " ").title()
-            alt = re.sub(r"\\s+recipe$", "", alt, flags=re.I)
+            alt = re.sub(r"\s+recipe$", "", alt, flags=re.I)
             image = (f'<img src="/assets/images/recipes/{slug}.webp" '
                      f'alt="{alt}" width="1200" height="900" loading="lazy" decoding="async">')
             return opening + image + closing
