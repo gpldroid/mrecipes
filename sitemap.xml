@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://mrecipes.online/</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/ar/</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/recipes.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/pages/about.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/pages/contact.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/pages/privacy-policy.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/pages/terms.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://mrecipes.online/pages/disclaimer.html</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://mrecipes.online/</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/recipes.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/recipes.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/about.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/contact.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/privacy-policy.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/terms.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/pages/disclaimer.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/pages/about.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/pages/contact.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/pages/privacy-policy.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/pages/terms.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/pages/disclaimer.html</loc><lastmod>2026-10-17</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/creamy-garlic-chicken.html</loc><lastmod>2026-10-16</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/classic-pancakes.html</loc><lastmod>2026-10-16</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/mediterranean-pasta.html</loc><lastmod>2026-10-16</lastmod></url>
@@ -46,4 +52,42 @@
   <url><loc>https://mrecipes.online/recipes/roasted-chickpea-bowl.html</loc><lastmod>2026-10-17</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/lemon-herb-lentil-salad.html</loc><lastmod>2026-10-17</lastmod></url>
   <url><loc>https://mrecipes.online/recipes/garlic-butter-pasta.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/avocado-toast.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/beef-vegetable-stir-fry.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/blueberry-muffins.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/cauliflower-cheese-bake.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/chicken-broccoli-mash.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/chicken-curry-rice.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/chicken-fried-rice.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/chicken-tomato-stew.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/chocolate-chip-cookies.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/classic-pancakes.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/creamy-garlic-chicken.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/creamy-garlic-parmesan-chicken.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/creamy-pasta.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/creamy-tomato-tortellini-soup.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/crispy-baked-chicken-thighs.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/crispy-oven-potato-wedges.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/easy-chickpea-curry.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/easy-fudgy-brownies.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/easy-shakshuka.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/fresh-greek-salad.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/garlic-butter-pasta.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/ground-beef-tacos.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/homemade-margherita-pizza.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/juicy-baked-chicken-breast.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/lemon-garlic-shrimp-pasta.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/lemon-herb-lentil-salad.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/marry-me-chicken.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/mediterranean-pasta.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/moist-banana-bread.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/no-bake-chocolate-oat-bars.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/one-pot-chicken-orzo.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/overnight-oats.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/roasted-chickpea-bowl.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/roasted-vegetable-salad.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/scrambled-eggs-on-toast.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/spaghetti-pasta.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/stuffed-bell-peppers.html</loc><lastmod>2026-10-17</lastmod></url>
+  <url><loc>https://mrecipes.online/ar/article/tomato-pasta-soup.html</loc><lastmod>2026-10-17</lastmod></url>
 </urlset>
