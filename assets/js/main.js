@@ -17,7 +17,7 @@
         event.preventDefault();
         return;
       }
-      if (status) status.textContent = 'Your email app should open with the message addressed to info@larache.xyz. Please review and send and send it there.';
+      if (status) status.textContent = 'Your email app should open with the message addressed to info@larache.xyz. Please review and send it there.';
     });
   }
 
@@ -40,7 +40,6 @@
         button.className = 'button load-more-button';
         grid.insertAdjacentElement('afterend', button);
       }
-
       const initialCount = Math.max(1, Number(grid.dataset.initialCount) || PAGE_SIZE);
       button.textContent = labels.more;
       button.addEventListener('click', () => {
@@ -49,7 +48,6 @@
         state.limit += state.pageSize;
         updateGrid(grid);
       });
-
       gridState.set(grid, { limit: initialCount, pageSize: PAGE_SIZE, button });
     }
     return gridState.get(grid);
@@ -59,17 +57,14 @@
     const state = getGridState(grid);
     const cards = [...grid.querySelectorAll('[data-recipe-card]')];
     const matching = cards.filter(card => card.dataset.searchMatch !== 'false');
-
     cards.forEach(card => {
       const index = matching.indexOf(card);
       card.hidden = index < 0 || index >= state.limit;
     });
-
     const shown = Math.min(state.limit, matching.length);
     state.button.hidden = matching.length <= state.limit;
     state.button.textContent = labels.more;
     state.button.setAttribute('aria-label', `${labels.more}; ${labels.shown(shown, matching.length)}`);
-
     let status = grid.parentElement.querySelector('[data-pagination-status]');
     if (!status) {
       status = document.createElement('p');
@@ -95,12 +90,9 @@
       card.dataset.searchMatch = matches ? 'true' : 'false';
       if (matches) count++;
     });
-
     const status = document.querySelector('[data-search-status]');
     if (status && search) {
-      status.textContent = count
-        ? `${count} recipe${count === 1 ? '' : 's'} found for “${search}”.`
-        : `No recipes found for “${search}”. Try another search.`;
+      status.textContent = count ? `${count} recipe${count === 1 ? '' : 's'} found for “${search}”.` : `No recipes found for “${search}”. Try another search.`;
     }
     updateAllGrids();
   };
@@ -112,10 +104,7 @@
 
   const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'YOUR_SUPABASE_PUBLISHABLE_KEY';
-  const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL)
-    && !SUPABASE_URL.includes('YOUR_PROJECT_REF')
-    && SUPABASE_PUBLISHABLE_KEY
-    && !SUPABASE_PUBLISHABLE_KEY.includes('YOUR_SUPABASE');
+  const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL) && !SUPABASE_URL.includes('YOUR_PROJECT_REF') && SUPABASE_PUBLISHABLE_KEY && !SUPABASE_PUBLISHABLE_KEY.includes('YOUR_SUPABASE');
 
   const loadClient = () => new Promise((resolve, reject) => {
     if (window.supabase?.createClient) return resolve(window.supabase);
@@ -137,7 +126,6 @@
       card.className = 'recipe-card';
       card.dataset.recipeCard = '';
       card.dataset.tags = [recipe.title, recipe.category, recipe.excerpt].join(' ').toLowerCase();
-
       const imageLink = document.createElement('a');
       imageLink.className = 'recipe-image';
       imageLink.href = `${recipeBase}${encodeURIComponent(recipe.slug)}.html`;
@@ -149,10 +137,7 @@
         img.loading = 'lazy';
         img.decoding = 'async';
         imageLink.appendChild(img);
-      } else {
-        imageLink.textContent = '🍽️';
-      }
-
+      } else imageLink.textContent = '🍽️';
       const content = document.createElement('div');
       content.className = 'recipe-content';
       const meta = document.createElement('div');
@@ -205,7 +190,6 @@
         if (error) throw error;
       }
     });
-
     const container = document.querySelector('[data-supabase-recipes]');
     if (!container) return;
     window.MRecipesData.getPublishedRecipes().then(recipes => {
