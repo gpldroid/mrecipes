@@ -88,8 +88,56 @@
     };
     latest.replaceChildren();
     const latestItems = entries.slice(0, 4).map(item => ({...item, article: item.article.cloneNode(true)}));
-    if (latestItems.length) latest.appendChild(createList(latestItems));
-    else {
+    if (latestItems.length) {
+      const slider = document.createElement('div');
+      slider.className = 'latest-slider';
+      slider.setAttribute('role', 'region');
+      slider.setAttribute('aria-roledescription', 'carousel');
+      slider.setAttribute('aria-label', locale === 'ar' ? 'أحدث الوصفات' : 'Latest recipes');
+      const viewport = document.createElement('div');
+      viewport.className = 'latest-slider-viewport';
+      const track = document.createElement('div');
+      track.className = 'latest-slider-track';
+      latestItems.forEach((item, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'latest-slider-slide';
+        slide.setAttribute('role', 'group');
+        slide.setAttribute('aria-roledescription', 'slide');
+        slide.setAttribute('aria-label', `${index + 1} / ${latestItems.length}`);
+        slide.appendChild(item.article);
+        track.appendChild(slide);
+      });
+      viewport.appendChild(track);
+      const controls = document.createElement('div');
+      controls.className = 'latest-slider-controls';
+      const previous = document.createElement('button');
+      previous.type = 'button';
+      previous.className = 'latest-slider-arrow';
+      previous.textContent = '‹';
+      previous.setAttribute('aria-label', locale === 'ar' ? 'الوصفة السابقة' : 'Previous recipe');
+      const counter = document.createElement('span');
+      counter.className = 'latest-slider-counter';
+      counter.setAttribute('aria-live', 'polite');
+      const next = document.createElement('button');
+      next.type = 'button';
+      next.className = 'latest-slider-arrow';
+      next.textContent = '›';
+      next.setAttribute('aria-label', locale === 'ar' ? 'الوصفة التالية' : 'Next recipe');
+      let active = 0;
+      const showSlide = index => {
+        active = (index + latestItems.length) % latestItems.length;
+        track.style.transform = `translateX(${active * -100}%)`;
+        counter.textContent = `${active + 1} / ${latestItems.length}`;
+        previous.disabled = latestItems.length < 2;
+        next.disabled = latestItems.length < 2;
+      };
+      previous.addEventListener('click', () => showSlide(active - 1));
+      next.addEventListener('click', () => showSlide(active + 1));
+      controls.append(previous, counter, next);
+      slider.append(viewport, controls);
+      latest.appendChild(slider);
+      showSlide(0);
+    } else {
       const empty = document.createElement('p');
       empty.className = 'sidebar-empty';
       empty.textContent = sidebarLabels.empty;
