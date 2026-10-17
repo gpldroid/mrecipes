@@ -22,11 +22,16 @@ DEST = ROOT / "assets/images/recipes"
 SECONDARY_PHOTO_MAP = {
     "chicken-curry-rice": "butter-chicken-masala.webp",
     "chocolate-chip-cookies": "chocolate-chip-cookies.webp",
+    "classic-pancakes": "pancake.webp",
     "creamy-garlic-chicken": "lemon-and-oregano-chicken-traybake.webp",
+    "creamy-pasta": "cacio-e-pepe.webp",
     "crispy-baked-chicken-thighs": "honey-sriracha-chicken-thighs.webp",
     "easy-chickpea-curry": "fall-vegetable-and-chickpea-curry.webp",
+    "easy-shakshuka": "shakshouka.webp",
     "overnight-oats": "hearty-breakfast-oatmeal.webp",
+    "spaghetti-pasta": "spaghetti-all-amatriciana.webp",
     "stuffed-bell-peppers": "ardei-umpluti.webp",
+    "tomato-pasta-soup": "tomato-flavored-hamburger-macaroni.webp",
 }
 
 PHOTO_MAP = {
