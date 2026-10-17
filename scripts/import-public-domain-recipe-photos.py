@@ -6,6 +6,13 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "https://raw.githubusercontent.com/ronaldl29/public-domain-recipes/main/static/pix/"
+# Both upstream recipe-photo collections are public domain (Unlicense). Prefer a
+# filename matching the recipe slug; fall back to the curated source map if absent.
+EXACT_PHOTO_SOURCES = (
+    "https://raw.githubusercontent.com/lukesmithxyz/based.cooking/master/pix/",
+    "https://raw.githubusercontent.com/lukesmithxyz/based.cooking/main/pix/",
+    BASE,
+)
 DEST = ROOT / "assets/images/recipes"
 
 # The upstream repository explicitly dedicates its content to the public domain (Unlicense).
@@ -56,16 +63,56 @@ def main():
     DEST.mkdir(parents=True, exist_ok=True)
     for slug, source_name in PHOTO_MAP.items():
         target = DEST / f"{slug}.webp"
-        # Always refresh the local copy so correcting the recipe/photo map also
-        # replaces stale or previously mismatched images already in the repo.
-        req = Request(BASE + source_name, headers={"User-Agent": "MRecipes-image-import/1.0"})
-        with urlopen(req, timeout=30) as response:
-            data = response.read()
-        if not data.startswith(b"RIFF") or data[8:12] != b"WEBP":
-            raise RuntimeError(f"Downloaded file is not valid WebP: {source_name}")
+        # Prefer exact recipe-named photos from a second public-domain source.
+        # If unavailable, try the explicitly curated photo mapping and then the
+        # direct slug in the first collection. Failed candidates never break the
+        # build while a valid mapped image is available.
+        candidates = [base + f"{slug}.webp" for base in EXACT_PHOTO_SOURCES[:2]]
+        candidates.extend([BASE + source_name, BASE + f"{slug}.webp"])
+        data = None
+        failures = []
+        for url in dict.fromkeys(candidates):
+            try:
+                req = Request(url, headers={"User-Agent": "MRecipes-image-import/1.0"})
+                with urlopen(req, timeout=20) as response:
+                    candidate_data = response.read()
+                if candidate_data.startswith(b"RIFF") and candidate_data[8:12] == b"WEBP" and len(candidate_data) >= 1000:
+                    data = candidate_data
+                    break
+                failures.append(f"{url}: invalid WebP")
+            except Exception as exc:
+                failures.append(f"{url}: {exc}")
+        if data is None:
+            raise RuntimeError(f"No valid public-domain photo found for {slug}: " + " | ".join(failures))
         target.write_bytes(data)
-        if target.stat().st_size < 1000:
-            raise RuntimeError(f"Image unexpectedly small: {target}")
+
+    # Make real photos visible in recipe cards throughout the site, not only on
+    # the full recipe article. Filenames always use the local recipe slug.
+    card_pattern = re.compile(
+        r'(<a\\b(?=[^>]*class=["\\'][^"\\']*\\brecipe-image\\b[^"\\']*["\\'])'
+        r'(?=[^>]*href=["\\'][^"\\']*/recipes/([^/"\\']+)\\.html["\\'])[^>]*>)(.*?)(</a>)',
+        re.I | re.S,
+    )
+    for page in ROOT.rglob("*.html"):
+        if ".git" in page.parts or "scripts" in page.parts:
+            continue
+        try:
+            original = page.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        def card_image(match):
+            opening, slug, inner, closing = match.groups()
+            if slug not in PHOTO_MAP:
+                return match.group(0)
+            label_match = re.search(r'aria-label=["\\']([^"\\']+)["\\']', opening, re.I)
+            alt = label_match.group(1) if label_match else slug.replace("-", " ").title()
+            alt = re.sub(r"\\s+recipe$", "", alt, flags=re.I)
+            image = (f'<img src="/assets/images/recipes/{slug}.webp" '
+                     f'alt="{alt}" width="1200" height="900" loading="lazy" decoding="async">')
+            return opening + image + closing
+        updated = card_pattern.sub(card_image, original)
+        if updated != original:
+            page.write_text(updated, encoding="utf-8")
 
     # Replace image references throughout published HTML and data files.
     candidates = []
