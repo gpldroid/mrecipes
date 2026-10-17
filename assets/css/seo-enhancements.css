@@ -1,0 +1,10 @@
+/* MRecipes semantic SEO helpers: accessible, responsive table of contents and breadcrumbs. */
+.table-of-contents{width:min(100%,960px);margin:0 auto 2rem;padding:1rem 1.15rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 8px 24px rgba(48,37,69,.06)}
+.table-of-contents strong{display:block;margin-bottom:.55rem;color:var(--ink);font-size:1rem}
+.table-of-contents ol{margin:0;padding-inline-start:1.35rem;display:grid;gap:.3rem}
+.table-of-contents li{margin:0;padding:0}
+.table-of-contents a{color:var(--ink);text-decoration:none;line-height:1.5}
+.table-of-contents a:hover,.table-of-contents a:focus-visible{color:var(--green);text-decoration:underline}
+.table-of-contents .toc-subitem{margin-inline-start:1rem;font-size:.94rem}
+[id]{scroll-margin-top:6rem}
+@media(max-width:640px){.table-of-contents{padding:.9rem 1rem;border-radius:14px}.table-of-contents ol{gap:.4rem}.table-of-contents .toc-subitem{margin-inline-start:.65rem}}
