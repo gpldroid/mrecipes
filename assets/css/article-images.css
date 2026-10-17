@@ -1,0 +1,113 @@
+/* MRecipes — article image sizing
+   Desktop: 1024 × 550px.
+   Smaller screens: fluid width with automatic height.
+   The explicit aspect-ratio on desktop reserves space and helps reduce CLS.
+*/
+
+/* Widen the reading canvas so a 1024px article image can fit on desktop. */
+.content-page {
+  width: min(100%, 1024px) !important;
+}
+
+.post-body img,
+.article-body img,
+.recipe-body img,
+.entry-content img,
+.article-content img,
+.content-page > figure.recipe-image img {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 24px auto !important;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+}
+
+.post-body figure,
+.article-body figure,
+.recipe-body figure,
+.entry-content figure,
+.article-content figure,
+.content-page > figure.recipe-image {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 24px auto !important;
+}
+
+/* Desktop / large screens: exact rendered dimensions. */
+@media (min-width: 1024px) {
+  .post-body img,
+  .article-body img,
+  .recipe-body img,
+  .entry-content img,
+  .article-content img,
+  .content-page > figure.recipe-image img {
+    width: 1024px !important;
+    max-width: 100% !important;
+    height: 550px !important;
+    min-height: 550px !important;
+    aspect-ratio: 1024 / 550 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+
+  .post-body figure,
+  .article-body figure,
+  .recipe-body figure,
+  .entry-content figure,
+  .article-content figure,
+  .content-page > figure.recipe-image {
+    width: 1024px !important;
+    max-width: 100% !important;
+    height: 550px !important;
+    min-height: 550px !important;
+    aspect-ratio: 1024 / 550 !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Phones and tablets: never overflow the article and let height follow the image ratio. */
+@media (max-width: 1023px) {
+  .content-page {
+    width: min(100%, 820px) !important;
+  }
+
+  .post-body img,
+  .article-body img,
+  .recipe-body img,
+  .entry-content img,
+  .article-content img,
+  .content-page > figure.recipe-image img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
+  }
+
+  .post-body figure,
+  .article-body figure,
+  .recipe-body figure,
+  .entry-content figure,
+  .article-content figure,
+  .content-page > figure.recipe-image {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+  }
+}
+
+/* Keep captions centered and readable. */
+.post-body figcaption,
+.article-body figcaption,
+.recipe-body figcaption,
+.entry-content figcaption,
+.article-content figcaption {
+  margin-top: 8px;
+  text-align: center;
+}
