@@ -7,6 +7,20 @@
   const input = document.querySelector("#header-search-input");
   if (input && search) input.value = search;
 
+  // Contact form uses the configured mailto action. Do not intercept submit:
+  // the browser opens the visitor's mail client so the visitor explicitly sends.
+  const contactForm = document.querySelector("[data-contact-form]");
+  if (contactForm) {
+    const status = contactForm.querySelector("[data-contact-status]");
+    contactForm.addEventListener("submit", event => {
+      if (!contactForm.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+      if (status) status.textContent = "Your email app should open with the message addressed to info@larache.xyz. Please review and send it there.";
+    });
+  }
+
   const PAGE_SIZE = 9;
   const gridState = new WeakMap();
   const getGridState = grid => {
@@ -64,6 +78,67 @@
   applySearch();
   document.querySelectorAll("[data-current-year]").forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll("[data-scroll-top]").forEach(button => button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" })));
+
+  // Related recipe cards: six cards; responsive two-column mobile, three-column desktop.
+  const relatedRecipes = [
+    { slug: "creamy-garlic-chicken", title: "Creamy Garlic Chicken", category: "Easy dinner", description: "Tender chicken in a silky garlic cream sauce." },
+    { slug: "classic-pancakes", title: "Fluffy Classic Pancakes", category: "Breakfast", description: "Golden, soft pancakes for a cozy morning." },
+    { slug: "mediterranean-pasta", title: "Mediterranean Pasta", category: "Weeknight", description: "Tomatoes, olives, and herbs tossed with pasta." },
+    { slug: "chocolate-chip-cookies", title: "Chocolate Chip Cookies", category: "Baking", description: "Soft centers and crisp edges with chocolate." },
+    { slug: "fresh-greek-salad", title: "Fresh Greek Salad", category: "Fresh & easy", description: "Crisp vegetables, feta, olives, and lemon dressing." },
+    { slug: "homemade-margherita-pizza", title: "Homemade Margherita Pizza", category: "Family favorite", description: "Tomato, mozzarella, basil, and a crisp crust." },
+    { slug: "one-pot-chicken-orzo", title: "One-Pot Chicken Orzo", category: "One-pot dinner", description: "Chicken, lemon, spinach, and orzo in savory broth." },
+    { slug: "easy-chickpea-curry", title: "Easy Coconut Chickpea Curry", category: "Vegetarian", description: "A fragrant tomato and coconut curry with chickpeas." },
+    { slug: "moist-banana-bread", title: "Moist Banana Bread", category: "Easy baking", description: "A tender banana loaf made with ripe bananas." },
+    { slug: "lemon-garlic-shrimp-pasta", title: "Lemon Garlic Shrimp Pasta", category: "Quick seafood", description: "Shrimp, garlic, lemon, and pasta in a glossy sauce." }
+  ];
+  const currentRecipeSlug = location.pathname.match(/^\\/recipes\\/([^/]+)\\.html$/)?.[1];
+  const articleMain = document.querySelector("#main-content .content-page");
+  if (currentRecipeSlug && currentRecipeSlug !== "recipe-template" && articleMain) {
+    const related = relatedRecipes.filter(recipe => recipe.slug !== currentRecipeSlug).slice(0, 6);
+    const section = document.createElement("section");
+    section.className = "related-posts";
+    section.setAttribute("aria-labelledby", "related-posts-title");
+    const heading = document.createElement("div");
+    heading.className = "related-posts__heading";
+    heading.innerHTML = '<span class="eyebrow">Keep exploring</span><h2 id="related-posts-title">Related recipes</h2><p>More ideas you might enjoy.</p>';
+    const grid = document.createElement("div");
+    grid.className = "related-posts__grid";
+    related.forEach(recipe => {
+      const card = document.createElement("article");
+      card.className = "recipe-card related-post-card";
+      const link = document.createElement("a");
+      link.className = "recipe-image";
+      link.href = "/recipes/" + recipe.slug + ".html";
+      link.setAttribute("aria-label", recipe.title);
+      const img = document.createElement("img");
+      img.src = "/assets/images/recipes/" + recipe.slug + ".svg";
+      img.alt = recipe.title;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.onerror = () => { img.remove(); link.textContent = "🍽️"; };
+      link.appendChild(img);
+      const content = document.createElement("div");
+      content.className = "recipe-content";
+      const meta = document.createElement("div");
+      meta.className = "recipe-meta";
+      const category = document.createElement("span");
+      category.textContent = recipe.category;
+      meta.appendChild(category);
+      const h3 = document.createElement("h3");
+      const titleLink = document.createElement("a");
+      titleLink.href = link.href;
+      titleLink.textContent = recipe.title;
+      h3.appendChild(titleLink);
+      const desc = document.createElement("p");
+      desc.textContent = recipe.description;
+      content.append(meta, h3, desc);
+      card.append(link, content);
+      grid.appendChild(card);
+    });
+    section.append(heading, grid);
+    articleMain.appendChild(section);
+  }
 
   const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL)
     && !SUPABASE_URL.includes("YOUR_PROJECT_REF")
