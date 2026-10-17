@@ -32,3 +32,12 @@ Set GitHub Pages source to **GitHub Actions** in repository settings. The workfl
 ## Compatibility note
 
 Legacy root-level legal pages and existing `recipes.html` remain available so older links are not broken. New navigation and editorial work should use the structured `pages/` and shared-component paths.
+
+## Recipe photography
+
+- Recipe image files are stored locally at `assets/images/recipes/<recipe-slug>.webp`; the filename follows the recipe page slug.
+- `scripts/import-public-domain-recipe-photos.py` prefers a recipe-slug match from [based.cooking](https://github.com/lukesmithxyz/based.cooking), then tries verified dish-specific photo filenames from that repository and the curated [public-domain-recipes collection](https://github.com/ronaldl29/public-domain-recipes).
+- Both source repositories declare their content public domain under the Unlicense. The importer validates the downloaded WebP files before replacing local assets.
+- Exact dish matches are preferred. Where neither source has an exact photo, the curated mapping remains a closest-available fallback and should be reviewed rather than described as an exact match.
+- Shared CSS keeps recipe-card and article images within their containers on mobile, tablet, and large desktop screens.
+
