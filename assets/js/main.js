@@ -22,6 +22,8 @@
   }
 
   const PAGE_SIZE = 9;
+  // Pagination is reserved for the homepages; article pages keep their related cards without a Load more control.
+  const isHomePage = location.pathname === "/" || location.pathname === "/index.html" || location.pathname === "/ar/" || location.pathname === "/ar/index.html";
   const gridState = new WeakMap();
   const getGridState = grid => {
     if (!gridState.has(grid)) {
@@ -61,7 +63,7 @@
     status.textContent = matching.length ? "Showing " + shown + " of " + matching.length + " recipes" : "No recipes to show.";
     status.hidden = matching.length === 0;
   };
-  const updateAllGrids = () => document.querySelectorAll("[data-supabase-recipes]").forEach(updateGrid);
+  const updateAllGrids = () => { if (isHomePage) document.querySelectorAll("[data-supabase-recipes]").forEach(updateGrid); };
   const applySearch = () => {
     const cards = [...document.querySelectorAll("[data-recipe-card]")];
     let count = 0;
@@ -74,7 +76,7 @@
     if (status && search) status.textContent = count ? count + " recipe" + (count === 1 ? "" : "s") + " found for “" + search + "”." : "No recipes found for “" + search + "”. Try another search.";
     updateAllGrids();
   };
-  document.querySelectorAll("[data-supabase-recipes]").forEach(getGridState);
+  if (isHomePage) document.querySelectorAll("[data-supabase-recipes]").forEach(getGridState);
   applySearch();
   document.querySelectorAll("[data-current-year]").forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll("[data-scroll-top]").forEach(button => button.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" })));
@@ -137,7 +139,7 @@
       grid.appendChild(card);
     });
     section.append(heading, grid);
-    articleMain.appendChild(section);
+    articleMain.insertAdjacentElement("afterend", section);
   }
 
   const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL)
