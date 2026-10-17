@@ -1,64 +1,16 @@
 (() => {
-  "use strict";
-  const links = [
-    { href: "/", label: "Home" },
-    { href: "/recipes.html", label: "Recipes" },
-    { href: "/pages/about.html", label: "About" },
-    { href: "/pages/contact.html", label: "Contact" }
-  ];
-  const path = location.pathname.replace(/\/index\.html$/, "/").replace(/\/$/, "") || "/";
-  const active = (href) => href === "/recipes.html" && path.startsWith("/recipes/") || path === href || href === "/" && path === "/";
-  const nav = links.map(({href,label}) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ""}>${label}</a>`).join("");
-  const root = document.querySelector("[data-site-header]");
-  if (!root || root.dataset.initialized) return;
-  root.dataset.initialized = "true";
-  root.innerHTML = `
-    <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="site-header">
-      <div class="header-inner">
-        <a class="brand" href="/" aria-label="MRecipes home"><span class="brand-mark" aria-hidden="true">M</span><span>MRecipes<span class="brand-dot">.</span></span></a>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation"><span></span><span></span><span></span></button>
-        <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">${nav}</nav>
-        <form class="header-search" action="/recipes.html" role="search"><label class="visually-hidden" for="header-search-input">Search recipes</label><input id="header-search-input" name="search" type="search" placeholder="Find a recipe…" /><button type="submit" aria-label="Search recipes">⌕</button></form>
-        <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch color theme"><span aria-hidden="true">☾</span></button>
-      </div>
-    </header>
-    <nav class="mobile-tab-bar" aria-label="Mobile navigation">${links.map(({href,label}) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ""}><span aria-hidden="true">${({"Home":"⌂","Recipes":"▤","About":"♡","Contact":"✉"})[label]}</span><small>${label}</small></a>`).join("")}</nav>`;
-  const themeButton = root.querySelector(".theme-toggle");
-  const themeIcon = themeButton.querySelector("span");
-  const setTheme = (theme, persist = false) => {
-    const dark = theme === "dark";
-    document.documentElement.dataset.theme = dark ? "dark" : "light";
-    document.documentElement.style.colorScheme = dark ? "dark" : "light";
-    themeButton.setAttribute("aria-pressed", String(dark));
-    themeButton.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
-    themeIcon.textContent = dark ? "☀" : "☾";
-    let themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (!themeMeta) { themeMeta = document.createElement("meta"); themeMeta.name = "theme-color"; document.head.appendChild(themeMeta); }
-    themeMeta.setAttribute("content", dark ? "#171420" : "#fcf9ff");
-    if (persist) {
-      try { localStorage.setItem("mrecipes-theme", dark ? "dark" : "light"); } catch (_) {}
-    }
-  };
-  let initialTheme = "light";
-  try {
-    const storedTheme = localStorage.getItem("mrecipes-theme");
-    if (storedTheme === "dark" || storedTheme === "light") initialTheme = storedTheme;
-  } catch (_) {}
-  setTheme(initialTheme);
-  themeButton.addEventListener("click", () => {
-    setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true);
-  });
-
-  const button = root.querySelector(".menu-toggle");
-  const menu = root.querySelector(".primary-nav");
-  const close = () => { button.setAttribute("aria-expanded","false"); button.setAttribute("aria-label","Open navigation"); menu.classList.remove("is-open"); };
-  button.addEventListener("click", () => {
-    const open = button.getAttribute("aria-expanded") !== "true";
-    button.setAttribute("aria-expanded", String(open));
-    button.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
-    menu.classList.toggle("is-open", open);
-  });
-  root.addEventListener("click", (event) => { if (event.target.closest(".primary-nav a")) close(); });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") { close(); button.focus(); } });
+'use strict';
+const ar=document.documentElement.lang.toLowerCase().startsWith('ar')||location.pathname.startsWith('/ar/');
+const article=location.pathname.match(/^\/recipes\/([^/]+)\.html$/)||location.pathname.match(/^\/ar\/article\/([^/]+)\.html$/);
+const slug=article?.[1];
+const switchHref=slug?(ar?`/recipes/${slug}.html`:`/ar/article/${slug}.html`):(ar?(location.pathname==='/ar/'||location.pathname==='/ar/index.html'?'/':location.pathname==='/ar/recipes.html'?'/recipes.html':location.pathname.startsWith('/ar/pages/')?location.pathname.replace('/ar/pages/','/pages/'): '/'):location.pathname==='/'||location.pathname==='/index.html'?'/ar/':location.pathname==='/recipes.html'?'/ar/recipes.html':location.pathname.startsWith('/pages/')?location.pathname.replace('/pages/','/ar/pages/'): '/ar/');
+const links=ar?[{href:'/ar/',label:'الرئيسية'},{href:'/ar/recipes.html',label:'الوصفات'},{href:'/ar/pages/about.html',label:'من نحن'},{href:'/ar/pages/contact.html',label:'اتصل بنا'}]:[{href:'/',label:'Home'},{href:'/recipes.html',label:'Recipes'},{href:'/pages/about.html',label:'About'},{href:'/pages/contact.html',label:'Contact'}];
+const path=location.pathname.replace(/\/index\.html$/,'/').replace(/\/$/,'')||'/';
+const active=href=>href==='/ar/recipes.html'&&path.startsWith('/ar/article/')||href==='/recipes.html'&&path.startsWith('/recipes/')||path===href||href==='/'&&path==='/'||href==='/ar/'&&path==='/ar';
+const nav=links.map(({href,label})=>`<a href="${href}"${active(href)?' aria-current="page"':''}>${label}</a>`).join('');
+const root=document.querySelector('[data-site-header]');if(!root||root.dataset.initialized)return;root.dataset.initialized='true';
+const searchAction=ar?'/ar/recipes.html':'/recipes.html';
+root.innerHTML=`<a class="skip-link" href="#main-content">${ar?'تجاوز إلى المحتوى':'Skip to content'}</a><header class="site-header"><div class="header-inner"><a class="brand" href="${ar?'/ar/':'/'}" aria-label="MRecipes ${ar?'الرئيسية':'home'}"><span class="brand-mark" aria-hidden="true">M</span><span>MRecipes<span class="brand-dot">.</span></span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="${ar?'فتح القائمة':'Open navigation'}"><span></span><span></span><span></span></button><nav class="primary-nav" id="primary-nav" aria-label="${ar?'التنقل الرئيسي':'Main navigation'}">${nav}</nav><form class="header-search" action="${searchAction}" role="search"><label class="visually-hidden" for="header-search-input">${ar?'البحث عن وصفة':'Search recipes'}</label><input id="header-search-input" name="search" type="search" placeholder="${ar?'ابحث عن وصفة…':'Find a recipe…'}"/><button type="submit" aria-label="${ar?'بحث':'Search recipes'}">⌕</button></form><a class="language-switch" href="${switchHref}" lang="${ar?'en':'ar'}" aria-label="${ar?'Switch to English':'التبديل إلى العربية'}">${ar?'EN':'AR'}</a><button class="theme-toggle" type="button" aria-label="${ar?'التبديل إلى الوضع الداكن':'Switch to dark mode'}" aria-pressed="false" title="${ar?'تغيير المظهر':'Switch color theme'}"><span aria-hidden="true">☾</span></button></div></header><nav class="mobile-tab-bar" aria-label="${ar?'التنقل عبر الهاتف':'Mobile navigation'}">${links.map(({href,label})=>`<a href="${href}"${active(href)?' aria-current="page"':''}><span aria-hidden="true">${({'الرئيسية':'⌂','الوصفات':'▤','من نحن':'♡','اتصل بنا':'✉',Home:'⌂',Recipes:'▤',About:'♡',Contact:'✉'})[label]}</span><small>${label}</small></a>`).join('')}</nav>`;
+const themeButton=root.querySelector('.theme-toggle'),themeIcon=themeButton.querySelector('span');const setTheme=(theme,persist=false)=>{const dark=theme==='dark';document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.style.colorScheme=dark?'dark':'light';themeButton.setAttribute('aria-pressed',String(dark));themeButton.setAttribute('aria-label',dark?(ar?'التبديل إلى الوضع الفاتح':'Switch to light mode'):(ar?'التبديل إلى الوضع الداكن':'Switch to dark mode'));themeIcon.textContent=dark?'☀':'☾';let meta=document.querySelector('meta[name="theme-color"]');if(!meta){meta=document.createElement('meta');meta.name='theme-color';document.head.appendChild(meta)}meta.content=dark?'#171420':'#fcf9ff';if(persist)try{localStorage.setItem('mrecipes-theme',dark?'dark':'light')}catch(_){}};let initial='light';try{const s=localStorage.getItem('mrecipes-theme');if(s==='dark'||s==='light')initial=s}catch(_){}setTheme(initial);themeButton.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark',true));
+const button=root.querySelector('.menu-toggle'),menu=root.querySelector('.primary-nav');const close=()=>{button.setAttribute('aria-expanded','false');button.setAttribute('aria-label',ar?'فتح القائمة':'Open navigation');menu.classList.remove('is-open')};button.addEventListener('click',()=>{const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));button.setAttribute('aria-label',open?(ar?'إغلاق القائمة':'Close navigation'):(ar?'فتح القائمة':'Open navigation'));menu.classList.toggle('is-open',open)});root.addEventListener('click',e=>{if(e.target.closest('.primary-nav a'))close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&button.getAttribute('aria-expanded')==='true'){close();button.focus()}});
 })();
