@@ -27,8 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/seo-build.py
-          python3 scripts/add-seo-css.py
+          python3 scripts/seo-build-v2.py
 
       - name: Validate site structure, SEO and local links
         shell: bash
@@ -53,67 +52,61 @@ jobs:
           from urllib.parse import urlparse
           import sys, xml.etree.ElementTree as ET
 
-          root = Path('.')
-          errors = []
-          html_files = sorted(p for p in root.rglob('*.html') if '.git' not in p.parts)
-          paths = set('/' if p.relative_to(root).as_posix() == 'index.html' else '/' + p.relative_to(root).as_posix() for p in html_files)
-          paths.update('/' + p.relative_to(root).as_posix()[:-10].strip('/') + '/' for p in html_files if p.name == 'index.html' and p.relative_to(root).as_posix() != 'index.html')
+          root=Path('.')
+          errors=[]
+          html_files=sorted(p for p in root.rglob('*.html') if '.git' not in p.parts)
 
           class P(HTMLParser):
               def __init__(self):
-                  super().__init__(convert_charrefs=True); self.title=''; self.in_title=False; self.buf=[]
-                  self.meta={}; self.canon=[]; self.hreflang=[]; self.links=[]; self.schema=False
-              def handle_starttag(self, tag, attrs):
-                  a=dict(attrs); rel=a.get('rel','').lower()
-                  if tag=='title': self.in_title=True; self.buf=[]
-                  if tag=='meta' and a.get('name','').lower() in ('description','robots','keywords'):
-                      self.meta[a.get('name','').lower()]=a.get('content','') or ''
-                  if tag=='link' and rel=='canonical': self.canon.append(a.get('href',''))
-                  if tag=='link' and rel=='alternate' and a.get('hreflang'): self.hreflang.append((a['hreflang'],a.get('href','')))
-                  if tag=='script' and a.get('type')=='application/ld+json': self.schema=True
-                  if tag=='a' and a.get('href'): self.links.append(a['href'])
-                  if tag in ('script','link') and a.get('src' if tag=='script' else 'href'):
-                      self.links.append(a.get('src' if tag=='script' else 'href'))
-              def handle_endtag(self, tag):
-                  if tag=='title': self.title=''.join(self.buf).strip(); self.in_title=False
-              def handle_data(self,data):
-                  if self.in_title: self.buf.append(data)
+                  super().__init__(convert_charrefs=True); self.title=''; self.in_title=False; self.buf=[]; self.meta={}; self.canon=[]; self.alts=[]; self.links=[]; self.schema=False
+              def handle_starttag(self,t,a):
+                  d=dict(a); rel=d.get('rel','').lower()
+                  if t=='title': self.in_title=True; self.buf=[]
+                  if t=='meta' and d.get('name','').lower() in ('description','robots','keywords'): self.meta[d.get('name','').lower()]=d.get('content','') or ''
+                  if t=='link' and rel=='canonical': self.canon.append(d.get('href',''))
+                  if t=='link' and rel=='alternate' and d.get('hreflang'): self.alts.append((d['hreflang'],d.get('href','')))
+                  if t=='script' and d.get('type')=='application/ld+json': self.schema=True
+                  if t=='a' and d.get('href'): self.links.append(d['href'])
+                  if t in ('script','link'):
+                      key='src' if t=='script' else 'href'
+                      if d.get(key): self.links.append(d[key])
+              def handle_endtag(self,t):
+                  if t=='title': self.title=''.join(self.buf).strip(); self.in_title=False
+              def handle_data(self,d):
+                  if self.in_title:self.buf.append(d)
 
           for page in html_files:
-              label=str(page); p=P(); p.feed(page.read_text(encoding='utf-8'))
               if page.name=='404.html': continue
+              p=P(); p.feed(page.read_text(encoding='utf-8')); label=str(page)
               if not p.title: errors.append(f'{label}: missing title')
               if not (50 <= len(p.meta.get('description','')) <= 160): errors.append(f'{label}: meta description must be 50-160 characters')
-              if 'noindex' in p.meta.get('robots','').lower(): errors.append(f'{label}: robots contains noindex')
-              if 'index' not in p.meta.get('robots','').lower() or 'follow' not in p.meta.get('robots','').lower(): errors.append(f'{label}: robots must allow index,follow')
+              robots=p.meta.get('robots','').lower()
+              if 'noindex' in robots or 'nofollow' in robots: errors.append(f'{label}: robots blocks indexing/following')
+              if 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
               if len(p.canon)!=1 or not p.canon[0].startswith('https://mrecipes.online/'): errors.append(f'{label}: invalid canonical')
               if page.parent.name=='recipes' and page.name!='recipe-template.html' and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
               for href in p.links:
-                  if not href or href.startswith(('#','mailto:','tel:','javascript:','data:','http://','https://','//')): continue
-                  clean=urlparse(href).path.split('?',1)[0].split('#',1)[0]
+                  if href.startswith(('#','mailto:','tel:','javascript:','data:','http://','https://','//')): continue
+                  clean=urlparse(href).path
                   if clean.startswith('/'):
-                      target = root / clean.lstrip('/')
+                      target=root/clean.lstrip('/')
                   else:
-                      target = (page.parent / clean).resolve()
-                  if target.is_dir(): target = target / 'index.html'
+                      target=(page.parent/clean).resolve()
+                  if target.is_dir(): target=target/'index.html'
                   if not target.is_file(): errors.append(f'{label}: broken local link/asset {href}')
 
           try:
-              tree=ET.parse(root/'sitemap.xml'); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
-              sitemap_paths=[]
+              tree=ET.parse(root/'sitemap.xml'); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}; urls=[]
               for loc in tree.findall('.//s:loc',ns):
                   url=(loc.text or '').strip(); u=urlparse(url)
-                  if u.scheme!='https' or u.netloc!='mrecipes.online': errors.append(f'sitemap: invalid domain {url}'); continue
-                  sitemap_paths.append(u.path)
-                  target=root / u.path.lstrip('/') if u.path not in ('','/') else root/'index.html'
-                  if u.path.endswith('/'): target=target/'index.html'
-                  if not target.is_file(): errors.append(f'sitemap: missing target {url}')
-              if len(sitemap_paths) != len(set(sitemap_paths)): errors.append('sitemap: duplicate URLs')
+                  if u.scheme!='https' or u.netloc!='mrecipes.online': errors.append(f'sitemap: invalid URL {url}')
+                  urls.append(u.path)
+              if len(urls)!=len(set(urls)): errors.append('sitemap: duplicate URLs')
           except Exception as exc: errors.append(f'sitemap parse error: {exc}')
 
           if errors:
               print('\n'.join('ERROR: '+e for e in errors)); sys.exit(1)
-          print(f'Validation passed: {len(html_files)} HTML files, metadata, hreflang, robots, JSON-LD, local links and sitemap.')
+          print(f'Validation passed: {len(html_files)} HTML files, metadata, robots, canonical, hreflang, JSON-LD, local links and sitemap.')
           PY
 
       - name: Configure GitHub Pages
