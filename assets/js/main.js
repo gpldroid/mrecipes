@@ -17,11 +17,11 @@
       button.textContent = "Load more recipes";
       button.addEventListener("click", () => {
         const state = gridState.get(grid);
-        state.limit += PAGE_SIZE;
+        state.limit += state.pageSize;
         updateGrid(grid);
       });
       grid.after(button);
-      gridState.set(grid, { limit: PAGE_SIZE, button });
+      gridState.set(grid, { limit: Number(grid.dataset.initialCount) || PAGE_SIZE, pageSize: Number(grid.dataset.initialCount) || PAGE_SIZE, button });
     }
     return gridState.get(grid);
   };
