@@ -3,6 +3,8 @@ name: Deploy MRecipes to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -56,6 +58,7 @@ jobs:
                   self.title_text = []
                   self.meta = {}
                   self.canonical = []
+                  self.hreflang = []
                   self.recipe_schema = False
                   self.links = []
                   self.scripts = []
@@ -68,6 +71,8 @@ jobs:
                       self.meta[a["name"].lower()] = a.get("content", "").strip()
                   if tag == "link" and a.get("rel", "").lower() == "canonical":
                       self.canonical.append(a.get("href", ""))
+                  if tag == "link" and a.get("rel", "").lower() == "alternate" and a.get("hreflang") and a.get("href"):
+                      self.hreflang.append((a["hreflang"].lower(), a["href"]))
                   if tag == "script":
                       if a.get("type") == "application/ld+json":
                           self.recipe_schema = True
@@ -131,6 +136,30 @@ jobs:
           except Exception as exc:
               errors.append(f"Could not parse sitemap.xml: {exc}")
 
+          # The English and Arabic homepages are alternate versions of each other.
+          expected_alternates = {
+              "index.html": {
+                  ("en", "https://mrecipes.online/"),
+                  ("ar", "https://mrecipes.online/ar/"),
+                  ("x-default", "https://mrecipes.online/"),
+              },
+              "ar/index.html": {
+                  ("en", "https://mrecipes.online/"),
+                  ("ar", "https://mrecipes.online/ar/"),
+                  ("x-default", "https://mrecipes.online/"),
+              },
+          }
+          for relative_path, expected in expected_alternates.items():
+              page = root / relative_path
+              parser = PageParser()
+              parser.feed(page.read_text(encoding="utf-8"))
+              actual = set(parser.hreflang)
+              for item in expected:
+                  if item not in actual:
+                      errors.append(f"{relative_path}: missing hreflang alternate {item[0]} -> {item[1]}.")
+              if len(actual) != len(parser.hreflang):
+                  errors.append(f"{relative_path}: duplicate hreflang alternate annotations.")
+
           if errors:
               print("\n".join(f"ERROR: {item}" for item in errors))
               sys.exit(1)
@@ -148,6 +177,7 @@ jobs:
           path: .
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
