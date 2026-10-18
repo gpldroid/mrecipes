@@ -71,12 +71,50 @@
     }
   };
 
+  const articleImageCache = new Map();
+
+  const articleImageForCard = async href => {
+    const url = new URL(href, location.origin);
+    if (url.origin !== location.origin) return null;
+    const key = url.pathname;
+    if (articleImageCache.has(key)) return articleImageCache.get(key);
+
+    const pending = fetch(url.href, { credentials: 'same-origin' })
+      .then(response => {
+        if (!response.ok) return null;
+        return response.text();
+      })
+      .then(html => {
+        if (!html) return null;
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const image = parsed.querySelector('.content-page img, article .recipe-image img, article img');
+        const src = image?.getAttribute('src') || image?.getAttribute('data-src');
+        if (!src) return null;
+        const resolved = new URL(src, url.href);
+        return resolved.origin === location.origin ? resolved.href : null;
+      })
+      .catch(() => null);
+
+    articleImageCache.set(key, pending);
+    return pending;
+  };
+
   const syncHomeImages = () => {
-    document.querySelectorAll('.recipe-card a[href] img').forEach((img, index) => {
+    document.querySelectorAll('.recipe-card a[href] img').forEach(async img => {
+      if (img.dataset.mrecipesImageSync === 'done' || img.dataset.mrecipesImageSync === 'pending') return;
       const link = img.closest('a[href]');
-      const slug = link && slugFromHref(link.getAttribute('href'));
-      if (!slug) return;
-      optimizeImage(img, slug, index === 0);
+      if (!link) return;
+      img.dataset.mrecipesImageSync = 'pending';
+      const articleImage = await articleImageForCard(link.getAttribute('href'));
+      if (!img.isConnected) return;
+      if (articleImage) {
+        const picture = img.closest('picture');
+        picture?.querySelectorAll('source').forEach(source => source.remove());
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+        img.src = articleImage;
+      }
+      img.dataset.mrecipesImageSync = 'done';
     });
   };
 
