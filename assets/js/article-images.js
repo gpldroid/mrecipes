@@ -8,7 +8,7 @@
   const slugFromHref = href => {
     try {
       const p = new URL(href, location.origin).pathname.replace(/\/index\.html$/, '/');
-      const m = p.match(/^\/recipes\/([^/]+)\.html$/) || p.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
+      const m = p.match(/^\/recipes\/([^/]+)\.html$/) || p.match(/^\/(?:ar|es|fr|ru|sp|en)\/article\/([^/]+)\.html$/);
       return m?.[1] || null;
     } catch (_) { return null; }
   };
