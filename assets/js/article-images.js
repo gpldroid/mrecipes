@@ -29,16 +29,26 @@
     meta.setAttribute('content', value);
   };
 
+  const optimizeImage = (img, priority = false) => {
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.decoding = 'async';
+    if (priority) {
+      img.loading = 'eager';
+      img.fetchPriority = 'high';
+    } else {
+      img.loading = 'lazy';
+      img.fetchPriority = 'low';
+    }
+  };
+
   const syncHomeImages = () => {
     document.querySelectorAll('.recipe-card a[href] img').forEach(img => {
       const link = img.closest('a[href]');
       const slug = link && slugFromHref(link.getAttribute('href'));
       if (!slug) return;
       img.src = imageFor(slug);
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
-      img.loading = 'lazy';
-      img.decoding = 'async';
+      optimizeImage(img, false);
     });
   };
 
@@ -49,12 +59,10 @@
     const absoluteImage = absoluteFor(slug);
     const title = document.querySelector('h1')?.textContent?.trim() || document.title;
 
-    document.querySelectorAll('.content-page img').forEach(img => {
+    document.querySelectorAll('.content-page img').forEach((img, index) => {
       img.src = image;
-      img.removeAttribute('srcset');
-      img.removeAttribute('sizes');
       img.alt = img.alt || title;
-      img.decoding = 'async';
+      optimizeImage(img, index === 0);
     });
 
     const article = document.querySelector('.content-page');
@@ -90,7 +98,6 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
   else apply();
 
-  // Localized home scripts populate cards after the shared footer script.
   document.addEventListener('mrecipes:localized-home-ready', syncHomeImages);
   new MutationObserver(() => {
     if (home) syncHomeImages();
