@@ -2,8 +2,8 @@
   'use strict';
 
   const path = location.pathname.replace(/\/index\.html$/, '/');
-  const articleMatch = path.match(/^\/recipes\/([^/]+)\.html$/) || path.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
-  const home = ['/', '/ar/', '/es/', '/fr/', '/ru/'].includes(path);
+  const articleMatch = path.match(/^\/recipes\/([^/]+)\.html$/) || path.match(/^\/(?:ar|es|fr|ru|sp|en)\/article\/([^/]+)\.html$/);
+  const home = ['/', '/ar/', '/es/', '/sp/', '/fr/', '/ru/', '/en/'].includes(path);
 
   const slugFromHref = href => {
     try {
