@@ -1,28 +1,54 @@
 (() => {
   'use strict';
 
-  // One canonical featured image per recipe slug, shared by EN/AR/FR/ES/RU.
+  // One canonical image per recipe slug, shared by EN/AR/FR/ES/RU.
   const path = location.pathname.replace(/\/index\.html$/, '/');
-  const match = path.match(/^\/recipes\/([^/]+)\.html$/) || path.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
-  const slug = match?.[1];
-  if (!slug) return;
+  const articleMatch = path.match(/^\/recipes\/([^/]+)\.html$/) || path.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
+  const home = ['/', '/ar/', '/es/', '/fr/', '/ru/'].includes(path);
 
-  const image = `/assets/images/recipes/${encodeURIComponent(slug)}.webp`;
-  const absoluteImage = new URL(image, location.origin).href;
-  const title = document.querySelector('h1')?.textContent?.trim() || document.title;
+  const slugFromHref = href => {
+    try {
+      const p = new URL(href, location.origin).pathname.replace(/\/index\.html$/, '/');
+      const m = p.match(/^\/recipes\/([^/]+)\.html$/) || p.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
+      return m?.[1] || null;
+    } catch (_) { return null; }
+  };
+
+  const imageFor = slug => `/assets/images/recipes/${encodeURIComponent(slug)}.webp`;
+  const absoluteFor = slug => new URL(imageFor(slug), location.origin).href;
 
   const setMeta = (selector, attribute, value) => {
     let meta = document.querySelector(selector);
     if (!meta) {
       meta = document.createElement('meta');
-      meta.setAttribute(attribute, selector.includes('property=') ? selector.match(/property="([^"]+)"/)?.[1] : selector.match(/name="([^"]+)"/)?.[1] || '');
+      const prop = selector.match(/property="([^"]+)"/)?.[1];
+      const name = selector.match(/name="([^"]+)"/)?.[1];
+      meta.setAttribute(attribute, prop || name || '');
       document.head.appendChild(meta);
     }
     meta.setAttribute('content', value);
   };
 
-  const apply = () => {
-    // Every image inside a recipe article uses the same canonical recipe image.
+  const syncHomeImages = () => {
+    document.querySelectorAll('.recipe-card a[href] img').forEach(img => {
+      const link = img.closest('a[href]');
+      const slug = link && slugFromHref(link.getAttribute('href'));
+      if (!slug) return;
+      img.src = imageFor(slug);
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    });
+  };
+
+  const syncArticleImages = () => {
+    if (!articleMatch) return;
+    const slug = articleMatch[1];
+    const image = imageFor(slug);
+    const absoluteImage = absoluteFor(slug);
+    const title = document.querySelector('h1')?.textContent?.trim() || document.title;
+
     document.querySelectorAll('.content-page img').forEach(img => {
       img.src = image;
       img.removeAttribute('srcset');
@@ -35,7 +61,8 @@
     if (article && !article.querySelector('img')) {
       const figure = document.createElement('figure');
       figure.className = 'recipe-image';
-      figure.innerHTML = `<img src="${image}" alt="${title.replace(/"/g, '&quot;')}" width="1200" height="675" decoding="async" fetchpriority="high"><figcaption>Photo: MRecipes</figcaption>`;
+      const safeTitle = title.replace(/"/g, '&quot;');
+      figure.innerHTML = `<img src="${image}" alt="${safeTitle}" width="1200" height="675" decoding="async" fetchpriority="high"><figcaption>Photo: MRecipes</figcaption>`;
       article.insertBefore(figure, article.firstChild);
     }
 
@@ -55,6 +82,17 @@
     });
   };
 
+  const apply = () => {
+    if (home) syncHomeImages();
+    if (articleMatch) syncArticleImages();
+  };
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
   else apply();
+
+  // Localized home scripts populate cards after the shared footer script.
+  document.addEventListener('mrecipes:localized-home-ready', syncHomeImages);
+  new MutationObserver(() => {
+    if (home) syncHomeImages();
+  }).observe(document.body, { childList: true, subtree: true });
 })();
