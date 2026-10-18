@@ -1,6 +1,15 @@
 (() => {
   'use strict';
 
+  // Keep homepage card imagery in sync with the image authored in each recipe article.
+  if (!document.querySelector('script[data-mrecipes-article-images]')) {
+    const imageSyncScript = document.createElement('script');
+    imageSyncScript.src = '/assets/js/article-images.js';
+    imageSyncScript.defer = true;
+    imageSyncScript.dataset.mrecipesArticleImages = 'true';
+    document.head.appendChild(imageSyncScript);
+  }
+
   const PAGE_SIZE = 6;
   const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/';
   const locale = ['ar', 'es', 'fr', 'ru'].find(code => path === `/${code}` || path.startsWith(`/${code}/`)) || 'en';
