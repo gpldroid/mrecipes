@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  // One canonical featured image per recipe slug, shared by EN/AR/FR/ES/RU.
   const path = location.pathname.replace(/\/index\.html$/, '/');
   const match = path.match(/^\/recipes\/([^/]+)\.html$/) || path.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
   const slug = match?.[1];
@@ -21,24 +22,21 @@
   };
 
   const apply = () => {
-    const figures = [...document.querySelectorAll('.content-page figure')];
-    const existing = figures.find(figure => figure.querySelector('img'));
-    const firstImage = existing?.querySelector('img') || document.querySelector('.content-page img');
+    // Every image inside a recipe article uses the same canonical recipe image.
+    document.querySelectorAll('.content-page img').forEach(img => {
+      img.src = image;
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.alt = img.alt || title;
+      img.decoding = 'async';
+    });
 
-    if (firstImage) {
-      firstImage.src = image;
-      firstImage.removeAttribute('srcset');
-      firstImage.alt = firstImage.alt || title;
-      firstImage.decoding = 'async';
-      firstImage.fetchPriority = 'high';
-    } else {
-      const article = document.querySelector('.content-page');
-      if (article) {
-        const figure = document.createElement('figure');
-        figure.className = 'recipe-image';
-        figure.innerHTML = `<img src="${image}" alt="${title.replace(/"/g, '&quot;')}" width="1200" height="675" decoding="async" fetchpriority="high"><figcaption>Photo: MRecipes</figcaption>`;
-        article.insertBefore(figure, article.firstChild);
-      }
+    const article = document.querySelector('.content-page');
+    if (article && !article.querySelector('img')) {
+      const figure = document.createElement('figure');
+      figure.className = 'recipe-image';
+      figure.innerHTML = `<img src="${image}" alt="${title.replace(/"/g, '&quot;')}" width="1200" height="675" decoding="async" fetchpriority="high"><figcaption>Photo: MRecipes</figcaption>`;
+      article.insertBefore(figure, article.firstChild);
     }
 
     setMeta('meta[property="og:image"]', 'property', absoluteImage);
@@ -46,8 +44,7 @@
     setMeta('meta[property="og:image:width"]', 'property', '1200');
     setMeta('meta[property="og:image:height"]', 'property', '675');
 
-    const jsonScripts = [...document.querySelectorAll('script[type="application/ld+json"]')];
-    jsonScripts.forEach(script => {
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(script => {
       try {
         const data = JSON.parse(script.textContent);
         if (data && typeof data === 'object' && data['@type'] === 'Recipe') {
