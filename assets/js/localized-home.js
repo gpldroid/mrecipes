@@ -57,7 +57,7 @@
     card.className = 'recipe-card';
     card.dataset.recipeCard = '';
     card.dataset.tags = `${title} ${category} ${excerpt}`.toLowerCase();
-    card.innerHTML = `<a class="recipe-image" href="${base}${slug}.html" aria-label="${title}"><img src="/assets/images/recipes/${slug}.svg" alt="${title}" loading="lazy" decoding="async"></a><div class="recipe-content"><div class="recipe-meta"><span>${category}</span></div><h3><a href="${base}${slug}.html">${title}</a></h3><p>${excerpt}</p></div>`;
+    card.innerHTML = `<a class="recipe-image" href="${base}${slug}.html" aria-label="${title}"><img src="/assets/images/recipes/${slug}.webp" alt="${title}" loading="lazy" decoding="async"></a><div class="recipe-content"><div class="recipe-meta"><span>${category}</span></div><h3><a href="${base}${slug}.html">${title}</a></h3><p>${excerpt}</p></div>`;
     fragment.appendChild(card);
   });
   grid.replaceChildren(fragment);
