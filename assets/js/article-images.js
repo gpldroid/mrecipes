@@ -1,7 +1,6 @@
 (() => {
   'use strict';
 
-  // One canonical image per recipe slug, shared by EN/AR/FR/ES/RU.
   const path = location.pathname.replace(/\/index\.html$/, '/');
   const articleMatch = path.match(/^\/recipes\/([^/]+)\.html$/) || path.match(/^\/(?:ar|es|fr|ru)\/article\/([^/]+)\.html$/);
   const home = ['/', '/ar/', '/es/', '/fr/', '/ru/'].includes(path);
@@ -14,7 +13,8 @@
     } catch (_) { return null; }
   };
 
-  const imageFor = slug => `/assets/images/recipes/${encodeURIComponent(slug)}.webp`;
+  const baseFor = slug => `/assets/images/recipes/${encodeURIComponent(slug)}`;
+  const imageFor = slug => `${baseFor(slug)}.webp`;
   const absoluteFor = slug => new URL(imageFor(slug), location.origin).href;
 
   const setMeta = (selector, attribute, value) => {
@@ -29,9 +29,38 @@
     meta.setAttribute('content', value);
   };
 
-  const optimizeImage = (img, priority = false) => {
+  const addResponsiveSources = (img, slug) => {
     img.removeAttribute('srcset');
     img.removeAttribute('sizes');
+    img.setAttribute('src', imageFor(slug));
+
+    let picture = img.closest('picture');
+    if (!picture) {
+      picture = document.createElement('picture');
+      img.parentNode?.insertBefore(picture, img);
+      picture.appendChild(img);
+    }
+
+    picture.querySelectorAll('source[data-mrecipes-responsive]').forEach(source => source.remove());
+
+    const avif = document.createElement('source');
+    avif.type = 'image/avif';
+    avif.setAttribute('data-mrecipes-responsive', 'true');
+    avif.sizes = '(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px';
+    avif.srcset = `${baseFor(slug)}-480.avif 480w, ${baseFor(slug)}-768.avif 768w, ${baseFor(slug)}-1200.avif 1200w`;
+
+    const webp = document.createElement('source');
+    webp.type = 'image/webp';
+    webp.setAttribute('data-mrecipes-responsive', 'true');
+    webp.sizes = '(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px';
+    webp.srcset = `${baseFor(slug)}-480.webp 480w, ${baseFor(slug)}-768.webp 768w, ${baseFor(slug)}-1200.webp 1200w`;
+
+    picture.insertBefore(avif, img);
+    picture.insertBefore(webp, img);
+  };
+
+  const optimizeImage = (img, slug, priority = false) => {
+    addResponsiveSources(img, slug);
     img.decoding = 'async';
     if (priority) {
       img.loading = 'eager';
@@ -43,12 +72,11 @@
   };
 
   const syncHomeImages = () => {
-    document.querySelectorAll('.recipe-card a[href] img').forEach(img => {
+    document.querySelectorAll('.recipe-card a[href] img').forEach((img, index) => {
       const link = img.closest('a[href]');
       const slug = link && slugFromHref(link.getAttribute('href'));
       if (!slug) return;
-      img.src = imageFor(slug);
-      optimizeImage(img, false);
+      optimizeImage(img, slug, index === 0);
     });
   };
 
@@ -60,9 +88,8 @@
     const title = document.querySelector('h1')?.textContent?.trim() || document.title;
 
     document.querySelectorAll('.content-page img').forEach((img, index) => {
-      img.src = image;
       img.alt = img.alt || title;
-      optimizeImage(img, index === 0);
+      optimizeImage(img, slug, index === 0);
     });
 
     const article = document.querySelector('.content-page');
@@ -70,7 +97,7 @@
       const figure = document.createElement('figure');
       figure.className = 'recipe-image';
       const safeTitle = title.replace(/"/g, '&quot;');
-      figure.innerHTML = `<img src="${image}" alt="${safeTitle}" width="1200" height="675" decoding="async" fetchpriority="high"><figcaption>Photo: MRecipes</figcaption>`;
+      figure.innerHTML = `<picture><source type="image/avif" srcset="${baseFor(slug)}-480.avif 480w, ${baseFor(slug)}-768.avif 768w, ${baseFor(slug)}-1200.avif 1200w" sizes="(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px"><source type="image/webp" srcset="${baseFor(slug)}-480.webp 480w, ${baseFor(slug)}-768.webp 768w, ${baseFor(slug)}-1200.webp 1200w" sizes="(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px"><img src="${image}" alt="${safeTitle}" width="1200" height="675" decoding="async" fetchpriority="high"></picture><figcaption>Photo: MRecipes</figcaption>`;
       article.insertBefore(figure, article.firstChild);
     }
 
