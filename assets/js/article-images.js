@@ -173,6 +173,14 @@
 
   const apply = () => {
     if (articleMatch) syncArticleImages();
+    if (home) {
+      syncHomeImages();
+      const grid = document.querySelector('.recipe-grid, [data-supabase-recipes]');
+      if (grid) {
+        const observer = new MutationObserver(() => syncHomeImages());
+        observer.observe(grid, { childList: true, subtree: true });
+      }
+    }
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
