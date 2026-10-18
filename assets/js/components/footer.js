@@ -12,3 +12,14 @@
     document.head.appendChild(link);
   }
 })();
+
+/* Load the same featured-image synchronizer on every localized article page. */
+(() => {
+  if (!document.querySelector('script[data-article-images]')) {
+    const script = document.createElement('script');
+    script.src = '/assets/js/article-images.js';
+    script.defer = true;
+    script.dataset.articleImages = 'true';
+    document.head.appendChild(script);
+  }
+})();
