@@ -83,21 +83,37 @@
   const syncArticleImages = () => {
     if (!articleMatch) return;
     const slug = articleMatch[1];
-    const image = imageFor(slug);
-    const absoluteImage = absoluteFor(slug);
+    const article = document.querySelector('.content-page');
+    const existingImage = article?.querySelector('img');
+    // Preserve the image already authored for this recipe. Replacing it with a
+    // guessed slug-based path caused broken images and made article/card images differ.
+    const image = existingImage?.getAttribute('src') || imageFor(slug);
+    const absoluteImage = new URL(image, location.origin).href;
     const title = document.querySelector('h1')?.textContent?.trim() || document.title;
 
     document.querySelectorAll('.content-page img').forEach((img, index) => {
       img.alt = img.alt || title;
-      optimizeImage(img, slug, index === 0);
+      img.decoding = 'async';
+      if (index === 0) {
+        img.loading = 'eager';
+        img.fetchPriority = 'high';
+      }
     });
 
-    const article = document.querySelector('.content-page');
-    if (article && !article.querySelector('img')) {
+    if (article && !existingImage) {
       const figure = document.createElement('figure');
       figure.className = 'recipe-image';
-      const safeTitle = title.replace(/"/g, '&quot;');
-      figure.innerHTML = `<picture><source type="image/avif" srcset="${baseFor(slug)}-480.avif 480w, ${baseFor(slug)}-768.avif 768w, ${baseFor(slug)}-1200.avif 1200w" sizes="(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px"><source type="image/webp" srcset="${baseFor(slug)}-480.webp 480w, ${baseFor(slug)}-768.webp 768w, ${baseFor(slug)}-1200.webp 1200w" sizes="(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px"><img src="${image}" alt="${safeTitle}" width="1200" height="675" decoding="async" fetchpriority="high"></picture><figcaption>Photo: MRecipes</figcaption>`;
+      const img = document.createElement('img');
+      img.src = image;
+      img.alt = title;
+      img.width = 1200;
+      img.height = 675;
+      img.decoding = 'async';
+      img.fetchPriority = 'high';
+      figure.appendChild(img);
+      const caption = document.createElement('figcaption');
+      caption.textContent = 'Photo: MRecipes';
+      figure.appendChild(caption);
       article.insertBefore(figure, article.firstChild);
     }
 
