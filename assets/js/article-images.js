@@ -118,15 +118,10 @@
   };
 
   const apply = () => {
-    if (home) syncHomeImages();
     if (articleMatch) syncArticleImages();
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
   else apply();
 
-  document.addEventListener('mrecipes:localized-home-ready', syncHomeImages);
-  new MutationObserver(() => {
-    if (home) syncHomeImages();
-  }).observe(document.body, { childList: true, subtree: true });
 })();
