@@ -135,6 +135,17 @@ jobs:
                   if u.scheme!='https' or u.netloc!='mrecipes.online': errors.append(f'sitemap: invalid URL {loc.text}')
                   urls.append(u.path)
               if len(urls)!=len(set(urls)): errors.append('sitemap: duplicate URLs')
+              # Require every eligible HTML page to be represented in the sitemap, and
+              # reject sitemap entries that do not map to a real HTML page.
+              def page_url_path(page):
+                  rel=page.as_posix()
+                  if rel=='index.html': return '/'
+                  if rel.endswith('/index.html'): return '/'+rel[:-10].strip('/')+'/'
+                  return '/'+rel
+              expected={page_url_path(p) for p in html_files if p.name!='404.html' and p.as_posix()!='recipes/recipe-template.html'}
+              actual=set(urls)
+              for missing in sorted(expected-actual): errors.append(f'sitemap: missing eligible HTML page {missing}')
+              for extra in sorted(actual-expected): errors.append(f'sitemap: URL has no eligible HTML page {extra}')
           except Exception as exc: errors.append(f'sitemap parse error: {exc}')
           if errors: print('\n'.join('ERROR: '+e for e in errors)); sys.exit(1)
           print(f'Validation passed: {len(html_files)} HTML files, metadata, robots, canonical, JSON-LD, AdSense code, local links and sitemap.')
