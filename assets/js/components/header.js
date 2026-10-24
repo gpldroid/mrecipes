@@ -92,9 +92,7 @@ root.innerHTML = `
     <button class="theme-toggle" type="button" aria-label="${t.theme}" aria-pressed="false" title="${t.theme}"><span aria-hidden="true">☾</span></button>
   </div>
 </header>
-const tabIcons = ['fa-house', 'fa-utensils', 'fa-circle-info', 'fa-envelope'];
-const mobileTabBar = `<nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }, index) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${tabIcons[index]}" aria-hidden="true"></i><small>${label}</small></a>`).join('')}</nav>`;
-root.innerHTML += mobileTabBar;
+<nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${label === t.home ? 'fa-house' : label === t.recipes ? 'fa-utensils' : label === t.about ? 'fa-circle-info' : 'fa-envelope'}" aria-hidden="true"></i><small>${label}</small></a>`).join('')}</nav>`;
 
 const style = document.createElement('style');
 style.textContent = `
