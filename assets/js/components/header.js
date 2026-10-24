@@ -64,6 +64,14 @@ const root = document.querySelector('[data-site-header]');
 if (!root || root.dataset.initialized) return;
 root.dataset.initialized = 'true';
 
+if (!document.querySelector('link[data-font-awesome-tab-icons]')) {
+  const fontAwesome = document.createElement('link');
+  fontAwesome.rel = 'stylesheet';
+  fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css';
+  fontAwesome.dataset.fontAwesomeTabIcons = 'true';
+  document.head.appendChild(fontAwesome);
+}
+
 root.innerHTML = `
 <a class="skip-link" href="#main-content">${t.skip}</a>
 <header class="site-header">
@@ -84,7 +92,9 @@ root.innerHTML = `
     <button class="theme-toggle" type="button" aria-label="${t.theme}" aria-pressed="false" title="${t.theme}"><span aria-hidden="true">☾</span></button>
   </div>
 </header>
-<nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ''}><span aria-hidden="true">${label === t.home ? '⌂' : label === t.recipes ? '▤' : label === t.about ? '♡' : '✉'}</span><small>${label}</small></a>`).join('')}</nav>`;
+const tabIcons = ['fa-house', 'fa-utensils', 'fa-circle-info', 'fa-envelope'];
+const mobileTabBar = `<nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }, index) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${tabIcons[index]}" aria-hidden="true"></i><small>${label}</small></a>`).join('')}</nav>`;
+root.innerHTML += mobileTabBar;
 
 const style = document.createElement('style');
 style.textContent = `
