@@ -1,0 +1,87 @@
+{
+  "locale": {
+    "code": "fr",
+    "name": "French",
+    "nativeName": "Français",
+    "dir": "ltr",
+    "htmlLang": "fr"
+  },
+  "common": {
+    "home": "Accueil",
+    "recipes": "Recettes",
+    "about": "À propos",
+    "contact": "Contact",
+    "language": "Langue",
+    "search": "Rechercher",
+    "close": "Fermer",
+    "openMenu": "Ouvrir la navigation",
+    "skipToContent": "Aller au contenu",
+    "viewAll": "Tout voir",
+    "loadMore": "Charger plus de recettes",
+    "noResults": "Aucune recette trouvée.",
+    "backToHome": "Retour à l’accueil"
+  },
+  "search": {
+    "label": "Rechercher des recettes",
+    "placeholder": "Rechercher une recette…",
+    "submit": "Rechercher",
+    "empty": "Aucune recette ne correspond à votre recherche."
+  },
+  "categories": {
+    "breakfast": "Petit-déjeuner",
+    "lunch": "Déjeuner",
+    "dinner": "Dîner",
+    "snacks": "En-cas",
+    "soups": "Soupes",
+    "salads": "Salades",
+    "pasta": "Pâtes",
+    "desserts": "Desserts",
+    "vegetarian": "Végétarien",
+    "plantBased": "Végétal",
+    "under15": "Moins de 15 minutes",
+    "under30": "30 minutes ou moins"
+  },
+  "recipe": {
+    "ingredients": "Ingrédients",
+    "instructions": "Préparation",
+    "tips": "Conseils",
+    "storage": "Conservation et service",
+    "faq": "Questions fréquentes",
+    "notes": "Notes de la recette",
+    "prepTime": "Préparation",
+    "cookTime": "Cuisson",
+    "totalTime": "Temps total",
+    "servings": "Portions",
+    "by": "Recette de",
+    "print": "Imprimer la recette",
+    "jumpToRecipe": "Aller à la recette"
+  },
+  "footer": {
+    "explore": "Explorer",
+    "information": "Informations",
+    "allRecipes": "Toutes les recettes",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d’utilisation",
+    "disclaimer": "Avertissement",
+    "cookiePreferences": "Préférences de cookies",
+    "allRightsReserved": "Tous droits réservés.",
+    "managedBy": "Contenu créé et géré par"
+  },
+  "consent": {
+    "title": "Nous respectons votre vie privée",
+    "acceptAll": "Tout accepter",
+    "rejectOptional": "Refuser les options",
+    "manage": "Gérer les préférences",
+    "save": "Enregistrer mes choix",
+    "essential": "Essentiels",
+    "analytics": "Analytique",
+    "marketing": "Marketing"
+  },
+  "pages": {
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d’utilisation",
+    "disclaimer": "Avertissement",
+    "about": "À propos",
+    "contact": "Contact"
+  }
+}
