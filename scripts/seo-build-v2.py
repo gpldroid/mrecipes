@@ -72,10 +72,10 @@ def hreflang(html,kind,slug,existing):
  html=re.sub(r'\s*<link\s+[^>]*rel=["\']alternate["\'][^>]*hreflang=["\'][^"\']+["\'][^>]*>','',html,flags=re.I)
  tags=[]
  for k,(home,art,pagesp,_) in LOCALES.items():
-  path=home if kind=='home' else art+slug+'.html' if kind=='article' else pagesp+slug+'.html' if kind=='page' else None
+  path=home if kind=='home' else art+slug+'.html' if kind=='article' else pagesp+slug+'.html' if kind=='page' else ('/recipes.html' if k=='en' else f'/{k}/recipes.html') if kind=='recipes' else None
   if path and path in existing: tags.append(f'<link rel="alternate" hreflang="{k}" href="{DOMAIN}{path}">')
- if kind in ('home','article','page'):
-  home,art,pagesp,_=LOCALES['en']; ep=home if kind=='home' else art+slug+'.html' if kind=='article' else pagesp+slug+'.html'
+ if kind in ('home','article','page','recipes'):
+  home,art,pagesp,_=LOCALES['en']; ep=home if kind=='home' else art+slug+'.html' if kind=='article' else pagesp+slug+'.html' if kind=='page' else '/recipes.html'
   if ep in existing: tags.append(f'<link rel="alternate" hreflang="x-default" href="{DOMAIN}{ep}">')
  return re.sub(r'</head>','\n'.join(tags)+'\n</head>',html,count=1,flags=re.I)
 def toc(html,p,k):
