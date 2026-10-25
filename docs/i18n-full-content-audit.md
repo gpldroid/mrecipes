@@ -76,4 +76,7 @@ These counts are triage flags, not automatic proof that every flagged page is in
 
 ## Remaining work (explicit)
 
-Only two recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars` and `garlic-butter-pasta`. The remaining 46 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
+Three recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars`, `garlic-butter-pasta`, and `overnight-oats`. The remaining 45 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
+
+
+- Fully translated `overnight-oats` into AR/FR/ES/RU, preserving 9 ingredients and 5 steps in both visible HTML and Recipe JSON-LD, with localized SEO and author byline.
