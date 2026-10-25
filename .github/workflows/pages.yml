@@ -84,8 +84,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pip install --user --disable-pip-version-check Pillow
-          python3 scripts/optimize-responsive-images.py
+          python3 -m venv /tmp/mrecipes-image-venv
+          /tmp/mrecipes-image-venv/bin/pip install --disable-pip-version-check Pillow
+          /tmp/mrecipes-image-venv/bin/python scripts/optimize-responsive-images.py
       - name: Validate site structure, SEO and local links
         shell: bash
         run: |
