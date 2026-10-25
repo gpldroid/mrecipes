@@ -30,24 +30,33 @@
   };
 
   const addResponsiveSources = (img, assetSlug, role = 'card') => {
-    // The repository contains the canonical <slug>.webp files, but does not
-    // contain the generated -card/-featured/-step variants. Never point the
-    // browser at files that are not part of the deployed asset tree.
     const base = baseFor(assetSlug);
     const config = role === 'featured'
-      ? { width: 1200, height: 675 }
+      ? { widths: [480, 800, 1200], sizes: '(max-width: 760px) calc(100vw - 2rem), (max-width: 1200px) 90vw, 1200px', width: 1200, height: 675 }
       : role === 'step'
-        ? { width: 800, height: 600 }
-        : { width: 600, height: 400 };
+        ? { widths: [400, 800], sizes: '(max-width: 760px) calc(100vw - 2rem), 800px', width: 800, height: 600 }
+        : { widths: [320, 600], sizes: '(max-width: 600px) calc(100vw - 2rem), (max-width: 1000px) 50vw, 300px', width: 600, height: 400 };
 
     img.removeAttribute('srcset');
-    img.removeAttribute('sizes');
+    img.sizes = config.sizes;
     img.width = config.width;
     img.height = config.height;
 
-    const picture = img.closest('picture');
-    picture?.querySelectorAll('source[data-mrecipes-responsive]').forEach(source => source.remove());
-    img.src = base + '.webp';
+    let picture = img.closest('picture');
+    if (!picture) {
+      picture = document.createElement('picture');
+      img.parentNode?.insertBefore(picture, img);
+      picture.appendChild(img);
+    }
+    picture.querySelectorAll('source[data-mrecipes-responsive]').forEach(source => source.remove());
+
+    const source = document.createElement('source');
+    source.type = 'image/webp';
+    source.setAttribute('data-mrecipes-responsive', 'true');
+    source.sizes = config.sizes;
+    source.srcset = config.widths.map(width => base + '-' + role + '-' + width + '.webp ' + width + 'w').join(', ');
+    picture.insertBefore(source, img);
+    img.src = base + '-' + role + '.jpg';
     img.decoding = 'async';
     if (role === 'card') {
       img.loading = 'lazy';
@@ -114,7 +123,7 @@
         const src = image?.getAttribute('src') || image?.getAttribute('data-src');
         if (!src) return null;
         const resolved = new URL(src, url.href);
-        return resolved.origin === location.origin ? resolved.href : null;
+        return ['http:', 'https:'].includes(resolved.protocol) ? resolved.href : null;
       })
       .catch(() => null);
 
@@ -133,18 +142,7 @@
       if (articleImage) {
         const assetSlug = recipeAssetSlugFromUrl(articleImage);
         if (assetSlug) {
-          // Reuse the exact image URL authored in the recipe article. Do not
-          // synthesize responsive filenames: only canonical source assets are
-          // guaranteed to exist in the repository.
-          const picture = img.closest('picture');
-          picture?.querySelectorAll('source').forEach(source => source.remove());
-          img.removeAttribute('srcset');
-          img.removeAttribute('sizes');
-          img.src = articleImage;
-          img.width = 600;
-          img.height = 400;
-          img.loading = 'lazy';
-          img.decoding = 'async';
+          addResponsiveSources(img, assetSlug, 'card');
         } else {
           const picture = img.closest('picture');
           picture?.querySelectorAll('source').forEach(source => source.remove());
