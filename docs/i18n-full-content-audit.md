@@ -118,4 +118,10 @@ For the two newly completed recipes, the source ingredient quantities and method
 - Localized the title/description, hero summary, visible byline directly under the summary, image alt text, 10 ingredients, 6 method steps, tips, storage, FAQs, notes, headings, canonical URL and all five hreflang alternates. Recipe JSON-LD name and description were localized, and the source author credit was preserved.
 - Source quantities and cooking times remain unchanged: 10 ingredients, 6 steps; 10 minutes prep + 20 minutes cooking; 4 servings.
 - The cumulative count is now **7 of 48 recipes fully rewritten across AR/FR/ES/RU**. **41 recipes per target locale** remain, along with all information/legal page review and site-wide UI/SEO QA.
+## Progress update — 2026-10-25 (pancakes and cookies)
+
+- Rewrote the four localized versions of `classic-pancakes` and `chocolate-chip-cookies` in AR/FR/ES/RU.
+- Both recipes now have localized page titles/descriptions, hero summary and direct author byline, image alt text, ingredient lists, numbered method, tips, storage/serving guidance, FAQs, recipe notes, and localized Recipe JSON-LD names/descriptions with canonical/hreflang links.
+- Original ingredient quantities and method times/steps are preserved. For pancakes, the source has 8 ingredients and 6 steps (5 min prep + 15 min cooking, 4 servings); for chocolate chip cookies, 9 ingredients and 7 steps (15 min prep + 12 min baking, 18 cookies).
+- Cumulative count: **9 of 48 recipes fully rewritten across AR/FR/ES/RU**. **39 recipes per target locale remain**, in addition to the information/legal pages and site-wide localization/QA.
 
