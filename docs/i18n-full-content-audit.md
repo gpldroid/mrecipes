@@ -76,7 +76,15 @@ These counts are triage flags, not automatic proof that every flagged page is in
 
 ## Remaining work (explicit)
 
-Three recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars`, `garlic-butter-pasta`, and `overnight-oats`. The remaining 45 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
+Four recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars`, `garlic-butter-pasta`, `overnight-oats`, and `avocado-toast`. The remaining 44 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
 
 
 - Fully translated `overnight-oats` into AR/FR/ES/RU, preserving 9 ingredients and 5 steps in both visible HTML and Recipe JSON-LD, with localized SEO and author byline.
+
+
+## Work completed on 2026-10-25 — avocado-toast
+
+- Rewrote `ar/article/avocado-toast.html`, `fr/article/avocado-toast.html`, `es/article/avocado-toast.html`, and `ru/article/avocado-toast.html` as full localized recipe pages, replacing the Arabic placeholder and English-copy leakage in the other localized editions.
+- Localized page titles, descriptions, Open Graph/Twitter metadata, visible article text, ingredient lists, instructions, tips, serving/storage guidance, FAQ, image alt text, and Recipe JSON-LD.
+- Preserved the English source quantities and cooking method (7 ingredients, 5 steps; 8 minutes prep, 3 minutes cooking, 2 servings), added all five hreflang alternates plus x-default, and credited Imad Limrani visibly and in Recipe JSON-LD.
+- Structural check is limited to the generated content and repository reads. A live browser/visual check has not been completed. The current full-site migration remains incomplete: 4 of 48 recipes are rewritten across the four target locales, leaving 44 per target locale plus informational/legal pages and remaining site-wide UI/index review.
