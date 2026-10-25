@@ -112,4 +112,10 @@ For the two newly completed recipes, the source ingredient quantities and method
 **Remaining scope:** 42 of 48 recipes still need full localized rewrites in each of AR/FR/ES/RU; all 25 localized information/legal pages still need end-to-end comparison and any necessary rewrites; shared UI, cards, indexes, and site-wide SEO/localization need review. This branch is still not release-ready. No browser/visual QA has been completed.
 
 **CI:** GitHub Actions run #329 for head commit `8575dc2318dd24cc2ea7fc0f36f242f11efc3250` completed successfully. This validates the repository's automated build/structure checks only; it does not certify translation quality or complete the migration.
+## Progress update — 2026-10-25 (creamy garlic chicken)
+
+- Rewrote `ar/article/creamy-garlic-chicken.html`, `fr/article/creamy-garlic-chicken.html`, `es/article/creamy-garlic-chicken.html`, and `ru/article/creamy-garlic-chicken.html` against the English source.
+- Localized the title/description, hero summary, visible byline directly under the summary, image alt text, 10 ingredients, 6 method steps, tips, storage, FAQs, notes, headings, canonical URL and all five hreflang alternates. Recipe JSON-LD name and description were localized, and the source author credit was preserved.
+- Source quantities and cooking times remain unchanged: 10 ingredients, 6 steps; 10 minutes prep + 20 minutes cooking; 4 servings.
+- The cumulative count is now **7 of 48 recipes fully rewritten across AR/FR/ES/RU**. **41 recipes per target locale** remain, along with all information/legal page review and site-wide UI/SEO QA.
 
