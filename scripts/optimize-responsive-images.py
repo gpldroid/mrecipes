@@ -9,7 +9,7 @@ from __future__ import annotations
 from html import escape
 from pathlib import Path
 import re
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qsl, urlencode, unquote, urlparse, urlsplit, urlunsplit
 
 from PIL import Image, ImageOps
 
@@ -87,6 +87,21 @@ def ensure_derivatives(source: Path, role: str) -> None:
         make_image(source, derivative_path(source, current_role), config["fallback"], "JPEG")
 
 
+def unsplash_srcset(src: str, role: str) -> str | None:
+    parsed = urlsplit(src)
+    if parsed.hostname != "images.unsplash.com":
+        return None
+    params = parse_qsl(parsed.query, keep_blank_values=True)
+    widths = ROLES[role]["sizes"]
+    candidates = []
+    for width, _height in widths:
+        query = [(key, value) for key, value in params if key != "w"]
+        query.append(("w", str(width)))
+        url = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(query), parsed.fragment))
+        candidates.append(f"{url} {width}w")
+    return ", ".join(candidates)
+
+
 def choose_role(html: str, start: int, image_counts: dict[str, int]) -> str:
     prefix = html[:start]
     last_card_open = prefix.rfind('class="recipe-card"')
@@ -131,6 +146,13 @@ def transform_page(page: Path) -> tuple[int, int]:
             tag = add_attr(tag, "fetchpriority", "high")
 
         if source is None:
+            remote_set = unsplash_srcset(src, role)
+            if remote_set:
+                tag = add_attr(tag, "srcset", remote_set)
+                tag = add_attr(tag, "sizes", ROLES[role]["sizes_attr"])
+                width, height = ROLES[role]["fallback"]
+                tag = add_attr(tag, "width", str(width))
+                tag = add_attr(tag, "height", str(height))
             if tag != original_tag:
                 replacements.append((match.start(), match.end(), tag))
             continue
