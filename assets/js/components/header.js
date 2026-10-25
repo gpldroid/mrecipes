@@ -130,6 +130,8 @@ root.innerHTML = `
   </div>
 </header>
 <nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${label === t.home ? 'fa-house' : label === t.recipes ? 'fa-utensils' : label === t.about ? 'fa-circle-info' : 'fa-envelope'}" aria-hidden="true"></i><small>${label}</small></a>`).join('')}</nav>`;
+const searchInput = root.querySelector('#header-search-input');
+if (searchInput && querySearch) searchInput.value = querySearch;
 
 const style = document.createElement('style');
 style.textContent = `
