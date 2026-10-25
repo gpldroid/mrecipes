@@ -259,7 +259,18 @@
     const existingImage = article?.querySelector('img');
     // Preserve the image already authored for this recipe. Replacing it with a
     // guessed slug-based path caused broken images and made article/card images differ.
-    const image = existingImage?.getAttribute('src') || imageFor(slug);
+    const authoredImage = existingImage?.getAttribute('src') || '';
+    const authoredAssetSlug = recipeAssetSlugFromUrl(authoredImage);
+    const image = (authoredAssetSlug && fallbackImages[authoredAssetSlug])
+      ? fallbackImages[authoredAssetSlug]
+      : (authoredImage || fallbackImages[slug] || imageFor(slug));
+    if (existingImage && image !== authoredImage) {
+      const picture = existingImage.closest('picture');
+      picture?.querySelectorAll('source').forEach(source => source.remove());
+      existingImage.removeAttribute('srcset');
+      existingImage.removeAttribute('sizes');
+      existingImage.src = image;
+    }
     const absoluteImage = new URL(image, location.origin).href;
     const title = document.querySelector('h1')?.textContent?.trim() || document.title;
 
