@@ -156,8 +156,9 @@ def transform_page(page: Path) -> tuple[int, int]:
             picture_start = html.lower().rfind("<picture", 0, match.start())
             picture_chunk = html[picture_start:match.start()].lower()
             if "data-mrecipes-responsive" not in picture_chunk:
+                picture_open_end = html.find(">", picture_start, match.start()) + 1
                 replacements.append((match.start(), match.end(), tag))
-                replacements.append((picture_start, picture_start, source_tag))
+                replacements.append((picture_open_end, picture_open_end, source_tag))
             else:
                 replacements.append((match.start(), match.end(), tag))
         else:
