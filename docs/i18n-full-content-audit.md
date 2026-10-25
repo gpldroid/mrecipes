@@ -146,3 +146,10 @@ For the two newly completed recipes, the source ingredient quantities and method
 - The slider now initializes from the localized static cards even when Supabase is not configured, returns no published rows, or the query fails. Previously, slider creation happened only after a successful non-empty Supabase response.
 - Existing logic continues to retrieve the image URL from the matching recipe article for card slugs without a local image and supports HTTP(S) sources. The local image directory contains 38 recipe images, so the remaining recipe pages must be checked individually to ensure their article-authored image URLs are valid.
 - Code-level fixes are committed to this draft PR. Live browser/network checks across EN/AR/FR/ES/RU are still required before confirming all publication images display correctly. This does not claim every recipe image is locally hosted or that the full multilingual rewrite is complete.
+
+
+## Homepage latest-recipes slider and image recovery
+- Added a horizontal, keyboard-scrollable three-card latest-recipes slider to the English, Arabic, French, Spanish, and Russian homepages. It is populated from each homepage's existing first three recipe cards, preserving localized titles, categories, links, and image sources rather than maintaining a second content catalogue.
+- Added responsive three-card/two-card/mobile swipe layouts, snap scrolling, and localized previous/next controls.
+- Fixed Arabic homepage card image failure handling: instead of immediately removing a failed local image, the card now tries the image authored in its linked recipe page before falling back to a category icon.
+- This is a code-level repair. Live browser verification and network checks for every published image across all five locales remain necessary; no claim is made that every recipe has a local image asset.
