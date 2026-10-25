@@ -46,7 +46,7 @@ const p = catalog ? {
   homeT: catalog.common.home, aboutT: catalog.pages.about, contactT: catalog.pages.contact, privacyT: catalog.pages.privacy,
   termsT: catalog.pages.terms, discT: catalog.pages.disclaimer, cookie: catalog.footer.cookiePreferences,
   copy: catalog.footer.allRightsReserved, managed: catalog.footer.managedBy, siteFooter: catalog.footer.siteFooter
-};
+} : fallbackP;
 root.innerHTML=`<footer class="site-footer" aria-label="${p.siteFooter}"><div class="footer-grid"><div class="footer-brand"><a class="brand brand-footer" href="${p.home}" aria-label="MRecipes"><span class="brand-mark" aria-hidden="true">M</span><span>MRecipes<span class="brand-dot">.</span></span></a><p>${p.desc}</p></div><div class="footer-links"><h2>${p.explore}</h2><ul><li><a href="${p.home}">${p.homeT}</a></li><li><a href="${p.recipes}">${p.all}</a></li><li><a href="${p.about}">${p.aboutT}</a></li><li><a href="${p.contact}">${p.contactT}</a></li></ul></div><div class="footer-links"><h2>${p.info}</h2><ul><li><a href="${p.privacy}">${p.privacyT}</a></li><li><a href="${p.terms}">${p.termsT}</a></li><li><a href="${p.disclaimer}">${p.discT}</a></li><li><button class="cookie-preferences-link" type="button" data-open-cookie-preferences>${p.cookie}</button></li></ul></div></div><div class="footer-bottom"><span>© <span data-current-year></span> MRecipes. ${p.copy}</span><span>${p.managed} <strong>Imad Limrani</strong>.</span></div></footer>`;root.querySelector('[data-current-year]').textContent=new Date().getFullYear();const copy = catalog ? {
   title: catalog.consent.title, body: catalog.consent.body, accept: catalog.consent.accept,
   reject: catalog.consent.reject, customize: catalog.consent.customize, save: catalog.consent.save,
