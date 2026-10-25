@@ -48,6 +48,11 @@ jobs:
           python3 scripts/seo-build-v2.py
           python3 scripts/seo-description-fix.py
           python3 scripts/validate-i18n.py
+      - name: Add Imad Limrani author attribution beneath page summaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-author-attribution.py
       - name: Audit localized article completeness (diagnostic)
         shell: bash
         run: |
