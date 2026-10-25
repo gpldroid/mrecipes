@@ -17,6 +17,54 @@
   const imageFor = slug => `${baseFor(slug)}.webp`;
   const absoluteFor = slug => new URL(imageFor(slug), location.origin).href;
 
+  // The original English articles already carry licensed/credited source imagery for
+  // these recipes, but their corresponding local WebP files are not in the repository.
+  // Use those source images instead of leaving a broken /assets/images/... request.
+  const fallbackImages = {
+    'apple-cinnamon-crumble-bars': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1600&q=85',
+    'coconut-lime-rice-bowl': 'https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=1600&q=85',
+    'honey-mustard-roasted-carrots': 'https://images.unsplash.com/photo-1445282768818-728615cc910a?auto=format&fit=crop&w=1600&q=85',
+    'lemon-ricotta-gnocchi': 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1600&q=85',
+    'miso-glazed-salmon': 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1600&q=85',
+    'mushroom-barley-soup': 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1600&q=85',
+    'pear-walnut-oatmeal': 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=1600&q=85',
+    'roasted-red-pepper-hummus': 'https://images.unsplash.com/photo-1577906096429-f73c2c312435?auto=format&fit=crop&w=1600&q=85',
+    'sesame-tofu-lettuce-wraps': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=85',
+    'turkey-spinach-meatballs': 'https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=1600&q=85'
+  };
+
+  const placeholderFor = img => {
+    const picture = img.closest('picture');
+    const holder = document.createElement('span');
+    holder.className = 'latest-slider-image-fallback';
+    holder.setAttribute('aria-hidden', 'true');
+    holder.textContent = '🍽️';
+    if (picture) picture.replaceWith(holder);
+    else img.replaceWith(holder);
+  };
+
+  const attachImageFallback = (img, slug) => {
+    if (img.dataset.mrecipesFallbackAttached === 'true') return;
+    img.dataset.mrecipesFallbackAttached = 'true';
+    img.addEventListener('error', () => {
+      if (img.dataset.mrecipesFallbackUsed === 'true') {
+        placeholderFor(img);
+        return;
+      }
+      img.dataset.mrecipesFallbackUsed = 'true';
+      const fallback = fallbackImages[slug];
+      if (fallback && img.src !== fallback) {
+        const picture = img.closest('picture');
+        picture?.querySelectorAll('source').forEach(source => source.remove());
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+        img.src = fallback;
+      } else {
+        placeholderFor(img);
+      }
+    });
+  };
+
   const setMeta = (selector, attribute, value) => {
     let meta = document.querySelector(selector);
     if (!meta) {
@@ -141,7 +189,13 @@
       if (!img.isConnected) return;
       if (articleImage) {
         const assetSlug = recipeAssetSlugFromUrl(articleImage);
-        if (assetSlug) {
+        if (assetSlug && fallbackImages[assetSlug]) {
+          const picture = img.closest('picture');
+          picture?.querySelectorAll('source').forEach(source => source.remove());
+          img.removeAttribute('srcset');
+          img.removeAttribute('sizes');
+          applyRemoteResponsive(img, fallbackImages[assetSlug]);
+        } else if (assetSlug) {
           addResponsiveSources(img, assetSlug, 'card');
         } else {
           const picture = img.closest('picture');
@@ -150,6 +204,7 @@
           img.removeAttribute('sizes');
           applyRemoteResponsive(img, articleImage);
         }
+        attachImageFallback(img, slugFromHref(link.href));
       }
       img.dataset.mrecipesImageSync = 'done';
     });
@@ -166,7 +221,13 @@
       const articleImage = await articleImageForCard(link.getAttribute('href'));
       if (!articleImage || new URL(articleImage, location.origin).href === img.src) return;
       const assetSlug = recipeAssetSlugFromUrl(articleImage);
-      if (assetSlug) {
+      if (assetSlug && fallbackImages[assetSlug]) {
+        const picture = img.closest('picture');
+        picture?.querySelectorAll('source').forEach(source => source.remove());
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+        applyRemoteResponsive(img, fallbackImages[assetSlug]);
+      } else if (assetSlug) {
         addResponsiveSources(img, assetSlug, 'card');
       } else {
         const picture = img.closest('picture');
@@ -205,6 +266,7 @@
     document.querySelectorAll('.content-page img').forEach((img, index) => {
       img.alt = img.alt || title;
       img.decoding = 'async';
+      attachImageFallback(img, slug);
       if (index === 0) {
         img.loading = 'eager';
         img.fetchPriority = 'high';
