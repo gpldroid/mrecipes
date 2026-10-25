@@ -72,6 +72,25 @@
     } catch (_) { return null; }
   };
 
+  const applyRemoteResponsive = (img, value) => {
+    img.src = value;
+    try {
+      const original = new URL(value, location.origin);
+      if (original.hostname !== 'images.unsplash.com') return;
+      const widths = [320, 600];
+      img.srcset = widths.map(width => {
+        const candidate = new URL(original.href);
+        candidate.searchParams.set('w', String(width));
+        return candidate.href + ' ' + width + 'w';
+      }).join(', ');
+      img.sizes = '(max-width: 600px) calc(100vw - 2rem), (max-width: 1000px) 50vw, 300px';
+      img.width = 600;
+      img.height = 400;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    } catch (_) {}
+  };
+
   const optimizeImage = (img, slug, priority = false) => {
     addResponsiveSources(img, slug);
     img.decoding = 'async';
@@ -129,7 +148,7 @@
           picture?.querySelectorAll('source').forEach(source => source.remove());
           img.removeAttribute('srcset');
           img.removeAttribute('sizes');
-          img.src = articleImage;
+          applyRemoteResponsive(img, articleImage);
         }
       }
       img.dataset.mrecipesImageSync = 'done';
