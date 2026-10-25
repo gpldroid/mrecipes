@@ -400,6 +400,9 @@
 
   if (!configured) {
     window.MRecipesData = Object.freeze({ enabled: false, reason: 'Configure the Supabase URL and publishable key in assets/js/main.js.' });
+    // Static localized cards are already present at this point. Keep the
+    // latest-recipe slider available even when Supabase is not configured.
+    buildHomepageLatestSlider();
     return;
   }
 
@@ -434,9 +437,14 @@
         renderCards(container, recipes);
         applySearch();
         renderSidebar();
-        buildHomepageLatestSlider();
       }
-    }).catch(error => console.error('Supabase query failed; keeping static recipe cards.', error));
+      // Whether Supabase returns rows or the localized static feed remains in
+      // place, render the three-card slider from the cards currently on screen.
+      buildHomepageLatestSlider();
+    }).catch(error => {
+      console.error('Supabase query failed; keeping static recipe cards.', error);
+      buildHomepageLatestSlider();
+    });
   }).catch(error => console.error('Supabase client failed to load; keeping static content.', error));
 })();
 
