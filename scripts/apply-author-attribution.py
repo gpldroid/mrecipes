@@ -27,7 +27,7 @@ SUMMARY_MARKERS = {
 AUTHOR_RE = re.compile(r'class=["\'][^"\']*\bi18n-author-credit\b', re.I)
 MAIN_RE = re.compile(r"<main\b[^>]*>(.*?)</main\s*>", re.I | re.S)
 PARA_RE = re.compile(r"<p\b[^>]*>.*?</p\s*>", re.I | re.S)
-LANG_RE = re.compile(r"<html\b[^>]*\blang=["\']([^"\']+)", re.I)
+LANG_RE = re.compile(r"""<html\b[^>]*\blang=["']([^"']+)""", re.I)
 TAG_RE = re.compile(r"<[^>]+>")
 SCRIPT_STYLE_RE = re.compile(r"<(script|style)\b[^>]*>.*?</\1\s*>", re.I | re.S)
 
