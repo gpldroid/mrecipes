@@ -65,3 +65,15 @@ The draft PR build completed successfully, including the existing site structure
 - Localized Recipe JSON-LD ingredient/step counts differing from EN: **34**.
 
 These counts are triage flags, not automatic proof that every flagged page is incorrect. They do establish that the remaining content requires a full article-by-article pass; the current successful CI run must not be interpreted as proof that the translations are complete. The rewritten apple-cinnamon-crumble-bars pages were separately checked for 11 visible/schema ingredients, 5 visible/schema steps, all six alternate-language links, correct language/direction, and no matches for the current English-residue pattern list.
+
+
+## Work completed after the initial baseline
+
+- Rewrote `garlic-butter-pasta` fully in Arabic, French, Spanish and Russian using the complete English source article. Each localized version now includes the full visible sections, 10 ingredients and 6 steps, matching Recipe JSON-LD counts, source quantities plus clearly marked approximate conversions, author attribution to Imad Limrani beneath the summary, and all five locale alternates plus x-default.
+- Expanded the four localized recipe-index pages (AR/FR/ES/RU) with localized guidance and SEO metadata. The card coverage/loading behavior still needs separate verification.
+- Added `scripts/apply-author-attribution.py` to the Pages build. It inserts a localized visible byline for Imad Limrani beneath a detected summary or, if no summary marker exists, the first content paragraph. The transform is idempotent and validates visible attribution coverage on pages containing `<main>`.
+- CI run #304 completed successfully after the author-attribution step and index rewrites. Later article changes are being checked in subsequent runs.
+
+## Remaining work (explicit)
+
+Only two recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars` and `garlic-butter-pasta`. The remaining 46 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
