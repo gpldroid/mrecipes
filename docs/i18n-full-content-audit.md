@@ -53,3 +53,15 @@ The existing localized privacy-policy sample is also materially shorter than the
 ## Completion standard
 
 A page is not considered translated merely because its title, metadata, or recipe name is localized. Each article must be reviewed end-to-end against EN, including visible text and JSON-LD. The audit script uses heuristics to prioritize review; it cannot certify translation quality by itself.
+
+
+## CI diagnostic results from run #297 (2026-10-25)
+
+The draft PR build completed successfully, including the existing site structure/SEO/local-link validator. The diagnostic audit reported:
+
+- Missing recipe pages/files: **0** (all expected recipe paths exist in the sitemap and checkout).
+- Localized recipe bodies below 55% of the EN visible-text length: **69**.
+- Localized recipe HTML containing known English-residue patterns: **103**.
+- Localized Recipe JSON-LD ingredient/step counts differing from EN: **34**.
+
+These counts are triage flags, not automatic proof that every flagged page is incorrect. They do establish that the remaining content requires a full article-by-article pass; the current successful CI run must not be interpreted as proof that the translations are complete. The rewritten apple-cinnamon-crumble-bars pages were separately checked for 11 visible/schema ingredients, 5 visible/schema steps, all six alternate-language links, correct language/direction, and no matches for the current English-residue pattern list.
