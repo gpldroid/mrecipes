@@ -137,3 +137,11 @@ For the two newly completed recipes, the source ingredient quantities and method
 - Preserved the same homepage hierarchy used by Arabic: one page hero, one “latest recipes” section, the same six-card initial grid, and the shared load-more behavior. Localized titles, categories and excerpts remain in each language.
 - Added stable locale-specific grid IDs (`fr-recipe-grid`, `es-recipe-grid`, `ru-recipe-grid`) for structural parity with `ar-recipe-grid`.
 - This change aligns the initial visible grouping/order. The additional cards still use the existing localized catalog, so full 48-recipe homepage-feed parity remains a separate task. Visual/browser QA is still outstanding.
+
+
+## Homepage latest-recipe slider and image repair — 2026-10-25
+
+- Added a horizontally scrollable, three-card latest-recipe rail to the homepages in EN, AR, FR, ES, and RU. Cards are selected from the page's current recipe feed and prefer distinct categories; controls and heading copy are localized, with touch scrolling and responsive card widths.
+- Root cause confirmed for broken homepage recipe images: `assets/js/article-images.js` generated responsive paths such as `<slug>-card.jpg` and `<slug>-card-320.webp`, but the repository image tree contains canonical `<slug>.webp` assets and **zero** generated `-card/-featured/-step` variants. Browsers were therefore pointed at files that do not exist.
+- Fixed homepage image synchronization to preserve the exact image URL authored in the recipe article and clear only generated `srcset`/responsive `source` entries. Removed the assumption that untracked responsive variants exist; retained the article's authored image and remote-image handling.
+- Automated/browser visual QA is still required after the Pages build to confirm image responses and slider interaction on all five deployed locales. This change does not claim that every recipe has a locally hosted image; it fixes the script that was replacing valid article image URLs with non-existent variants.
