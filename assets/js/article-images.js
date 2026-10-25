@@ -155,6 +155,42 @@
     });
   };
 
+  // Recipe index pages can contain slugs without a local photo. If their
+  // local placeholder fails, recover the actual image URL from the recipe page.
+  const observeBrokenCardImages = () => {
+    const recover = async img => {
+      if (img.dataset.mrecipesFallbackTried === 'true') return;
+      img.dataset.mrecipesFallbackTried = 'true';
+      const link = img.closest('a[href]');
+      if (!link) return;
+      const articleImage = await articleImageForCard(link.getAttribute('href'));
+      if (!articleImage || new URL(articleImage, location.origin).href === img.src) return;
+      const assetSlug = recipeAssetSlugFromUrl(articleImage);
+      if (assetSlug) {
+        addResponsiveSources(img, assetSlug, 'card');
+      } else {
+        const picture = img.closest('picture');
+        picture?.querySelectorAll('source').forEach(source => source.remove());
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+        applyRemoteResponsive(img, articleImage);
+      }
+    };
+    const attach = root => {
+      root.querySelectorAll('.recipe-card a[href] img').forEach(img => {
+        if (img.dataset.mrecipesFallbackListener === 'true') return;
+        img.dataset.mrecipesFallbackListener = 'true';
+        img.addEventListener('error', () => { recover(img); }, { once: true });
+        if (img.complete && img.naturalWidth === 0) recover(img);
+      });
+    };
+    attach(document);
+    document.querySelectorAll('.recipe-grid, [data-supabase-recipes]').forEach(grid => {
+      const observer = new MutationObserver(() => attach(grid));
+      observer.observe(grid, { childList: true, subtree: true });
+    });
+  };
+
   const syncArticleImages = () => {
     if (!articleMatch) return;
     const slug = articleMatch[1];
@@ -217,6 +253,8 @@
         const observer = new MutationObserver(() => syncHomeImages());
         observer.observe(grid, { childList: true, subtree: true });
       }
+    } else {
+      observeBrokenCardImages();
     }
   };
 
