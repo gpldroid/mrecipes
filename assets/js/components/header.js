@@ -108,6 +108,7 @@ if (!document.querySelector('link[data-font-awesome-tab-icons]')) {
   document.head.appendChild(fontAwesome);
 }
 
+const querySearch = new URLSearchParams(location.search).get('search')?.trim();
 root.innerHTML = `
 <a class="skip-link" href="#main-content">${t.skip}</a>
 <header class="site-header">
