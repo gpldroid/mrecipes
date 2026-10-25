@@ -118,23 +118,24 @@ def transform_page(page: Path) -> tuple[int, int]:
         if not src:
             continue
 
-        priority = attrs.get("fetchpriority", "").lower() == "high"
-        if "loading" not in attrs:
+        source = local_recipe_image(src, page)
+        role = choose_role(html, match.start(), image_counts)
+        priority = attrs.get("fetchpriority", "").lower() == "high" or role == "featured"
+        if "loading" not in attrs or priority:
             tag = add_attr(tag, "loading", "eager" if priority else "lazy")
-            lazy_added += 0 if priority else 1
+            if not priority:
+                lazy_added += 1
         if "decoding" not in attrs:
             tag = add_attr(tag, "decoding", "async")
-        if priority and attrs.get("loading", "").lower() != "eager":
-            tag = add_attr(tag, "loading", "eager")
+        if priority:
+            tag = add_attr(tag, "fetchpriority", "high")
 
-        source = local_recipe_image(src, page)
         if source is None:
             if tag != original_tag:
                 replacements.append((match.start(), match.end(), tag))
             continue
 
-        role = choose_role(html, match.start(), image_counts)
-        ensure_derivatives(source, role)
+                ensure_derivatives(source, role)
         config = ROLES[role]
         variants = ", ".join(
             f"/assets/images/recipes/{source.stem}-{role}-{width}.webp {width}w"
