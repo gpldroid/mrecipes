@@ -135,7 +135,7 @@ def transform_page(page: Path) -> tuple[int, int]:
                 replacements.append((match.start(), match.end(), tag))
             continue
 
-                ensure_derivatives(source, role)
+        ensure_derivatives(source, role)
         config = ROLES[role]
         variants = ", ".join(
             f"/assets/images/recipes/{source.stem}-{role}-{width}.webp {width}w"
