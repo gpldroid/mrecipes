@@ -19,7 +19,16 @@
     "viewAll": "View all",
     "loadMore": "Load more recipes",
     "noResults": "No recipes found.",
-    "backToHome": "Back to home"
+    "backToHome": "Back to home",
+    "mainNavigation": "Main navigation",
+    "themeDark": "Switch to dark mode",
+    "openLanguage": "Open language selector",
+    "browseAll": "Browse all recipes",
+    "byMeal": "By meal",
+    "byType": "By dish type",
+    "byDiet": "By diet",
+    "byTime": "By prep time",
+    "openRecipes": "Open recipe categories"
   },
   "search": {
     "label": "Search recipes",
