@@ -65,7 +65,9 @@
     "disclaimer": "Disclaimer",
     "cookiePreferences": "Cookie preferences",
     "allRightsReserved": "All rights reserved.",
-    "managedBy": "Content crafted and managed by"
+    "managedBy": "Content crafted and managed by",
+    "description": "Reliable recipes, everyday inspiration, and delicious ideas for your table.",
+    "siteFooter": "Site footer"
   },
   "consent": {
     "title": "We value your privacy",
@@ -75,7 +77,15 @@
     "save": "Save my choices",
     "essential": "Essential",
     "analytics": "Analytics",
-    "marketing": "Marketing"
+    "marketing": "Marketing",
+    "body": "We use essential storage to run this site and remember your choice. Optional cookies will not be enabled without your consent.",
+    "accept": "Accept all",
+    "reject": "Reject optional",
+    "customize": "Manage preferences",
+    "back": "Back",
+    "essentialDesc": "Required for site functionality and storing your consent choice.",
+    "analyticsDesc": "Allow cookies that help us understand site usage.",
+    "marketingDesc": "Allow cookies for personalization and advertising."
   },
   "pages": {
     "privacy": "Privacy policy",
