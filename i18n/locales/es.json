@@ -65,7 +65,9 @@
     "disclaimer": "Aviso legal",
     "cookiePreferences": "Preferencias de cookies",
     "allRightsReserved": "Todos los derechos reservados.",
-    "managedBy": "Contenido creado y gestionado por"
+    "managedBy": "Contenido creado y gestionado por",
+    "description": "Recetas fiables, inspiración diaria e ideas deliciosas para tu mesa.",
+    "siteFooter": "Pie de página"
   },
   "consent": {
     "title": "Valoramos tu privacidad",
@@ -75,7 +77,15 @@
     "save": "Guardar mis opciones",
     "essential": "Esenciales",
     "analytics": "Analítica",
-    "marketing": "Marketing"
+    "marketing": "Marketing",
+    "body": "Usamos almacenamiento esencial para que el sitio funcione y recordar tu elección. Las cookies opcionales no se activarán sin tu consentimiento.",
+    "accept": "Aceptar todo",
+    "reject": "Rechazar opcionales",
+    "customize": "Gestionar preferencias",
+    "back": "Volver",
+    "essentialDesc": "Necesario para el funcionamiento del sitio y para guardar tu consentimiento.",
+    "analyticsDesc": "Permitir cookies que nos ayudan a comprender el uso del sitio.",
+    "marketingDesc": "Permitir cookies para personalización y publicidad."
   },
   "pages": {
     "privacy": "Política de privacidad",
