@@ -65,7 +65,9 @@
     "disclaimer": "Avertissement",
     "cookiePreferences": "Préférences de cookies",
     "allRightsReserved": "Tous droits réservés.",
-    "managedBy": "Contenu créé et géré par"
+    "managedBy": "Contenu créé et géré par",
+    "description": "Des recettes fiables, de l’inspiration au quotidien et de délicieuses idées à partager.",
+    "siteFooter": "Pied de page"
   },
   "consent": {
     "title": "Nous respectons votre vie privée",
@@ -75,7 +77,15 @@
     "save": "Enregistrer mes choix",
     "essential": "Essentiels",
     "analytics": "Analytique",
-    "marketing": "Marketing"
+    "marketing": "Marketing",
+    "body": "Nous utilisons un stockage essentiel pour faire fonctionner le site et mémoriser votre choix. Les cookies facultatifs ne seront pas activés sans votre consentement.",
+    "accept": "Tout accepter",
+    "reject": "Refuser les options",
+    "customize": "Gérer les préférences",
+    "back": "Retour",
+    "essentialDesc": "Nécessaire au fonctionnement du site et à l’enregistrement de votre choix.",
+    "analyticsDesc": "Autoriser les cookies qui nous aident à comprendre l’utilisation du site.",
+    "marketingDesc": "Autoriser les cookies de personnalisation et de publicité."
   },
   "pages": {
     "privacy": "Politique de confidentialité",
