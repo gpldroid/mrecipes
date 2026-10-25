@@ -153,3 +153,13 @@ For the two newly completed recipes, the source ingredient quantities and method
 - Added responsive three-card/two-card/mobile swipe layouts, snap scrolling, and localized previous/next controls.
 - Fixed Arabic homepage card image failure handling: instead of immediately removing a failed local image, the card now tries the image authored in its linked recipe page before falling back to a category icon.
 - This is a code-level repair. Live browser verification and network checks for every published image across all five locales remain necessary; no claim is made that every recipe has a local image asset.
+
+
+## Homepage slider and image-recovery phase — 2026-10-25
+
+- Corrected a CSS selector collision: the homepage rail and an older sidebar slider reused .latest-slider-* classes, while the legacy rules hid horizontal overflow and squeezed the cards into a flex row. The new [data-latest-slider]-scoped rules now provide a horizontally scrollable three-card rail, responsive card widths, snap scrolling, and working previous/next controls without changing Arabic homepage content.
+- Audited the repository image directory against the English recipe inventory: **38 local WebP assets cover 48 real recipe slugs**. Ten real recipes have no matching local WebP; recipe-template is a template, not a published recipe.
+- Added source-image fallbacks for the ten missing local assets, using image URLs already authored in their English recipe pages: apple-cinnamon-crumble-bars, coconut-lime-rice-bowl, honey-mustard-roasted-carrots, lemon-ricotta-gnocchi, miso-glazed-salmon, mushroom-barley-soup, pear-walnut-oatmeal, roasted-red-pepper-hummus, sesame-tofu-lettuce-wraps, and turkey-spinach-meatballs.
+- Updated image synchronization so a missing local asset does not overwrite a valid source image; article pages, homepage cards, and Recipe/Open Graph image metadata use the source fallback when the corresponding local asset is absent. If an image still fails, the client now degrades to a visible placeholder rather than a broken-image icon.
+- Checked that the French localized article pages for all ten fallback slugs point to the same authored image URLs as EN. This is a source-level audit, not a live browser/network test; remote image host availability and all five locales still require deployed visual QA.
+- All five homepages already include the shared slider script and localized headings; the slider takes the first three cards from each locale's feed. The EN/AR/FR/ES/RU first-three cards come from different recipe categories in the current feed, but “latest” here means the order of the existing feed, not a timestamp-sorted recipe database.
