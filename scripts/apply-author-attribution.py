@@ -49,7 +49,7 @@ def transform(path: Path) -> bool:
     if path.name == "404.html" or ".git" in path.parts:
         return False
     html = path.read_text(encoding="utf-8")
-    if AUTHOR_RE.search(html) or "Imad Limrani" in html:
+    if AUTHOR_RE.search(html):
         return False
     locale = locale_for(path, html)
     label = LABELS[locale]
