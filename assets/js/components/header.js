@@ -80,7 +80,7 @@ root.innerHTML = `
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="${localeKey === 'ar' ? 'فتح القائمة' : 'Open navigation'}"><span></span><span></span><span></span></button>
     <nav class="primary-nav" id="primary-nav" aria-label="${t.nav}">${navHtml}<div class="language-menu">
       <button class="language-trigger" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="language-options" aria-label="${t.openLanguage}" title="${t.language}">
-        <span aria-hidden="true">◎</span><strong>${locales[localeKey].label}</strong><span class="language-chevron" aria-hidden="true">⌄</span>
+        <i class="fa-solid fa-globe" aria-hidden="true"></i><span class="language-chevron" aria-hidden="true">⌄</span>
       </button>
       <div class="language-options" id="language-options" role="menu" aria-label="${t.language}">${languageHtml}</div>
     </div></nav>
@@ -96,9 +96,17 @@ root.innerHTML = `
 
 const style = document.createElement('style');
 style.textContent = `
-.language-menu{position:relative;flex:0 0 auto}.primary-nav>.language-menu{display:flex;align-items:center}.language-trigger{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;min-width:68px;height:42px;padding:0 .7rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:.82rem;font-weight:700}.language-trigger:hover{border-color:var(--green);color:var(--green)}.language-chevron{font-size:1rem;line-height:1;transition:transform .2s ease}.language-menu.is-open .language-chevron{transform:rotate(180deg)}.language-options{position:absolute;z-index:250;top:calc(100% + .6rem);right:0;display:grid;width:190px;padding:.45rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 16px 38px rgba(48,37,69,.16);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease}.language-menu.is-open .language-options{opacity:1;visibility:visible;transform:translateY(0)}.language-option{display:grid;grid-template-columns:38px minmax(0,1fr) 20px;align-items:center;gap:.55rem;min-height:44px;padding:.55rem .65rem;border-radius:11px;color:var(--ink);text-decoration:none}.language-option:hover,.language-option[aria-current="true"]{background:color-mix(in srgb,var(--lime) 60%,var(--surface));color:var(--green)}.language-code{font-weight:800}.language-name{font-size:.86rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.language-check{font-weight:800;color:var(--green)}
+.language-menu{position:relative;flex:0 0 auto}.primary-nav>.language-menu{display:flex;align-items:center}.language-trigger{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;min-width:42px;height:42px;padding:0 .7rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:.82rem;font-weight:700}.language-trigger:hover{border-color:var(--green);color:var(--green)}.language-trigger .fa-globe{font-size:1rem}.mobile-floating-tools{display:none}.language-chevron{font-size:1rem;line-height:1;transition:transform .2s ease}.language-menu.is-open .language-chevron{transform:rotate(180deg)}.language-options{position:absolute;z-index:250;top:calc(100% + .6rem);right:0;display:grid;width:190px;padding:.45rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 16px 38px rgba(48,37,69,.16);opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease}.language-menu.is-open .language-options{opacity:1;visibility:visible;transform:translateY(0)}.language-option{display:grid;grid-template-columns:38px minmax(0,1fr) 20px;align-items:center;gap:.55rem;min-height:44px;padding:.55rem .65rem;border-radius:11px;color:var(--ink);text-decoration:none}.language-option:hover,.language-option[aria-current="true"]{background:color-mix(in srgb,var(--lime) 60%,var(--surface));color:var(--green)}.language-code{font-weight:800}.language-name{font-size:.86rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.language-check{font-weight:800;color:var(--green)}
+.mobile-floating-tools{position:fixed;z-index:950;inset-inline-start:.8rem;bottom:calc(5.5rem + env(safe-area-inset-bottom));display:none;flex-direction:column;align-items:center;gap:.55rem}
+.mobile-floating-tools .theme-toggle,.mobile-floating-tools .language-trigger{display:grid;place-items:center;width:2.65rem;height:2.65rem;min-width:2.65rem;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--green-dark);box-shadow:0 5px 18px rgba(41,37,54,.16);font-size:1.2rem}
+.mobile-floating-tools .language-menu{position:relative;display:block}
+.mobile-floating-tools .language-options{position:absolute;top:auto;bottom:0;inset-inline-start:calc(100% + .65rem);inset-inline-end:auto;width:190px}
+.mobile-floating-tools .language-menu.is-open .language-options{transform:translateY(0)}
+.mobile-floating-tools .theme-toggle:hover,.mobile-floating-tools .language-trigger:hover{background:var(--green);border-color:var(--green);color:#fff}
+@media(max-width:760px){.header-inner>.theme-toggle{display:none}.primary-nav>.language-menu{display:none}.mobile-floating-tools{display:flex}}
+@media(max-width:380px){.mobile-floating-tools{inset-inline-start:.55rem;bottom:calc(5.35rem + env(safe-area-inset-bottom))}.mobile-floating-tools .theme-toggle,.mobile-floating-tools .language-trigger{width:2.45rem;height:2.45rem;min-width:2.45rem}}
 @media(max-width:900px){.header-inner{gap:.55rem}.primary-nav{gap:.65rem}.primary-nav a{font-size:.82rem}.header-search{flex-basis:180px;width:180px}.language-trigger{min-width:62px}}
-@media(max-width:760px){.header-inner{min-height:4.5rem}.primary-nav{position:absolute;left:1.25rem;right:1.25rem;top:calc(100% + .35rem);display:none;flex-direction:column;align-items:stretch;gap:.15rem;padding:.65rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 16px 38px rgba(48,37,69,.14)}.primary-nav.is-open{display:flex}.primary-nav a{padding:.65rem .75rem;border-radius:10px}.primary-nav a:hover,.primary-nav a[aria-current="page"]{background:color-mix(in srgb,var(--lime) 60%,var(--surface))}.primary-nav>.language-menu{align-self:flex-start;margin:.15rem 0}.primary-nav .language-options{left:0;right:auto}.menu-toggle{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;padding:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.menu-toggle span{display:block;width:20px;height:2px;margin:2px 0;background:var(--ink);border-radius:9px}.header-search{flex:1 1 auto;width:auto;max-width:240px}.language-options{right:auto;left:0}.theme-toggle{flex-basis:40px;width:40px;height:40px}.language-trigger{height:40px;padding:0 .55rem}.language-trigger strong{font-size:.75rem}.language-trigger>span:first-child{display:none}}
+@media(max-width:760px){.header-inner{min-height:4.5rem}.primary-nav{position:absolute;left:1.25rem;right:1.25rem;top:calc(100% + .35rem);display:none;flex-direction:column;align-items:stretch;gap:.15rem;padding:.65rem;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 16px 38px rgba(48,37,69,.14)}.primary-nav.is-open{display:flex}.primary-nav a{padding:.65rem .75rem;border-radius:10px}.primary-nav a:hover,.primary-nav a[aria-current="page"]{background:color-mix(in srgb,var(--lime) 60%,var(--surface))}.primary-nav>.language-menu{align-self:flex-start;margin:.15rem 0}.primary-nav .language-options{left:0;right:auto}.menu-toggle{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;padding:.6rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.menu-toggle span{display:block;width:20px;height:2px;margin:2px 0;background:var(--ink);border-radius:9px}.header-search{flex:1 1 auto;width:auto;max-width:240px}.language-options{right:auto;left:0}.theme-toggle{flex-basis:40px;width:40px;height:40px}.language-trigger{height:40px;padding:0 .55rem}.language-trigger{min-width:42px;width:42px;padding:0}.language-chevron{display:none}}
 @media(max-width:430px){.header-inner{width:calc(100% - 1.25rem);gap:.4rem}.brand{font-size:1.05rem;gap:.4rem}.brand-mark{width:2.05rem;height:2.05rem;font-size:1.15rem}.header-search{max-width:none}.header-search input{font-size:.78rem}.language-trigger{min-width:48px}.language-chevron{display:none}.theme-toggle{display:none}}
 
 /* Article images: keep source proportions, cap desktop width, and stay responsive. */
@@ -145,6 +153,31 @@ style.textContent = `
 document.head.appendChild(style);
 
 const themeButton = root.querySelector('.theme-toggle');
+const languageMenu = root.querySelector('.language-menu');
+const languageTrigger = root.querySelector('.language-trigger');
+const languageOptions = root.querySelector('.language-options');
+const headerInner = root.querySelector('.header-inner');
+const primaryNav = root.querySelector('.primary-nav');
+const floatingTools = document.createElement('div');
+floatingTools.className = 'mobile-floating-tools';
+floatingTools.setAttribute('aria-label', localeKey === 'ar' ? 'أدوات العرض واللغة' : 'Display and language tools');
+document.body.appendChild(floatingTools);
+
+const mobileToolsQuery = window.matchMedia('(max-width: 760px)');
+const placeHeaderTools = () => {
+  if (mobileToolsQuery.matches) {
+    floatingTools.append(languageMenu, themeButton);
+    floatingTools.style.display = 'flex';
+  } else {
+    primaryNav.appendChild(languageMenu);
+    headerInner.appendChild(themeButton);
+    floatingTools.style.display = 'none';
+  }
+};
+placeHeaderTools();
+if (mobileToolsQuery.addEventListener) mobileToolsQuery.addEventListener('change', placeHeaderTools);
+else mobileToolsQuery.addListener(placeHeaderTools);
+
 const themeIcon = themeButton.querySelector('span');
 const setTheme = (theme, persist = false) => {
   const dark = theme === 'dark';
@@ -163,9 +196,6 @@ try { const s = localStorage.getItem('mrecipes-theme'); if (s === 'dark' || s ==
 setTheme(initial);
 themeButton.addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true));
 
-const languageMenu = root.querySelector('.language-menu');
-const languageTrigger = root.querySelector('.language-trigger');
-const languageOptions = root.querySelector('.language-options');
 const closeLanguage = () => { languageMenu.classList.remove('is-open'); languageTrigger.setAttribute('aria-expanded', 'false'); };
 const openLanguage = () => { languageMenu.classList.add('is-open'); languageTrigger.setAttribute('aria-expanded', 'true'); };
 languageTrigger.addEventListener('click', () => languageMenu.classList.contains('is-open') ? closeLanguage() : openLanguage());
