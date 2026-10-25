@@ -53,12 +53,17 @@ const active = href =>
   path === href ||
   (href === l.home && path === l.home);
 
-const recipeSearchHref = term => `${localeKey === 'en' || localeKey === 'ar' ? l.recipes : '/recipes.html'}?search=${encodeURIComponent(term)}`;
+const recipeSearchHref = term => {
+  const englishOnlyTerms = ['pasta', 'plant-based', '15 min', '30 min'];
+  const useEnglishCollection = localeKey !== 'en' && (localeKey !== 'ar' || englishOnlyTerms.includes(term));
+  const base = useEnglishCollection ? '/recipes.html' : l.recipes;
+  return base + '?search=' + encodeURIComponent(term);
+};
 const menuGroups = [
   { title: t.byMeal, links: [[t.breakfast, 'breakfast', 'فطور'], [t.lunch, 'lunch', 'الغداء'], [t.dinner, 'dinner', 'العشاء'], [t.snacks, 'snack', 'وجبة خفيفة']] },
   { title: t.byType, links: [[t.soup, 'soup', 'شوربة'], [t.salad, 'salad', 'سلطة'], [t.pasta, 'pasta', 'pasta'], [t.dessert, 'dessert', 'الحلويات']] },
-  { title: t.byDiet, links: [[t.vegetarian, 'vegetarian', 'نباتي'], [t.plantBased, 'plant-based', 'نباتي بالكامل']] },
-  { title: t.byTime, links: [[t.under15, '15 min', '15 دقيقة'], [t.under30, '30 min', '30 دقيقة']] }
+  { title: t.byDiet, links: [[t.vegetarian, 'vegetarian', 'نباتي'], [t.plantBased, 'plant-based', 'plant-based']] },
+  { title: t.byTime, links: [[t.under15, '15 min', '15 min'], [t.under30, '30 min', '30 min']] }
 ];
 const recipesMenuHtml = `<div class="recipes-menu">
   <button class="recipes-trigger" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="recipes-mega-menu" aria-label="${t.openRecipes}">${t.recipes}<span class="recipes-chevron" aria-hidden="true">⌄</span></button>
