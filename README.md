@@ -52,3 +52,16 @@ The GitHub Pages build runs `scripts/optimize-responsive-images.py` after the re
 - Images below the initial viewport use `loading="lazy"` and `decoding="async"`; featured images use eager loading and high fetch priority to protect Largest Contentful Paint.
 - The build validates local image references after optimization. Generated derivatives are present in the deployed Pages artifact, not necessarily in the source tree when browsing GitHub.
 
+
+## Internationalization (i18n)
+
+The site is a static HTML/CSS/JavaScript project deployed with GitHub Pages. Localized pages are maintained as HTML files so existing recipe URLs and content remain crawlable. The supported locales are English (`en`, default), Arabic (`ar`, RTL), French (`fr`), Spanish (`es`), and Russian (`ru`).
+
+- `i18n/config.json` documents locale metadata, route patterns, and the SEO `hreflang` codes.
+- `i18n/locales/<locale>.json` contains shared UI, recipe, footer, and consent translations. The shared header and footer read these catalogs at runtime and retain inline fallback strings if a catalog cannot be loaded.
+- `scripts/validate-i18n.py` checks catalog key parity, sitemap targets, per-locale page inventory, HTML language and Arabic direction, titles/descriptions, canonical URLs, and alternate-language links.
+- The Pages workflow runs the i18n validator after SEO metadata and sitemap generation. It does not rewrite or delete the source recipe pages.
+
+### Local validation
+
+Run `python3 scripts/validate-i18n.py` after running `python3 scripts/seo-build-v2.py` and `python3 scripts/seo-description-fix.py`. The validator expects the generated sitemap and `hreflang` metadata to reflect the current set of translated pages.
