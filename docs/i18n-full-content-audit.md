@@ -88,3 +88,10 @@ Four recipes have been fully rewritten and structurally checked across AR/FR/ES/
 - Localized page titles, descriptions, Open Graph/Twitter metadata, visible article text, ingredient lists, instructions, tips, serving/storage guidance, FAQ, image alt text, and Recipe JSON-LD.
 - Preserved the English source quantities and cooking method (7 ingredients, 5 steps; 8 minutes prep, 3 minutes cooking, 2 servings), added all five hreflang alternates plus x-default, and credited Imad Limrani visibly and in Recipe JSON-LD.
 - Structural check is limited to the generated content and repository reads. A live browser/visual check has not been completed. The current full-site migration remains incomplete: 4 of 48 recipes are rewritten across the four target locales, leaving 44 per target locale plus informational/legal pages and remaining site-wide UI/index review.
+
+
+## Build diagnostic and correction — 2026-10-25
+
+- The latest workflow run exposed a real defect in `scripts/apply-author-attribution.py`: the English entry in the `LABELS` map incorrectly contained summary-marker strings instead of an author label. As a result, the attribution coverage check failed on 13 English pages.
+- Corrected the English label to `Recipe by Imad Limrani`. Marked the four new localized avocado-toast bylines with the script's idempotency class to prevent duplicate attribution during builds.
+- The corrected branch is awaiting a fresh CI run. Do not treat this correction as validated until that run finishes successfully.
