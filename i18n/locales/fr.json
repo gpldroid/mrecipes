@@ -19,7 +19,16 @@
     "viewAll": "Tout voir",
     "loadMore": "Charger plus de recettes",
     "noResults": "Aucune recette trouvée.",
-    "backToHome": "Retour à l’accueil"
+    "backToHome": "Retour à l’accueil",
+    "mainNavigation": "Navigation principale",
+    "themeDark": "Passer au mode sombre",
+    "openLanguage": "Ouvrir le sélecteur de langue",
+    "browseAll": "Toutes les recettes",
+    "byMeal": "Par repas",
+    "byType": "Par type de plat",
+    "byDiet": "Par régime",
+    "byTime": "Par temps de préparation",
+    "openRecipes": "Ouvrir les catégories de recettes"
   },
   "search": {
     "label": "Rechercher des recettes",
