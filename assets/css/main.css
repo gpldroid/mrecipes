@@ -985,3 +985,193 @@ html[dir="rtl"] .home-primary,html[dir="rtl"] .home-sidebar{direction:rtl}
     max-height: 640px;
   }
 }
+
+
+/* 13. Responsive reading layout
+   Shared by recipe articles and informational pages in all five locales.
+   Use logical properties so spacing follows RTL/LTR automatically. */
+html {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+html[lang="ar"] {
+  direction: rtl;
+}
+
+html[lang="en"],
+html[lang="fr"],
+html[lang="es"],
+html[lang="ru"] {
+  direction: ltr;
+}
+
+.content-page,
+.container.content-page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 76rem;
+  min-width: 0;
+  margin-inline: auto;
+  padding-block: clamp(1.5rem, 4vw, 3.5rem);
+  padding-inline: clamp(1rem, 4vw, 2.25rem);
+}
+
+.content-page > :where(h1, h2, h3, h4, p, ul, ol, blockquote, table, .post-body, .article-body, .recipe-body, .entry-content, .article-content) {
+  min-width: 0;
+  max-width: 72ch;
+  margin-inline: auto;
+}
+
+.content-page > h1,
+.content-page > .eyebrow {
+  width: 100%;
+  text-align: start;
+}
+
+.content-page > h1 {
+  max-width: 22ch;
+  margin-block: 0 1.25rem;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.content-page :where(h2, h3, h4) {
+  width: 100%;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.content-page :where(h2) {
+  margin-block: clamp(1.75rem, 4vw, 2.5rem) .75rem;
+}
+
+.content-page :where(h3) {
+  margin-block: 1.5rem .625rem;
+}
+
+.content-page :where(p, li, blockquote, figcaption) {
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+}
+
+.content-page :where(p, li) {
+  line-height: 1.8;
+}
+
+.content-page :where(ul, ol) {
+  padding-inline-start: 1.5em;
+  padding-inline-end: 0;
+}
+
+.content-page :where(img, video, iframe, table, pre) {
+  max-width: 100%;
+}
+
+.content-page :where(table) {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  -webkit-overflow-scrolling: touch;
+}
+
+.content-page :where(pre) {
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.page-hero {
+  min-width: 0;
+  padding-block: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 3vw, 2rem);
+  padding-inline: 0;
+}
+
+.page-hero > .container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 76rem;
+  padding-inline: clamp(1rem, 4vw, 2.25rem);
+}
+
+.page-hero :where(h1, p) {
+  max-width: 68ch;
+  margin-inline: auto;
+  text-align: start;
+}
+
+.page-hero h1 {
+  max-width: 22ch;
+  margin-block: 0 1rem;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+.page-hero p {
+  line-height: 1.8;
+}
+
+:where(.post-body, .article-body, .recipe-body, .entry-content, .article-content) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 72ch;
+  min-width: 0;
+  margin-inline: auto;
+  padding-inline: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+
+:where(.post-body, .article-body, .recipe-body, .entry-content, .article-content) > :first-child {
+  margin-block-start: 0;
+}
+
+:where(.post-body, .article-body, .recipe-body, .entry-content, .article-content) :where(h1, h2, h3, h4, p, li) {
+  max-width: 100%;
+  letter-spacing: normal;
+  hyphens: auto;
+}
+
+@media (max-width: 760px) {
+  .content-page,
+  .container.content-page {
+    padding-block: 1.5rem 4rem;
+    padding-inline: 1rem;
+  }
+
+  .page-hero > .container {
+    padding-inline: 1rem;
+  }
+
+  .content-page :where(h2) {
+    margin-block-start: 1.75rem;
+  }
+
+  .content-page :where(p, li),
+  .page-hero p {
+    line-height: 1.75;
+  }
+
+  :where(.post-body, .article-body, .recipe-body, .entry-content, .article-content) {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .content-page,
+  .container.content-page,
+  .page-hero > .container {
+    padding-inline: .875rem;
+  }
+
+  .content-page > h1,
+  .page-hero h1 {
+    font-size: clamp(1.75rem, 8vw, 2.25rem);
+  }
+}
+
+html[lang="ar"] :where(h1, h2, h3, h4, h5, h6),
+html[lang="ar"] .content-page :where(p, li, blockquote),
+html[lang="ar"] .page-hero :where(h1, p) {
+  letter-spacing: normal;
+}
