@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LABELS = {
-    "en": "By Imad Limrani",
+    "en": ("at a glance", "recipe at a glance", "in summary", "summary"),
     "ar": "بقلم Imad Limrani",
     "fr": "Par Imad Limrani",
     "es": "Por Imad Limrani",
