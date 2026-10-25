@@ -88,19 +88,19 @@ def ensure_derivatives(source: Path, role: str) -> None:
 
 
 def choose_role(html: str, start: int, image_counts: dict[str, int]) -> str:
-    prefix = html[max(0, start - 2500):start]
+    prefix = html[:start]
     last_card_open = prefix.rfind('class="recipe-card"')
     last_card_close = prefix.rfind("</article>")
-    if last_card_open > last_card_close:
-        return "card"
     content_pos = prefix.rfind('class="content-page"')
-    if content_pos >= 0:
-        image_counts["article"] = image_counts.get("article", 0) + 1
-        return "featured" if image_counts["article"] == 1 else "step"
+    if last_card_open > last_card_close and last_card_open > content_pos:
+        return "card"
+    content_close = prefix.rfind("</article>")
+    if content_pos >= 0 and content_pos > content_close:
+        article_images_before = len(IMG_RE.findall(html[content_pos:start]))
+        return "featured" if article_images_before == 0 else "step"
     if 'class="recipe-image"' in prefix[-500:]:
         return "featured"
     return "card"
-
 
 def transform_page(page: Path) -> tuple[int, int]:
     html = page.read_text(encoding="utf-8")
