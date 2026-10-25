@@ -900,6 +900,26 @@ html[dir="rtl"] .home-primary,html[dir="rtl"] .home-sidebar{direction:rtl}
 
 
 /* Latest Posts slider: four newest recipe cards, one compact linked card per slide. */
+/* Homepage latest-recipes rail: three category-diverse cards with touch scrolling. */
+.homepage-latest-slider{margin:0 0 1.5rem;min-width:0}
+.homepage-latest-slider[hidden]{display:none}
+.homepage-latest-slider-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.85rem}
+.homepage-latest-slider-heading h3{margin:0;font-size:clamp(1.1rem,2vw,1.45rem);line-height:1.35}
+.homepage-latest-slider-heading p{margin:.25rem 0 0;color:var(--muted);font-size:.9rem}
+.homepage-latest-slider-controls{display:flex;gap:.45rem;flex-shrink:0}
+.homepage-latest-slider-arrow{display:grid;place-items:center;width:2.35rem;height:2.35rem;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-size:1.35rem;line-height:1;cursor:pointer}
+.homepage-latest-slider-arrow:hover{background:var(--green);border-color:var(--green);color:#fff}
+.homepage-latest-slider-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:0 0 .5rem}
+.homepage-latest-slider-track{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 2rem)/3);gap:1rem;align-items:stretch}
+.homepage-latest-slider-card{min-width:0;scroll-snap-align:start}
+.homepage-latest-slider-card .recipe-image{aspect-ratio:4/3;overflow:hidden}
+.homepage-latest-slider-card .recipe-image img{width:100%;height:100%;object-fit:cover}
+.homepage-latest-slider-card .recipe-content{padding:1rem}
+.homepage-latest-slider-card .recipe-content h3{font-size:1rem;line-height:1.4}
+.homepage-latest-slider-card .recipe-content p{font-size:.9rem}
+@media(max-width:760px){.homepage-latest-slider-track{grid-auto-columns:calc((100% - .75rem)/2);gap:.75rem}.homepage-latest-slider-heading p{font-size:.82rem}}
+@media(max-width:520px){.homepage-latest-slider-track{grid-auto-columns:minmax(0, 86%)}.homepage-latest-slider-heading{align-items:flex-start}.homepage-latest-slider-heading p{max-width:28ch}}
+@media(prefers-reduced-motion:reduce){.homepage-latest-slider-viewport{scroll-behavior:auto}}
 .latest-slider{min-width:0}
 .latest-slider-viewport{overflow:hidden;direction:ltr;border-radius:14px}
 .latest-slider-track{display:flex;align-items:stretch;transition:transform .32s ease;will-change:transform}
