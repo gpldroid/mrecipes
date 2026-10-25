@@ -130,3 +130,10 @@ For the two newly completed recipes, the source ingredient quantities and method
 - Source ingredient quantities and instructions remain intact: Greek salad has 11 ingredients and 5 steps (15 minutes, 4 servings); Margherita pizza has 7 ingredients and 6 steps (15 minutes prep + 25 minutes cook time, 2 servings).
 - Cumulative progress: **11 of 48 recipes rewritten across all four target locales**; **37 recipes per target locale remain**. The information/legal pages and site-wide UI/SEO/visual QA remain open.
 
+## Homepage recipe organization parity — 2026-10-25
+
+- Kept the Arabic homepage `ar/index.html` and `assets/js/ar-recipes.js` unchanged, as required.
+- Aligned the **first six recipe cards and their order** on the French, Spanish and Russian homepages with the Arabic reference: avocado toast, beef and vegetable stir-fry, blueberry muffins, cauliflower cheese bake, chicken with broccoli and mashed potatoes, and chicken curry rice.
+- Preserved the same homepage hierarchy used by Arabic: one page hero, one “latest recipes” section, the same six-card initial grid, and the shared load-more behavior. Localized titles, categories and excerpts remain in each language.
+- Added stable locale-specific grid IDs (`fr-recipe-grid`, `es-recipe-grid`, `ru-recipe-grid`) for structural parity with `ar-recipe-grid`.
+- This change aligns the initial visible grouping/order. The additional cards still use the existing localized catalog, so full 48-recipe homepage-feed parity remains a separate task. Visual/browser QA is still outstanding.
