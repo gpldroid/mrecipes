@@ -95,3 +95,21 @@ Four recipes have been fully rewritten and structurally checked across AR/FR/ES/
 - The latest workflow run exposed a real defect in `scripts/apply-author-attribution.py`: the English entry in the `LABELS` map incorrectly contained summary-marker strings instead of an author label. As a result, the attribution coverage check failed on 13 English pages.
 - Corrected the English label to `Recipe by Imad Limrani`. Marked the four new localized avocado-toast bylines with the script's idempotency class to prevent duplicate attribution during builds.
 - The corrected branch is awaiting a fresh CI run. Do not treat this correction as validated until that run finishes successfully.
+
+## Progress update — 2026-10-25 (after the beef and curry rewrite)
+
+The following six recipes now have full localized article rewrites in **AR, FR, ES, and RU** (24 localized article files in total), including localized visible ingredients and method, page metadata, Recipe JSON-LD, canonical/hreflang links, and the required visible byline immediately below the hero summary:
+
+- `apple-cinnamon-crumble-bars`
+- `avocado-toast`
+- `beef-vegetable-stir-fry`
+- `chicken-curry-rice`
+- `garlic-butter-pasta`
+- `overnight-oats`
+
+For the two newly completed recipes, the source ingredient quantities and method timings were preserved: beef and vegetable stir-fry (11 ingredients, 5 steps; 20 minutes prep + 12 minutes cooking; 4 servings) and chicken curry with rice (12 ingredients, 5 steps; 15 minutes prep + 30 minutes cooking; 4 servings). The source files remain the factual reference, and the English source pages were not rewritten.
+
+**Remaining scope:** 42 of 48 recipes still need full localized rewrites in each of AR/FR/ES/RU; all 25 localized information/legal pages still need end-to-end comparison and any necessary rewrites; shared UI, cards, indexes, and site-wide SEO/localization need review. This branch is still not release-ready. No browser/visual QA has been completed.
+
+**CI:** GitHub Actions run #329 for head commit `8575dc2318dd24cc2ea7fc0f36f242f11efc3250` completed successfully. This validates the repository's automated build/structure checks only; it does not certify translation quality or complete the migration.
+
