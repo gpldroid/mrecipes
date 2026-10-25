@@ -1,0 +1,87 @@
+{
+  "locale": {
+    "code": "es",
+    "name": "Spanish",
+    "nativeName": "Español",
+    "dir": "ltr",
+    "htmlLang": "es"
+  },
+  "common": {
+    "home": "Inicio",
+    "recipes": "Recetas",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "language": "Idioma",
+    "search": "Buscar",
+    "close": "Cerrar",
+    "openMenu": "Abrir navegación",
+    "skipToContent": "Saltar al contenido",
+    "viewAll": "Ver todo",
+    "loadMore": "Cargar más recetas",
+    "noResults": "No se encontraron recetas.",
+    "backToHome": "Volver al inicio"
+  },
+  "search": {
+    "label": "Buscar recetas",
+    "placeholder": "Buscar una receta…",
+    "submit": "Buscar",
+    "empty": "Ninguna receta coincide con tu búsqueda."
+  },
+  "categories": {
+    "breakfast": "Desayuno",
+    "lunch": "Almuerzo",
+    "dinner": "Cena",
+    "snacks": "Aperitivos",
+    "soups": "Sopas",
+    "salads": "Ensaladas",
+    "pasta": "Pasta",
+    "desserts": "Postres",
+    "vegetarian": "Vegetariano",
+    "plantBased": "De origen vegetal",
+    "under15": "Menos de 15 minutos",
+    "under30": "30 minutos o menos"
+  },
+  "recipe": {
+    "ingredients": "Ingredientes",
+    "instructions": "Preparación",
+    "tips": "Consejos",
+    "storage": "Conservación y servicio",
+    "faq": "Preguntas frecuentes",
+    "notes": "Notas de la receta",
+    "prepTime": "Preparación",
+    "cookTime": "Cocción",
+    "totalTime": "Tiempo total",
+    "servings": "Porciones",
+    "by": "Receta de",
+    "print": "Imprimir receta",
+    "jumpToRecipe": "Ir a la receta"
+  },
+  "footer": {
+    "explore": "Explorar",
+    "information": "Información",
+    "allRecipes": "Todas las recetas",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso",
+    "disclaimer": "Aviso legal",
+    "cookiePreferences": "Preferencias de cookies",
+    "allRightsReserved": "Todos los derechos reservados.",
+    "managedBy": "Contenido creado y gestionado por"
+  },
+  "consent": {
+    "title": "Valoramos tu privacidad",
+    "acceptAll": "Aceptar todo",
+    "rejectOptional": "Rechazar opcionales",
+    "manage": "Gestionar preferencias",
+    "save": "Guardar mis opciones",
+    "essential": "Esenciales",
+    "analytics": "Analítica",
+    "marketing": "Marketing"
+  },
+  "pages": {
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso",
+    "disclaimer": "Aviso legal",
+    "about": "Acerca de nosotros",
+    "contact": "Contacto"
+  }
+}
