@@ -220,6 +220,8 @@
       controls.append(makeArrow('‹', copy.previous, -1), makeArrow('›', copy.next, 1));
       grid.insertAdjacentElement('beforebegin', section);
     }
+    // The slider's localized heading replaces the generic heading above the same feed.
+    container.querySelector(':scope > .section-heading')?.remove();
     const track = section.querySelector('.homepage-latest-slider-track');
     const cards = [...grid.querySelectorAll('[data-recipe-card]')];
     const categoryOf = card => {
