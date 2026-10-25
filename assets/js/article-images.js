@@ -139,8 +139,8 @@
       // Localized home cards already point to the real, repository-owned .webp
       // files. Do not replace them with responsive variants that are not present
       // in assets/images/recipes (for example, slug-card.jpg or slug-card-320.webp).
-      const localizedHome = /^\/(?:es|fr|ru)\/$/.test(location.pathname.replace(/index\\.html$/, ''));
-      const localRecipeImage = /^\\/assets\\/images\\/recipes\\/[^/]+\\.webp(?:[?#].*)?$/.test(img.getAttribute('src') || '');
+      const localizedHome = /^\/(?:es|fr|ru)\/$/.test(location.pathname.replace(/index\.html$/, ''));
+      const localRecipeImage = /^\/assets\/images\/recipes\/[^/]+\.webp(?:[?#].*)?$/.test(img.getAttribute('src') || '');
       if (localizedHome && localRecipeImage) {
         img.dataset.mrecipesImageSync = 'done';
         return;
