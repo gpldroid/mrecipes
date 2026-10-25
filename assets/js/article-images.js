@@ -133,7 +133,18 @@
       if (articleImage) {
         const assetSlug = recipeAssetSlugFromUrl(articleImage);
         if (assetSlug) {
-          addResponsiveSources(img, assetSlug, 'card');
+          // Reuse the exact image URL authored in the recipe article. Do not
+          // synthesize responsive filenames: only canonical source assets are
+          // guaranteed to exist in the repository.
+          const picture = img.closest('picture');
+          picture?.querySelectorAll('source').forEach(source => source.remove());
+          img.removeAttribute('srcset');
+          img.removeAttribute('sizes');
+          img.src = articleImage;
+          img.width = 600;
+          img.height = 400;
+          img.loading = 'lazy';
+          img.decoding = 'async';
         } else {
           const picture = img.closest('picture');
           picture?.querySelectorAll('source').forEach(source => source.remove());
