@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 IMAGE_ROOT = ROOT / "assets" / "images" / "recipes"
 IMG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE | re.DOTALL)
 ATTR_RE = re.compile(r"""([^\s=/>]+)\s*(?:=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?""")
+GENERATED_DERIVATIVES: set[tuple[str, str]] = set()
 ROLES = {
     "card": {"sizes": [(320, 213), (600, 400)], "fallback": (600, 400),
              "sizes_attr": "(max-width: 600px) calc(100vw - 2rem), (max-width: 1000px) 50vw, 300px"},
@@ -81,10 +82,14 @@ def make_image(source: Path, destination: Path, size: tuple[int, int], fmt: str)
 def ensure_derivatives(source: Path, role: str) -> None:
     roles = {role, "card"}  # card variants are also used when the article-image sync updates a card.
     for current_role in roles:
+        key = (str(source.resolve()), current_role)
+        if key in GENERATED_DERIVATIVES:
+            continue
         config = ROLES[current_role]
         for width, height in config["sizes"]:
             make_image(source, derivative_path(source, current_role, width), (width, height), "WEBP")
         make_image(source, derivative_path(source, current_role), config["fallback"], "JPEG")
+        GENERATED_DERIVATIVES.add(key)
 
 
 def unsplash_srcset(src: str, role: str) -> str | None:
