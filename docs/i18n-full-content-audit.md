@@ -124,4 +124,9 @@ For the two newly completed recipes, the source ingredient quantities and method
 - Both recipes now have localized page titles/descriptions, hero summary and direct author byline, image alt text, ingredient lists, numbered method, tips, storage/serving guidance, FAQs, recipe notes, and localized Recipe JSON-LD names/descriptions with canonical/hreflang links.
 - Original ingredient quantities and method times/steps are preserved. For pancakes, the source has 8 ingredients and 6 steps (5 min prep + 15 min cooking, 4 servings); for chocolate chip cookies, 9 ingredients and 7 steps (15 min prep + 12 min baking, 18 cookies).
 - Cumulative count: **9 of 48 recipes fully rewritten across AR/FR/ES/RU**. **39 recipes per target locale remain**, in addition to the information/legal pages and site-wide localization/QA.
+## Progress update — 2026-10-25 (Greek salad and Margherita pizza)
+
+- Rewrote `fresh-greek-salad` and `homemade-margherita-pizza` across AR/FR/ES/RU, including visible article copy, ingredients, instructions, serving/storage tips, image alt text, page metadata, Recipe JSON-LD, canonical/hreflang, and the visible Imad Limrani byline directly under the hero summary.
+- Source ingredient quantities and instructions remain intact: Greek salad has 11 ingredients and 5 steps (15 minutes, 4 servings); Margherita pizza has 7 ingredients and 6 steps (15 minutes prep + 25 minutes cook time, 2 servings).
+- Cumulative progress: **11 of 48 recipes rewritten across all four target locales**; **37 recipes per target locale remain**. The information/legal pages and site-wide UI/SEO/visual QA remain open.
 
