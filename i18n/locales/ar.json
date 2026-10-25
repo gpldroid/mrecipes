@@ -1,0 +1,87 @@
+{
+  "locale": {
+    "code": "ar",
+    "name": "Arabic",
+    "nativeName": "العربية",
+    "dir": "rtl",
+    "htmlLang": "ar"
+  },
+  "common": {
+    "home": "الرئيسية",
+    "recipes": "الوصفات",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "language": "اللغة",
+    "search": "بحث",
+    "close": "إغلاق",
+    "openMenu": "فتح قائمة التنقل",
+    "skipToContent": "تجاوز إلى المحتوى",
+    "viewAll": "عرض الكل",
+    "loadMore": "عرض المزيد من الوصفات",
+    "noResults": "لم يتم العثور على وصفات.",
+    "backToHome": "العودة إلى الرئيسية"
+  },
+  "search": {
+    "label": "البحث عن وصفات",
+    "placeholder": "ابحث عن وصفة…",
+    "submit": "بحث",
+    "empty": "لا توجد وصفات تطابق بحثك."
+  },
+  "categories": {
+    "breakfast": "الفطور",
+    "lunch": "الغداء",
+    "dinner": "العشاء",
+    "snacks": "وجبات خفيفة",
+    "soups": "الشوربات",
+    "salads": "السلطات",
+    "pasta": "المعكرونة",
+    "desserts": "الحلويات",
+    "vegetarian": "نباتي",
+    "plantBased": "نباتي بالكامل",
+    "under15": "أقل من 15 دقيقة",
+    "under30": "30 دقيقة أو أقل"
+  },
+  "recipe": {
+    "ingredients": "المقادير",
+    "instructions": "طريقة التحضير",
+    "tips": "نصائح",
+    "storage": "الحفظ والتقديم",
+    "faq": "الأسئلة الشائعة",
+    "notes": "ملاحظات الوصفة",
+    "prepTime": "وقت التحضير",
+    "cookTime": "وقت الطهي",
+    "totalTime": "الوقت الإجمالي",
+    "servings": "عدد الحصص",
+    "by": "إعداد الوصفة",
+    "print": "طباعة الوصفة",
+    "jumpToRecipe": "انتقل إلى الوصفة"
+  },
+  "footer": {
+    "explore": "استكشف",
+    "information": "معلومات",
+    "allRecipes": "جميع الوصفات",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الاستخدام",
+    "disclaimer": "إخلاء المسؤولية",
+    "cookiePreferences": "تفضيلات ملفات تعريف الارتباط",
+    "allRightsReserved": "جميع الحقوق محفوظة.",
+    "managedBy": "إعداد وإدارة المحتوى بواسطة"
+  },
+  "consent": {
+    "title": "نحترم خصوصيتك",
+    "acceptAll": "قبول الكل",
+    "rejectOptional": "رفض الاختيارية",
+    "manage": "إدارة التفضيلات",
+    "save": "حفظ اختياراتي",
+    "essential": "ضرورية",
+    "analytics": "التحليلات",
+    "marketing": "التسويق"
+  },
+  "pages": {
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الاستخدام",
+    "disclaimer": "إخلاء المسؤولية",
+    "about": "من نحن",
+    "contact": "اتصل بنا"
+  }
+}
