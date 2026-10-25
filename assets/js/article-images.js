@@ -30,33 +30,24 @@
   };
 
   const addResponsiveSources = (img, assetSlug, role = 'card') => {
+    // The repository contains the canonical <slug>.webp files, but does not
+    // contain the generated -card/-featured/-step variants. Never point the
+    // browser at files that are not part of the deployed asset tree.
     const base = baseFor(assetSlug);
     const config = role === 'featured'
-      ? { widths: [480, 800, 1200], sizes: '(max-width: 760px) calc(100vw - 2rem), (max-width: 1200px) 90vw, 1200px', width: 1200, height: 675 }
+      ? { width: 1200, height: 675 }
       : role === 'step'
-        ? { widths: [400, 800], sizes: '(max-width: 760px) calc(100vw - 2rem), 800px', width: 800, height: 600 }
-        : { widths: [320, 600], sizes: '(max-width: 600px) calc(100vw - 2rem), (max-width: 1000px) 50vw, 300px', width: 600, height: 400 };
+        ? { width: 800, height: 600 }
+        : { width: 600, height: 400 };
 
     img.removeAttribute('srcset');
-    img.sizes = config.sizes;
+    img.removeAttribute('sizes');
     img.width = config.width;
     img.height = config.height;
 
-    let picture = img.closest('picture');
-    if (!picture) {
-      picture = document.createElement('picture');
-      img.parentNode?.insertBefore(picture, img);
-      picture.appendChild(img);
-    }
-    picture.querySelectorAll('source[data-mrecipes-responsive]').forEach(source => source.remove());
-
-    const source = document.createElement('source');
-    source.type = 'image/webp';
-    source.setAttribute('data-mrecipes-responsive', 'true');
-    source.sizes = config.sizes;
-    source.srcset = config.widths.map(width => base + '-' + role + '-' + width + '.webp ' + width + 'w').join(', ');
-    picture.insertBefore(source, img);
-    img.src = base + '-' + role + '.jpg';
+    const picture = img.closest('picture');
+    picture?.querySelectorAll('source[data-mrecipes-responsive]').forEach(source => source.remove());
+    img.src = base + '.webp';
     img.decoding = 'async';
     if (role === 'card') {
       img.loading = 'lazy';
