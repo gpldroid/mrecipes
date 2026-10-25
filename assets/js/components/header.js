@@ -1,4 +1,4 @@
-(() => {
+(async () => {
 'use strict';
 
 const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/{2,}/g, '/');
@@ -38,7 +38,23 @@ const labels = {
   fr: { home: 'Accueil', recipes: 'Recettes', about: 'À propos', contact: 'Contact', skip: 'Aller au contenu', nav: 'Navigation principale', search: 'Rechercher des recettes', placeholder: 'Rechercher une recette…', theme: 'Passer au mode sombre', language: 'Langue', openLanguage: 'Ouvrir le sélecteur de langue', browseAll: 'Toutes les recettes', byMeal: 'Par repas', byType: 'Par type de plat', byDiet: 'Par régime', byTime: 'Par temps de préparation', breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snacks: 'En-cas', soup: 'Soupes', salad: 'Salades', pasta: 'Pâtes', dessert: 'Desserts', vegetarian: 'Végétarien', plantBased: 'Végétal', under15: 'Moins de 15 minutes', under30: '30 minutes ou moins', openRecipes: 'Ouvrir les catégories de recettes' },
   ru: { home: 'Главная', recipes: 'Рецепты', about: 'О нас', contact: 'Контакты', skip: 'Перейти к содержимому', nav: 'Основная навигация', search: 'Поиск рецептов', placeholder: 'Найти рецепт…', theme: 'Включить тёмную тему', language: 'Язык', openLanguage: 'Открыть выбор языка', browseAll: 'Все рецепты', byMeal: 'По приёму пищи', byType: 'По типу блюда', byDiet: 'По диете', byTime: 'По времени приготовления', breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', snacks: 'Закуски', soup: 'Супы', salad: 'Салаты', pasta: 'Паста', dessert: 'Десерты', vegetarian: 'Вегетарианское', plantBased: 'Растительное', under15: 'Менее 15 минут', under30: '30 минут или меньше', openRecipes: 'Открыть категории рецептов' }
 };
-const t = labels[localeKey];
+let catalog = null;
+try {
+  const response = await fetch('/i18n/locales/' + localeKey + '.json', { credentials: 'same-origin' });
+  if (response.ok) catalog = await response.json();
+} catch (_) {}
+const t = catalog ? {
+  home: catalog.common.home, recipes: catalog.common.recipes, about: catalog.common.about, contact: catalog.common.contact,
+  skip: catalog.common.skipToContent, nav: catalog.common.mainNavigation, search: catalog.search.label,
+  placeholder: catalog.search.placeholder, theme: catalog.common.themeDark, language: catalog.common.language,
+  openLanguage: catalog.common.openLanguage, browseAll: catalog.common.browseAll, byMeal: catalog.common.byMeal,
+  byType: catalog.common.byType, byDiet: catalog.common.byDiet, byTime: catalog.common.byTime,
+  breakfast: catalog.categories.breakfast, lunch: catalog.categories.lunch, dinner: catalog.categories.dinner,
+  snacks: catalog.categories.snacks, soup: catalog.categories.soups, salad: catalog.categories.salads,
+  pasta: catalog.categories.pasta, dessert: catalog.categories.desserts, vegetarian: catalog.categories.vegetarian,
+  plantBased: catalog.categories.plantBased, under15: catalog.categories.under15, under30: catalog.categories.under30,
+  openRecipes: catalog.common.openRecipes
+} : labels[localeKey];
 
 const nav = [
   { href: l.home, label: t.home },
@@ -92,6 +108,7 @@ if (!document.querySelector('link[data-font-awesome-tab-icons]')) {
   document.head.appendChild(fontAwesome);
 }
 
+const querySearch = new URLSearchParams(location.search).get('search')?.trim();
 root.innerHTML = `
 <a class="skip-link" href="#main-content">${t.skip}</a>
 <header class="site-header">
@@ -113,6 +130,8 @@ root.innerHTML = `
   </div>
 </header>
 <nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }) => `<a href="${href}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${label === t.home ? 'fa-house' : label === t.recipes ? 'fa-utensils' : label === t.about ? 'fa-circle-info' : 'fa-envelope'}" aria-hidden="true"></i><small>${label}</small></a>`).join('')}</nav>`;
+const searchInput = root.querySelector('#header-search-input');
+if (searchInput && querySearch) searchInput.value = querySearch;
 
 const style = document.createElement('style');
 style.textContent = `

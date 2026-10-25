@@ -12,8 +12,8 @@
 
   const PAGE_SIZE = 6;
   const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/';
-  const locale = ['ar', 'es', 'sp', 'fr', 'ru'].find(code => path === `/${code}` || path.startsWith(`/${code}/`)) || 'en';
-  const isHomePage = path === '/' || ['ar', 'es', 'sp', 'fr', 'ru', 'en'].some(code => path === `/${code}`);
+  const locale = ['ar', 'es', 'fr', 'ru'].find(code => path === `/${code}` || path.startsWith(`/${code}/`)) || 'en';
+  const isHomePage = path === '/' || ['ar', 'es', 'fr', 'ru', 'en'].some(code => path === `/${code}`);
   const search = new URLSearchParams(location.search).get('search')?.trim().toLowerCase() || '';
   const input = document.querySelector('#header-search-input');
   if (input && search) input.value = search;

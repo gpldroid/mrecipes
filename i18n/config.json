@@ -1,0 +1,64 @@
+{
+  "defaultLocale": "en",
+  "supportedLocales": [
+    "ar",
+    "en",
+    "fr",
+    "es",
+    "ru"
+  ],
+  "localeOrder": [
+    "en",
+    "ar",
+    "es",
+    "fr",
+    "ru"
+  ],
+  "domain": "https://mrecipes.online",
+  "xDefault": "en",
+  "routePatterns": {
+    "en": {
+      "home": "/",
+      "recipesIndex": "/recipes.html",
+      "recipe": "/recipes/{slug}.html",
+      "page": "/pages/{slug}.html",
+      "dir": "ltr"
+    },
+    "ar": {
+      "home": "/ar/",
+      "recipesIndex": "/ar/recipes.html",
+      "recipe": "/ar/article/{slug}.html",
+      "page": "/ar/pages/{slug}.html",
+      "dir": "rtl"
+    },
+    "es": {
+      "home": "/es/",
+      "recipesIndex": "/es/recipes.html",
+      "recipe": "/es/article/{slug}.html",
+      "page": "/es/pages/{slug}.html",
+      "dir": "ltr"
+    },
+    "fr": {
+      "home": "/fr/",
+      "recipesIndex": "/fr/recipes.html",
+      "recipe": "/fr/article/{slug}.html",
+      "page": "/fr/pages/{slug}.html",
+      "dir": "ltr"
+    },
+    "ru": {
+      "home": "/ru/",
+      "recipesIndex": "/ru/recipes.html",
+      "recipe": "/ru/article/{slug}.html",
+      "page": "/ru/pages/{slug}.html",
+      "dir": "ltr"
+    }
+  },
+  "hreflang": {
+    "en": "en",
+    "ar": "ar",
+    "fr": "fr",
+    "es": "es",
+    "ru": "ru",
+    "x-default": "en"
+  }
+}

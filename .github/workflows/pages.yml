@@ -47,6 +47,7 @@ jobs:
           set -euo pipefail
           python3 scripts/seo-build-v2.py
           python3 scripts/seo-description-fix.py
+          python3 scripts/validate-i18n.py
       - name: Add AdSense code to every HTML page
         shell: bash
         run: |
