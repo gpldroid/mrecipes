@@ -41,3 +41,14 @@ Legacy root-level legal pages and existing `recipes.html` remain available so ol
 - Exact dish matches are preferred. Where neither source has an exact photo, the curated mapping remains a closest-available fallback and should be reviewed rather than described as an exact match.
 - Shared CSS keeps recipe-card and article images within their containers on mobile, tablet, and large desktop screens.
 
+## Responsive image delivery
+
+The GitHub Pages build runs `scripts/optimize-responsive-images.py` after the recipe-photo import and SEO steps. It generates delivery derivatives in the build workspace; canonical source photos remain WebP files under `assets/images/recipes/` so generated files do not inflate the Git repository.
+
+- Featured recipe images: 1200×675 (16:9), with 480/800/1200-pixel WebP candidates.
+- Recipe cards and grids: 600×400, with 320/600-pixel WebP candidates.
+- Additional recipe-step images: 800×600, with 400/800-pixel WebP candidates.
+- Local images use a `<picture>` WebP source and a generated JPEG fallback. Existing Unsplash images use responsive `srcset`/ `sizes` and Unsplash's `auto=format` content negotiation.
+- Images below the initial viewport use `loading="lazy"` and `decoding="async"`; featured images use eager loading and high fetch priority to protect Largest Contentful Paint.
+- The build validates local image references after optimization. Generated derivatives are present in the deployed Pages artifact, not necessarily in the source tree when browsing GitHub.
+

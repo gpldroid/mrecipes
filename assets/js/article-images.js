@@ -29,10 +29,18 @@
     meta.setAttribute('content', value);
   };
 
-  const addResponsiveSources = (img, slug) => {
+  const addResponsiveSources = (img, assetSlug, role = 'card') => {
+    const base = baseFor(assetSlug);
+    const config = role === 'featured'
+      ? { widths: [480, 800, 1200], sizes: '(max-width: 760px) calc(100vw - 2rem), (max-width: 1200px) 90vw, 1200px', width: 1200, height: 675 }
+      : role === 'step'
+        ? { widths: [400, 800], sizes: '(max-width: 760px) calc(100vw - 2rem), 800px', width: 800, height: 600 }
+        : { widths: [320, 600], sizes: '(max-width: 600px) calc(100vw - 2rem), (max-width: 1000px) 50vw, 300px', width: 600, height: 400 };
+
     img.removeAttribute('srcset');
-    img.removeAttribute('sizes');
-    img.setAttribute('src', imageFor(slug));
+    img.sizes = config.sizes;
+    img.width = config.width;
+    img.height = config.height;
 
     let picture = img.closest('picture');
     if (!picture) {
@@ -40,23 +48,47 @@
       img.parentNode?.insertBefore(picture, img);
       picture.appendChild(img);
     }
-
     picture.querySelectorAll('source[data-mrecipes-responsive]').forEach(source => source.remove());
 
-    const avif = document.createElement('source');
-    avif.type = 'image/avif';
-    avif.setAttribute('data-mrecipes-responsive', 'true');
-    avif.sizes = '(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px';
-    avif.srcset = `${baseFor(slug)}-480.avif 480w, ${baseFor(slug)}-768.avif 768w, ${baseFor(slug)}-1200.avif 1200w`;
+    const source = document.createElement('source');
+    source.type = 'image/webp';
+    source.setAttribute('data-mrecipes-responsive', 'true');
+    source.sizes = config.sizes;
+    source.srcset = config.widths.map(width => base + '-' + role + '-' + width + '.webp ' + width + 'w').join(', ');
+    picture.insertBefore(source, img);
+    img.src = base + '-' + role + '.jpg';
+    img.decoding = 'async';
+    if (role === 'card') {
+      img.loading = 'lazy';
+      img.fetchPriority = 'low';
+    }
+  };
 
-    const webp = document.createElement('source');
-    webp.type = 'image/webp';
-    webp.setAttribute('data-mrecipes-responsive', 'true');
-    webp.sizes = '(max-width: 600px) 100vw, (max-width: 1200px) 820px, 1200px';
-    webp.srcset = `${baseFor(slug)}-480.webp 480w, ${baseFor(slug)}-768.webp 768w, ${baseFor(slug)}-1200.webp 1200w`;
+  const recipeAssetSlugFromUrl = value => {
+    try {
+      const pathname = new URL(value, location.origin).pathname;
+      const match = pathname.match(/\/assets\/images\/recipes\/([^/]+?)(?:-(?:card|featured|step)(?:-\d+)?)?\.(?:webp|jpg)$/i);
+      return match ? decodeURIComponent(match[1]) : null;
+    } catch (_) { return null; }
+  };
 
-    picture.insertBefore(avif, img);
-    picture.insertBefore(webp, img);
+  const applyRemoteResponsive = (img, value) => {
+    img.src = value;
+    try {
+      const original = new URL(value, location.origin);
+      if (original.hostname !== 'images.unsplash.com') return;
+      const widths = [320, 600];
+      img.srcset = widths.map(width => {
+        const candidate = new URL(original.href);
+        candidate.searchParams.set('w', String(width));
+        return candidate.href + ' ' + width + 'w';
+      }).join(', ');
+      img.sizes = '(max-width: 600px) calc(100vw - 2rem), (max-width: 1000px) 50vw, 300px';
+      img.width = 600;
+      img.height = 400;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    } catch (_) {}
   };
 
   const optimizeImage = (img, slug, priority = false) => {
@@ -108,11 +140,16 @@
       const articleImage = await articleImageForCard(link.getAttribute('href'));
       if (!img.isConnected) return;
       if (articleImage) {
-        const picture = img.closest('picture');
-        picture?.querySelectorAll('source').forEach(source => source.remove());
-        img.removeAttribute('srcset');
-        img.removeAttribute('sizes');
-        img.src = articleImage;
+        const assetSlug = recipeAssetSlugFromUrl(articleImage);
+        if (assetSlug) {
+          addResponsiveSources(img, assetSlug, 'card');
+        } else {
+          const picture = img.closest('picture');
+          picture?.querySelectorAll('source').forEach(source => source.remove());
+          img.removeAttribute('srcset');
+          img.removeAttribute('sizes');
+          applyRemoteResponsive(img, articleImage);
+        }
       }
       img.dataset.mrecipesImageSync = 'done';
     });

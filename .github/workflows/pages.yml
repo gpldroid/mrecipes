@@ -80,6 +80,13 @@ jobs:
 
           print(f'AdSense code added to {updated} HTML pages; skipped {skipped} files.')
           PY
+      - name: Generate responsive WebP images and JPEG fallbacks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mrecipes-image-venv
+          /tmp/mrecipes-image-venv/bin/pip install --disable-pip-version-check Pillow
+          /tmp/mrecipes-image-venv/bin/python scripts/optimize-responsive-images.py
       - name: Validate site structure, SEO and local links
         shell: bash
         run: |

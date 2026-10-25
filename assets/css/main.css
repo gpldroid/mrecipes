@@ -236,7 +236,9 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   overflow: hidden; aspect-ratio: 4 / 3; background: linear-gradient(135deg, var(--lime), #f8d7ca);
   color: var(--green); font-size: 3rem; text-decoration: none;
 }
-.recipe-image img { width: 100%; height: 100%; object-fit: cover; }
+.recipe-image picture { display: block; width: 100%; height: 100%; }
+.recipe-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.content-page picture { display: block; max-width: 100%; }
 .recipe-content {
   display: flex; flex: 1 1 auto; flex-direction: column; align-items: stretch;
   min-width: 0; padding: 1.25rem;
