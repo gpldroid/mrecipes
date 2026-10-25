@@ -39,7 +39,6 @@
 
     img.removeAttribute('srcset');
     img.sizes = config.sizes;
-    img.src = base + '-' + role + '.jpg';
     img.width = config.width;
     img.height = config.height;
 
@@ -57,6 +56,7 @@
     source.sizes = config.sizes;
     source.srcset = config.widths.map(width => base + '-' + role + '-' + width + '.webp ' + width + 'w').join(', ');
     picture.insertBefore(source, img);
+    img.src = base + '-' + role + '.jpg';
     img.decoding = 'async';
     if (role === 'card') {
       img.loading = 'lazy';
