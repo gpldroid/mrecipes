@@ -108,7 +108,7 @@ for page in allp:
  raw=page.read_text(encoding='utf-8'); p=P(); p.feed(raw); path=pathof(page); k=locale(path); kind,slug=info(path,k)
  raw=re.sub(r'<meta\s+[^>]*name=["\']robots["\'][^>]*>','',raw,flags=re.I); raw=meta(raw,'robots','index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1')
  raw=re.sub(r'<html\b[^>]*>',f'<html lang="{k}" dir="{LOCALES[k][3]}">',raw,count=1,flags=re.I)
- title=p.title or p.h1 or ('MRecipes — Easy Recipes' if kind in ('home','recipes') else 'MRecipes')
+ title=trim(p.title or p.h1 or ('MRecipes — Easy Recipes' if kind in ('home','recipes') else 'MRecipes'), 60)
  if re.search(r'<title\b',raw,re.I): raw=re.sub(r'<title>.*?</title>',f'<title>{escape(title)}</title>',raw,count=1,flags=re.I|re.S)
  else: raw=re.sub(r'</head>',f'<title>{escape(title)}</title>\n</head>',raw,count=1,flags=re.I)
  desc=p.desc
