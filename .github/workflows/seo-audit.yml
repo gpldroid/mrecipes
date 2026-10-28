@@ -22,5 +22,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      # Audit the same generated metadata state used by the production Pages build.
+      - name: Build SEO metadata and validate locale inventory
+        run: |
+          python scripts/seo-build-v2.py
+          python scripts/seo-description-fix.py
+          python scripts/validate-i18n.py
+          python scripts/apply-author-attribution.py
       - name: Run static SEO audit
         run: python scripts/seo_audit.py
