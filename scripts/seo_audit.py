@@ -98,6 +98,9 @@ def repo_path_for_url(url: str):
 def main():
     pages = {}
     for file in html_files():
+        # 404 pages should not be indexed and are intentionally outside normal SEO requirements.
+        if file.name == "404.html":
+            continue
         parser = PageParser()
         try:
             parser.feed(file.read_text(encoding="utf-8"))
