@@ -171,7 +171,12 @@ def main():
                 pass
     # hreflang reciprocity: every target should point back to the source URL.
     for rel, parser in pages.items():
-        source = DOMAIN + ("/" if rel == "index.html" else "/" + rel)
+        if rel == "index.html":
+            source = DOMAIN + "/"
+        elif rel.endswith("/index.html"):
+            source = DOMAIN + "/" + rel[:-10].strip("/") + "/"
+        else:
+            source = DOMAIN + "/" + rel
         for lang, target_url in parser.alternates:
             target_path = repo_path_for_url(target_url)
             if target_path and target_path.exists():
