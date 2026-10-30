@@ -1,6 +1,104 @@
 (() => {
   'use strict';
 
+  // Load AdSense once and mount two responsive placements on every published page.
+  const initializeAdsense = () => {
+    const publisher = 'ca-pub-6996931662051674';
+    const loaderUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + publisher;
+    if (!document.querySelector('meta[name="google-adsense-account"]')) {
+      const account = document.createElement('meta');
+      account.name = 'google-adsense-account';
+      account.content = publisher;
+      document.head.appendChild(account);
+    }
+    if (!window.__mrecipesAdsenseLoaded && !document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
+      window.__mrecipesAdsenseLoaded = true;
+      const loader = document.createElement('script');
+      loader.async = true;
+      loader.crossOrigin = 'anonymous';
+      loader.src = loaderUrl;
+      document.head.appendChild(loader);
+    }
+
+    const main = document.querySelector('main');
+    if (!main || main.dataset.adsenseInitialized === 'true') return;
+    main.dataset.adsenseInitialized = 'true';
+
+    const createPlacement = (slot, kind) => {
+      const wrapper = document.createElement('aside');
+      wrapper.className = 'adsense-placement adsense-' + kind;
+      wrapper.setAttribute('aria-label', 'Advertisement');
+      wrapper.style.cssText = 'display:block;clear:both;width:100%;max-width:' + (kind === 'in-article' ? '760px' : '300px') + ';margin:28px auto;padding:0;text-align:center;overflow:hidden;';
+      const unit = document.createElement('ins');
+      unit.className = 'adsbygoogle';
+      unit.style.cssText = kind === 'in-article'
+        ? 'display:block;text-align:center;width:100%;max-width:760px;min-height:100px;'
+        : 'display:block;width:250px;height:125px;max-width:100%;margin:0 auto;';
+      unit.setAttribute('data-ad-client', publisher);
+      unit.setAttribute('data-ad-slot', slot);
+      if (kind === 'in-article') {
+        unit.setAttribute('data-ad-format', 'fluid');
+        unit.setAttribute('data-ad-layout', 'in-article');
+      } else {
+        unit.setAttribute('data-ad-format', 'rectangle');
+      }
+      wrapper.appendChild(unit);
+      const push = document.createElement('script');
+      push.text = '(adsbygoogle = window.adsbygoogle || []).push({});';
+      wrapper.appendChild(push);
+      return wrapper;
+    };
+
+    const firstAd = createPlacement('5806370724', 'in-article');
+    const secondAd = createPlacement('1190274186', 'display');
+    const article = main.querySelector('article');
+    if (article) {
+      const heading = article.querySelector('h1');
+      const intro = heading?.parentElement?.querySelector('p') ||
+        (heading ? [...article.querySelectorAll('p')].find(p => heading.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING) : null);
+      if (intro?.parentNode) intro.parentNode.insertBefore(firstAd, intro.nextSibling);
+      else article.insertBefore(firstAd, article.firstChild);
+
+      const paragraphs = [...article.querySelectorAll('p')];
+      const author = paragraphs.find(p => /recipe content by|mrecipes|وصفات/i.test(p.textContent || '') && p !== intro);
+      if (author?.parentNode) author.parentNode.insertBefore(secondAd, author);
+      else article.appendChild(secondAd);
+      return;
+    }
+
+    const sections = [...main.querySelectorAll(':scope > section')];
+    if (sections.length) {
+      sections[0].after(firstAd);
+      if (sections.length > 1) {
+        sections[Math.min(1, sections.length - 1)].after(secondAd);
+      } else {
+        const content = main.querySelector('.content-page');
+        if (content && content.children.length > 1) {
+          content.children[Math.floor(content.children.length / 2)].after(secondAd);
+        } else {
+          main.appendChild(secondAd);
+        }
+      }
+      return;
+    }
+
+    const paragraphs = [...main.querySelectorAll('p')];
+    if (paragraphs.length) {
+      paragraphs[0].after(firstAd);
+      paragraphs[Math.floor(paragraphs.length / 2)].after(secondAd);
+    } else {
+      main.append(firstAd, secondAd);
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAdsense, { once: true });
+  } else {
+    initializeAdsense();
+  }
+
+
+
   // Keep homepage card imagery in sync with the image authored in each recipe article.
   if (!document.querySelector('script[data-mrecipes-article-images]')) {
     const imageSyncScript = document.createElement('script');
