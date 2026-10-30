@@ -76,7 +76,101 @@ These counts are triage flags, not automatic proof that every flagged page is in
 
 ## Remaining work (explicit)
 
-Three recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars`, `garlic-butter-pasta`, and `overnight-oats`. The remaining 45 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
+Four recipes have been fully rewritten and structurally checked across AR/FR/ES/RU so far: `apple-cinnamon-crumble-bars`, `garlic-butter-pasta`, `overnight-oats`, and `avocado-toast`. The remaining 44 recipes in each target language, all informational/legal pages, and the complete localization of the homepages and recipe indexes still require article-level translation/review. The earlier heuristic flags remain a useful backlog, not a substitute for linguistic review.
 
 
 - Fully translated `overnight-oats` into AR/FR/ES/RU, preserving 9 ingredients and 5 steps in both visible HTML and Recipe JSON-LD, with localized SEO and author byline.
+
+
+## Work completed on 2026-10-25 — avocado-toast
+
+- Rewrote `ar/article/avocado-toast.html`, `fr/article/avocado-toast.html`, `es/article/avocado-toast.html`, and `ru/article/avocado-toast.html` as full localized recipe pages, replacing the Arabic placeholder and English-copy leakage in the other localized editions.
+- Localized page titles, descriptions, Open Graph/Twitter metadata, visible article text, ingredient lists, instructions, tips, serving/storage guidance, FAQ, image alt text, and Recipe JSON-LD.
+- Preserved the English source quantities and cooking method (7 ingredients, 5 steps; 8 minutes prep, 3 minutes cooking, 2 servings), added all five hreflang alternates plus x-default, and credited Imad Limrani visibly and in Recipe JSON-LD.
+- Structural check is limited to the generated content and repository reads. A live browser/visual check has not been completed. The current full-site migration remains incomplete: 4 of 48 recipes are rewritten across the four target locales, leaving 44 per target locale plus informational/legal pages and remaining site-wide UI/index review.
+
+
+## Build diagnostic and correction — 2026-10-25
+
+- The latest workflow run exposed a real defect in `scripts/apply-author-attribution.py`: the English entry in the `LABELS` map incorrectly contained summary-marker strings instead of an author label. As a result, the attribution coverage check failed on 13 English pages.
+- Corrected the English label to `Recipe by Imad Limrani`. Marked the four new localized avocado-toast bylines with the script's idempotency class to prevent duplicate attribution during builds.
+- The corrected branch is awaiting a fresh CI run. Do not treat this correction as validated until that run finishes successfully.
+
+## Progress update — 2026-10-25 (after the beef and curry rewrite)
+
+The following six recipes now have full localized article rewrites in **AR, FR, ES, and RU** (24 localized article files in total), including localized visible ingredients and method, page metadata, Recipe JSON-LD, canonical/hreflang links, and the required visible byline immediately below the hero summary:
+
+- `apple-cinnamon-crumble-bars`
+- `avocado-toast`
+- `beef-vegetable-stir-fry`
+- `chicken-curry-rice`
+- `garlic-butter-pasta`
+- `overnight-oats`
+
+For the two newly completed recipes, the source ingredient quantities and method timings were preserved: beef and vegetable stir-fry (11 ingredients, 5 steps; 20 minutes prep + 12 minutes cooking; 4 servings) and chicken curry with rice (12 ingredients, 5 steps; 15 minutes prep + 30 minutes cooking; 4 servings). The source files remain the factual reference, and the English source pages were not rewritten.
+
+**Remaining scope:** 42 of 48 recipes still need full localized rewrites in each of AR/FR/ES/RU; all 25 localized information/legal pages still need end-to-end comparison and any necessary rewrites; shared UI, cards, indexes, and site-wide SEO/localization need review. This branch is still not release-ready. No browser/visual QA has been completed.
+
+**CI:** GitHub Actions run #329 for head commit `8575dc2318dd24cc2ea7fc0f36f242f11efc3250` completed successfully. This validates the repository's automated build/structure checks only; it does not certify translation quality or complete the migration.
+## Progress update — 2026-10-25 (creamy garlic chicken)
+
+- Rewrote `ar/article/creamy-garlic-chicken.html`, `fr/article/creamy-garlic-chicken.html`, `es/article/creamy-garlic-chicken.html`, and `ru/article/creamy-garlic-chicken.html` against the English source.
+- Localized the title/description, hero summary, visible byline directly under the summary, image alt text, 10 ingredients, 6 method steps, tips, storage, FAQs, notes, headings, canonical URL and all five hreflang alternates. Recipe JSON-LD name and description were localized, and the source author credit was preserved.
+- Source quantities and cooking times remain unchanged: 10 ingredients, 6 steps; 10 minutes prep + 20 minutes cooking; 4 servings.
+- The cumulative count is now **7 of 48 recipes fully rewritten across AR/FR/ES/RU**. **41 recipes per target locale** remain, along with all information/legal page review and site-wide UI/SEO QA.
+## Progress update — 2026-10-25 (pancakes and cookies)
+
+- Rewrote the four localized versions of `classic-pancakes` and `chocolate-chip-cookies` in AR/FR/ES/RU.
+- Both recipes now have localized page titles/descriptions, hero summary and direct author byline, image alt text, ingredient lists, numbered method, tips, storage/serving guidance, FAQs, recipe notes, and localized Recipe JSON-LD names/descriptions with canonical/hreflang links.
+- Original ingredient quantities and method times/steps are preserved. For pancakes, the source has 8 ingredients and 6 steps (5 min prep + 15 min cooking, 4 servings); for chocolate chip cookies, 9 ingredients and 7 steps (15 min prep + 12 min baking, 18 cookies).
+- Cumulative count: **9 of 48 recipes fully rewritten across AR/FR/ES/RU**. **39 recipes per target locale remain**, in addition to the information/legal pages and site-wide localization/QA.
+## Progress update — 2026-10-25 (Greek salad and Margherita pizza)
+
+- Rewrote `fresh-greek-salad` and `homemade-margherita-pizza` across AR/FR/ES/RU, including visible article copy, ingredients, instructions, serving/storage tips, image alt text, page metadata, Recipe JSON-LD, canonical/hreflang, and the visible Imad Limrani byline directly under the hero summary.
+- Source ingredient quantities and instructions remain intact: Greek salad has 11 ingredients and 5 steps (15 minutes, 4 servings); Margherita pizza has 7 ingredients and 6 steps (15 minutes prep + 25 minutes cook time, 2 servings).
+- Cumulative progress: **11 of 48 recipes rewritten across all four target locales**; **37 recipes per target locale remain**. The information/legal pages and site-wide UI/SEO/visual QA remain open.
+
+## Homepage recipe organization parity — 2026-10-25
+
+- Kept the Arabic homepage `ar/index.html` and `assets/js/ar-recipes.js` unchanged, as required.
+- Aligned the **first six recipe cards and their order** on the French, Spanish and Russian homepages with the Arabic reference: avocado toast, beef and vegetable stir-fry, blueberry muffins, cauliflower cheese bake, chicken with broccoli and mashed potatoes, and chicken curry rice.
+- Preserved the same homepage hierarchy used by Arabic: one page hero, one “latest recipes” section, the same six-card initial grid, and the shared load-more behavior. Localized titles, categories and excerpts remain in each language.
+- Added stable locale-specific grid IDs (`fr-recipe-grid`, `es-recipe-grid`, `ru-recipe-grid`) for structural parity with `ar-recipe-grid`.
+- This change aligns the initial visible grouping/order. The additional cards still use the existing localized catalog, so full 48-recipe homepage-feed parity remains a separate task. Visual/browser QA is still outstanding.
+
+
+## Homepage latest-recipe slider and image repair — 2026-10-25
+
+- The shared homepage code renders a localized horizontal slider with exactly three recipe cards, selecting distinct categories when the available feed permits. Desktop shows three cards across; smaller screens use horizontal touch scrolling and previous/next controls.
+- Fixed a concrete image-path failure: the browser-side sync changed valid repository images such as `<slug>.webp` into generated `<slug>-card.jpg` and `<slug>-card-320.webp` paths. Those derivatives are created by a separate workflow and may not exist in a fresh deployment. The sync now keeps the canonical `<slug>.webp` as the image source rather than relying on optional generated variants.
+- The slider now initializes from the localized static cards even when Supabase is not configured, returns no published rows, or the query fails. Previously, slider creation happened only after a successful non-empty Supabase response.
+- Existing logic continues to retrieve the image URL from the matching recipe article for card slugs without a local image and supports HTTP(S) sources. The local image directory contains 38 recipe images, so the remaining recipe pages must be checked individually to ensure their article-authored image URLs are valid.
+- Code-level fixes are committed to this draft PR. Live browser/network checks across EN/AR/FR/ES/RU are still required before confirming all publication images display correctly. This does not claim every recipe image is locally hosted or that the full multilingual rewrite is complete.
+
+
+## Homepage latest-recipes slider and image recovery
+- Added a horizontal, keyboard-scrollable three-card latest-recipes slider to the English, Arabic, French, Spanish, and Russian homepages. It is populated from each homepage's existing first three recipe cards, preserving localized titles, categories, links, and image sources rather than maintaining a second content catalogue.
+- Added responsive three-card/two-card/mobile swipe layouts, snap scrolling, and localized previous/next controls.
+- Fixed Arabic homepage card image failure handling: instead of immediately removing a failed local image, the card now tries the image authored in its linked recipe page before falling back to a category icon.
+- This is a code-level repair. Live browser verification and network checks for every published image across all five locales remain necessary; no claim is made that every recipe has a local image asset.
+
+
+## Homepage slider and image-recovery phase — 2026-10-25
+
+- Corrected a CSS selector collision: the homepage rail and an older sidebar slider reused .latest-slider-* classes, while the legacy rules hid horizontal overflow and squeezed the cards into a flex row. The new [data-latest-slider]-scoped rules now provide a horizontally scrollable three-card rail, responsive card widths, snap scrolling, and working previous/next controls without changing Arabic homepage content.
+- Audited the repository image directory against the English recipe inventory: **38 local WebP assets cover 48 real recipe slugs**. Ten real recipes have no matching local WebP; recipe-template is a template, not a published recipe.
+- Added source-image fallbacks for the ten missing local assets, using image URLs already authored in their English recipe pages: apple-cinnamon-crumble-bars, coconut-lime-rice-bowl, honey-mustard-roasted-carrots, lemon-ricotta-gnocchi, miso-glazed-salmon, mushroom-barley-soup, pear-walnut-oatmeal, roasted-red-pepper-hummus, sesame-tofu-lettuce-wraps, and turkey-spinach-meatballs.
+- Updated image synchronization so a missing local asset does not overwrite a valid source image; article pages, homepage cards, and Recipe/Open Graph image metadata use the source fallback when the corresponding local asset is absent. If an image still fails, the client now degrades to a visible placeholder rather than a broken-image icon.
+- Checked that the French localized article pages for all ten fallback slugs point to the same authored image URLs as EN. This is a source-level audit, not a live browser/network test; remote image host availability and all five locales still require deployed visual QA.
+- All five homepages already include the shared slider script and localized headings; the slider takes the first three cards from each locale's feed. The EN/AR/FR/ES/RU first-three cards come from different recipe categories in the current feed, but “latest” here means the order of the existing feed, not a timestamp-sorted recipe database.
+
+
+## Integration and content-quality update — 2026-10-30
+
+- Integrated the current `main` tip into this branch with a two-parent merge commit, preserving the multilingual work and homepage slider while retaining the SEO audit workflow, SEO build updates, generated sitemap, and English recipe updates from `main`.
+- Reconciled `assets/js/main.js` by keeping the PR's homepage slider behavior and adding the AdSense initializer from `main` once. GitHub reports the branch as up to date with `main` and mergeable.
+- The four localized `mediterranean-pasta` pages already contained translated visible recipe content (10 ingredients and 6 steps each), but lacked Recipe JSON-LD and a visible byline below the hero summary. Added localized Recipe JSON-LD for all four locales from their visible ingredient/method lists, added x-default hreflang, completed social metadata, and moved the localized author byline directly below the summary.
+- Structural verification after the change: AR/FR/ES/RU all have the correct HTML language, one parseable Recipe JSON-LD block, 10 schema ingredients, 6 schema steps, x-default, and a single visible author byline below the hero summary. This is a source-level check, not browser/visual QA.
+- Updated cumulative recipe completion: **12 of 48 recipes** have localized article content across AR/FR/ES/RU with the required structural coverage; **36 recipes per target locale remain**. All 25 informational/legal pages and full homepage/index/UI localization review remain open.
+- CI for merge commit `255db2c59ef7293c6cf9fefcaabeb83d382243f0`: SEO preflight succeeded and the Pages build succeeded; deployment was skipped because the PR is intentionally Draft. CI for the latest content commit is queued and must be checked before treating the latest changes as validated.
+- Keep this PR Draft. Do not publish until all localized articles and informational/legal pages are reviewed and the full validation/browser QA pass is complete.
