@@ -1,6 +1,14 @@
 (() => {
   'use strict';
 
+  if (!document.querySelector('link[data-clip-recipe-video-styles]')) {
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '/assets/css/clip-recipe-videos.css';
+    stylesheet.dataset.clipRecipeVideoStyles = 'true';
+    document.head.appendChild(stylesheet);
+  }
+
   const videos = {
     chicken: [
       { title: 'Chicken recipe video', cuisine: 'Quick home cooking', time: '40 min', image: 'https://img.cliprecipe.com/images/1473fb0824a64c88ab810cac90f8bdf4_1677726734tplv-tiktokx-origin.image', recipe: 'https://www.cliprecipe.com/recipe/0fbb5f64-1ca8-4501-85a9-2e49891e23a9?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZP8fHsLAA/' },
@@ -9,7 +17,7 @@
     ],
     pasta: [
       { title: 'Italian pasta video', cuisine: 'Italian', image: 'https://img.cliprecipe.com/thumbnails/3WLZfLTLzpgQqunCaQPXvS.jpg', recipe: 'https://www.cliprecipe.com/recipe/0869db0f-d1e9-43c0-9d48-acbe80eed946?utm_source=mrecipes', video: 'https://www.instagram.com/reel/DUEKmuOjFUP/' },
-      { title: 'Pasta in  short-form video', cuisine: 'Recipe inspiration', image: 'https://img.cliprecipe.com/thumbnails/HAT8b75kmaQqrHZrUVNYYd.webp', recipe: 'https://www.cliprecipe.com/recipe/5523a99e-ce97-4786-a99e-e69ecf74be0f?utm_source=mrecipes', video: 'https://youtube.com/shorts/WHFVTDWaFCU' },
+      { title: 'Pasta video inspiration', cuisine: 'Recipe inspiration', image: 'https://img.cliprecipe.com/thumbnails/HAT8b75kmaQqrHZrUVNYYd.webp', recipe: 'https://www.cliprecipe.com/recipe/5523a99e-ce97-4786-a99e-e69ecf74be0f?utm_source=mrecipes', video: 'https://youtube.com/shorts/WHFVTDWaFCU' },
       { title: 'Ouzi pasta', cuisine: 'Middle Eastern', time: '15 min', image: 'https://img.cliprecipe.com/images/osDECAMJiiAwR6AwII3BKpdTwHHAe70WWA8PBqtplv-tiktokx-origin.image', recipe: 'https://www.cliprecipe.com/recipe/e1626a56-5aba-44d4-802b-921beb454f2d?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZTkbGn5nC/' }
     ],
     baking: [
