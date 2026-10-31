@@ -369,7 +369,7 @@
       button.textContent = labels.more;
       button.addEventListener('click', () => {
         const state = gridState.get(grid);
-        if (!state) return;
+        if (!state || button.hidden) return;
         state.limit += state.pageSize;
         updateGrid(grid);
       });
@@ -396,7 +396,7 @@
       status.className = 'pagination-status';
       status.dataset.paginationStatus = '';
       status.setAttribute('aria-live', 'polite');
-      grid.insertAdjacentElement('afterend', status);
+      state.button.insertAdjacentElement('afterend', status);
     }
     status.textContent = matching.length ? labels.shown(shown, matching.length) : labels.empty;
     status.hidden = matching.length === 0;
@@ -428,125 +428,9 @@
   document.querySelectorAll('[data-current-year]').forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll('[data-scroll-top]').forEach(button => button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })));
 
-  const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'YOUR_SUPABASE_PUBLISHABLE_KEY';
-  const configured = /^https:\/\/[^/]+\.supabase\.co$/.test(SUPABASE_URL) && !SUPABASE_URL.includes('YOUR_PROJECT_REF') && SUPABASE_PUBLISHABLE_KEY && !SUPABASE_PUBLISHABLE_KEY.includes('YOUR_SUPABASE');
-
-  const loadClient = () => new Promise((resolve, reject) => {
-    if (window.supabase?.createClient) return resolve(window.supabase);
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    script.async = true;
-    script.onload = () => window.supabase?.createClient ? resolve(window.supabase) : reject(new Error('Supabase client unavailable'));
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-
-  const str = value => String(value ?? '');
-  const recipeBase = locale === 'en' ? '/recipes/' : `/${locale}/article/`;
-
-  const renderCards = (container, recipes) => {
-    const fragment = document.createDocumentFragment();
-    recipes.forEach(recipe => {
-      const card = document.createElement('article');
-      card.className = 'recipe-card';
-      card.dataset.recipeCard = '';
-      card.dataset.tags = [recipe.title, recipe.category, recipe.excerpt].join(' ').toLowerCase();
-      const imageLink = document.createElement('a');
-      imageLink.className = 'recipe-image';
-      imageLink.href = `${recipeBase}${encodeURIComponent(recipe.slug)}.html`;
-      imageLink.setAttribute('aria-label', str(recipe.title));
-      {
-        const img = document.createElement('img');
-        // Prefer the site-owned image named after this recipe. Supabase's
-        // image_url is only a fallback for recipes without a local photo.
-        img.src = `/assets/images/recipes/${encodeURIComponent(recipe.slug)}.webp`;
-        img.alt = str(recipe.title);
-        img.loading = 'lazy';
-        img.decoding = 'async';
-        img.onerror = () => {
-          if (recipe.image_url && img.dataset.fallbackUsed !== 'true') {
-            img.dataset.fallbackUsed = 'true';
-            img.src = recipe.image_url;
-          } else {
-            img.remove();
-            imageLink.textContent = '🍽️';
-          }
-        };
-        imageLink.appendChild(img);
-      }
-      const content = document.createElement('div');
-      content.className = 'recipe-content';
-      const meta = document.createElement('div');
-      meta.className = 'recipe-meta';
-      const time = document.createElement('span');
-      time.textContent = `${Number(recipe.prep_minutes || 0) + Number(recipe.cook_minutes || 0)} min`;
-      const category = document.createElement('span');
-      category.textContent = str(recipe.category || 'Recipe');
-      meta.append(time, category);
-      const h3 = document.createElement('h3');
-      const title = document.createElement('a');
-      title.href = imageLink.href;
-      title.textContent = str(recipe.title);
-      h3.appendChild(title);
-      const excerpt = document.createElement('p');
-      excerpt.textContent = str(recipe.excerpt);
-      content.append(meta, h3, excerpt);
-      card.append(imageLink, content);
-      fragment.appendChild(card);
-    });
-    container.replaceChildren(fragment);
-  };
-
-  if (!configured) {
-    window.MRecipesData = Object.freeze({ enabled: false, reason: 'Configure the Supabase URL and publishable key in assets/js/main.js.' });
-    // Static localized cards are already present at this point. Keep the
-    // latest-recipe slider available even when Supabase is not configured.
-    buildHomepageLatestSlider();
-    return;
-  }
-
-  loadClient().then(library => {
-    const client = library.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-    window.MRecipesData = Object.freeze({
-      enabled: true,
-      async getPublishedRecipes() {
-        const { data, error } = await client.from('recipes').select('slug,title,excerpt,category,image_url,prep_minutes,cook_minutes,published_at').eq('status', 'published').order('published_at', { ascending: false }).limit(60);
-        if (error) throw error;
-        return data || [];
-      },
-      async getApprovedComments(slug) {
-        const { data, error } = await client.from('recipe_comments').select('display_name,body,created_at,recipes!inner(slug)').eq('status', 'approved').eq('recipes.slug', slug).order('created_at', { ascending: false });
-        if (error) throw error;
-        return data || [];
-      },
-      async submitComment({ slug, displayName, body }) {
-        const name = str(displayName).trim();
-        const comment = str(body).trim();
-        if (name.length < 2 || name.length > 80 || comment.length < 5 || comment.length > 2000) throw new Error('Name must be 2–80 characters and comment 5–2000 characters.');
-        const { data: recipe, error: lookupError } = await client.from('recipes').select('id').eq('slug', slug).eq('status', 'published').single();
-        if (lookupError) throw lookupError;
-        const { error } = await client.from('recipe_comments').insert({ recipe_id: recipe.id, display_name: name, body: comment, status: 'pending' });
-        if (error) throw error;
-      }
-    });
-    const container = document.querySelector('[data-supabase-recipes]');
-    if (!container) return;
-    window.MRecipesData.getPublishedRecipes().then(recipes => {
-      if (recipes.length) {
-        renderCards(container, recipes);
-        applySearch();
-        renderSidebar();
-      }
-      // Whether Supabase returns rows or the localized static feed remains in
-      // place, render the three-card slider from the cards currently on screen.
-      buildHomepageLatestSlider();
-    }).catch(error => {
-      console.error('Supabase query failed; keeping static recipe cards.', error);
-      buildHomepageLatestSlider();
-    });
-  }).catch(error => console.error('Supabase client failed to load; keeping static content.', error));
-})();
+  // Recipe listings use the recipe cards authored in the HTML files.
+  // No remote database or client-side data service is required.
+})(););
 
 /* Accessible floating controls for scrolling to the top or bottom of any page. */
 (() => {
