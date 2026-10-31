@@ -46,39 +46,48 @@
     const inArticleAd = createPlacement('5806370724', 'in-article');
     const displayAd = createPlacement('1190274186', 'display');
 
-    // The homepage has a single full-width placement after its recipe feed,
-    // never between the hero, navigation, slider, or recipe cards.
+    // Keep the homepage display unit below the complete recipe feed and
+    // above the newsletter, away from navigation, slider controls, and cards.
     const homeFeed = main.querySelector('.home-content-layout');
     if (homeFeed) {
-      homeFeed.insertAdjacentElement('afterend', inArticleAd);
+      homeFeed.insertAdjacentElement('afterend', displayAd);
       return;
     }
 
     const article = main.querySelector('article.content-page, .content-page article, article.recipe-article, article.post-content');
     if (article) {
-      const heading = article.querySelector('h1');
       const paragraphs = [...article.querySelectorAll('p')].filter(p => p.textContent.trim().length > 80);
-      const intro = paragraphs.find(p => !heading || (heading.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING));
-      if (intro?.parentNode) intro.parentNode.insertBefore(inArticleAd, intro.nextSibling);
-      else if (heading?.parentNode) heading.parentNode.insertBefore(inArticleAd, heading.nextSibling);
-      else article.insertBefore(inArticleAd, article.firstChild);
 
-      if (paragraphs.length >= 6) {
-        const middleParagraph = paragraphs[Math.floor(paragraphs.length * 0.6)];
-        if (middleParagraph?.parentNode) middleParagraph.parentNode.insertBefore(displayAd, middleParagraph.nextSibling);
+      // Start the first in-article unit after the opening context, not directly
+      // below the hero image or recipe-at-a-glance line.
+      if (paragraphs.length >= 3) {
+        paragraphs[1].insertAdjacentElement('afterend', inArticleAd);
+      }
+
+      // A second unit is only useful on long articles. Keep it well separated
+      // from the first placement and within the article reading column.
+      if (paragraphs.length >= 7) {
+        const middleIndex = Math.min(paragraphs.length - 1, Math.floor(paragraphs.length * 0.65));
+        const middleParagraph = paragraphs[middleIndex];
+        if (middleParagraph && middleParagraph !== paragraphs[1]) {
+          middleParagraph.insertAdjacentElement('afterend', displayAd);
+        }
       }
       return;
     }
 
-    // On informational pages, keep ads within the actual reading column and
-    // only show them when there is enough text to separate them from controls.
+    // Informational pages receive fewer placements than recipe articles.
+    // Ads stay inside the reading column and away from short utility pages.
     const content = main.querySelector('.content-page, .article-body, .post-body, .entry-content');
     if (content) {
-      const paragraphs = [...content.querySelectorAll('p')].filter(p => p.textContent.trim().length > 80);
-      if (paragraphs.length >= 3) {
-        paragraphs[0].after(inArticleAd);
-        if (paragraphs.length >= 7) {
-          paragraphs[Math.floor(paragraphs.length * 0.65)].after(displayAd);
+      const paragraphs = [...content.querySelectorAll('p')].filter(p => p.textContent.trim().length > 100);
+      if (paragraphs.length >= 4) {
+        paragraphs[1].insertAdjacentElement('afterend', inArticleAd);
+        if (paragraphs.length >= 8) {
+          const middleParagraph = paragraphs[Math.floor(paragraphs.length * 0.65)];
+          if (middleParagraph && middleParagraph !== paragraphs[1]) {
+            middleParagraph.insertAdjacentElement('afterend', displayAd);
+          }
         }
       }
     }
@@ -120,11 +129,11 @@
   }
 
   const labels = {
-    en: { more: 'Load more recipes', shown: (a, b) => `Showing ${a} of ${b} recipes`, empty: 'No recipes to show.' },
-    ar: { more: 'عرض المزيد من الوصفات', shown: (a, b) => `عرض ${a} من أصل ${b} وصفة`, empty: 'لا توجد وصفات لعرضها.' },
-    es: { more: 'Cargar más recetas', shown: (a, b) => `Mostrando ${a} de ${b} recetas`, empty: 'No hay recetas para mostrar.' },
-    fr: { more: 'Charger plus de recettes', shown: (a, b) => `Affichage de ${a} recettes sur ${b}`, empty: 'Aucune recette à afficher.' },
-    ru: { more: 'Загрузить ещё рецепты', shown: (a, b) => `Показано ${a} из ${b} рецептов`, empty: 'Нет рецептов для отображения.' }
+    en: { more: 'Load more', shown: (a, b) => `Showing ${a} of ${b} recipes`, empty: 'No recipes to show.' },
+    ar: { more: 'عرض المزيد', shown: (a, b) => `عرض ${a} من أصل ${b} وصفة`, empty: 'لا توجد وصفات لعرضها.' },
+    es: { more: 'Cargar más', shown: (a, b) => `Mostrando ${a} de ${b} recetas`, empty: 'No hay recetas para mostrar.' },
+    fr: { more: 'Charger plus', shown: (a, b) => `Affichage de ${a} recettes sur ${b}`, empty: 'Aucune recette à afficher.' },
+    ru: { more: 'Загрузить ещё', shown: (a, b) => `Показано ${a} из ${b} рецептов`, empty: 'Нет рецептов для отображения.' }
   }[locale];
 
 
@@ -354,6 +363,9 @@
         grid.insertAdjacentElement('afterend', button);
       }
       const initialCount = Math.max(1, Number(grid.dataset.initialCount) || PAGE_SIZE);
+      const pageSize = Math.max(1, Number(grid.dataset.pageSize) || PAGE_SIZE);
+      if (!grid.id) grid.id = 'homepage-recipe-grid';
+      button.setAttribute('aria-controls', grid.id);
       button.textContent = labels.more;
       button.addEventListener('click', () => {
         const state = gridState.get(grid);
@@ -361,7 +373,7 @@
         state.limit += state.pageSize;
         updateGrid(grid);
       });
-      gridState.set(grid, { limit: initialCount, pageSize: PAGE_SIZE, button });
+      gridState.set(grid, { limit: initialCount, pageSize, button });
     }
     return gridState.get(grid);
   };
