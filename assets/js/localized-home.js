@@ -7,6 +7,12 @@
 
   const data = {
     es: [
+    ['avocado-toast','Tostada de aguacate sencilla','Desayuno','Aguacate cremoso sobre pan tostado con limón, pimienta y hierbas.'],
+      ['beef-vegetable-stir-fry','Salteado rápido de ternera y verduras','Cena','Tiras de ternera y verduras crujientes con soja y jengibre.'],
+      ['blueberry-muffins','Magdalenas de arándanos','Repostería','Magdalenas tiernas con arándanos, ideales para desayunar o merendar.'],
+      ['cauliflower-cheese-bake','Coliflor gratinada con queso','Cena','Coliflor tierna al horno con salsa de queso y una superficie dorada.'],
+      ['chicken-broccoli-mash','Pollo con brócoli y puré de patatas','Cena','Una comida casera con pollo tierno, brócoli y puré de patatas.'],
+      ['chicken-curry-rice','Arroz con pollo al curry','Cena','Pollo especiado con curry y arroz aromático para una comida reconfortante.'],
       ['garlic-butter-pasta','Pasta con mantequilla y ajo','Pasta','Una pasta rápida y brillante con ajo, mantequilla y parmesano.'],
       ['lemon-herb-lentil-salad','Ensalada de lentejas con limón y hierbas','Ensalada','Lentejas tiernas con pepino, tomate, hierbas y aderezo de limón.'],
       ['roasted-chickpea-bowl','Bowl de garbanzos asados','Almuerzo vegetariano','Garbanzos crujientes, cereales, verduras y salsa de tahini.'],
@@ -21,6 +27,12 @@
       ['classic-pancakes','Pancakes clásicos esponjosos','Desayuno','Pancakes dorados y suaves con ingredientes cotidianos.']
     ],
     fr: [
+    ['avocado-toast','Tartine simple à l’avocat','Petit-déjeuner','Avocat crémeux sur du pain grillé avec citron, poivre et herbes.'],
+      ['beef-vegetable-stir-fry','Sauté rapide de bœuf aux légumes','Dîner','Bœuf émincé et légumes croquants avec sauce soja et gingembre.'],
+      ['blueberry-muffins','Muffins aux myrtilles','Pâtisserie','Des muffins moelleux aux myrtilles, parfaits au petit-déjeuner ou au goûter.'],
+      ['cauliflower-cheese-bake','Gratin de chou-fleur au fromage','Dîner','Du chou-fleur tendre au four avec une sauce au fromage gratinée.'],
+      ['chicken-broccoli-mash','Poulet, brocoli et purée de pommes de terre','Dîner','Un repas maison avec du poulet tendre, du brocoli et une purée onctueuse.'],
+      ['chicken-curry-rice','Riz au poulet et au curry','Dîner','Du poulet épicé au curry accompagné d’un riz parfumé et réconfortant.'],
       ['garlic-butter-pasta','Pâtes au beurre et à l’ail','Pâtes','Des pâtes rapides et brillantes avec ail, beurre et parmesan.'],
       ['lemon-herb-lentil-salad','Salade de lentilles au citron et aux herbes','Salade','Lentilles, concombre, tomates et herbes avec une vinaigrette citronnée.'],
       ['roasted-chickpea-bowl','Bowl de pois chiches rôtis','Déjeuner végétarien','Pois chiches croustillants, céréales, légumes et sauce tahini.'],
@@ -35,6 +47,12 @@
       ['classic-pancakes','Pancakes classiques moelleux','Petit-déjeuner','Des pancakes dorés et légers avec des ingrédients du placard.']
     ],
     ru: [
+    ['avocado-toast','Простой тост с авокадо','Завтрак','Нежное авокадо на хрустящем тосте с лимоном, перцем и зеленью.'],
+      ['beef-vegetable-stir-fry','Быстрая говядина с овощами на сковороде','Ужин','Тонкие ломтики говядины и хрустящие овощи с соевым соусом и имбирём.'],
+      ['blueberry-muffins','Маффины с черникой','Выпечка','Нежные маффины с черникой для завтрака или перекуса.'],
+      ['cauliflower-cheese-bake','Запеканка из цветной капусты с сыром','Ужин','Нежная цветная капуста под сырным соусом с золотистой корочкой.'],
+      ['chicken-broccoli-mash','Курица с брокколи и картофельным пюре','Ужин','Домашнее блюдо с нежной курицей, брокколи и картофельным пюре.'],
+      ['chicken-curry-rice','Рис с курицей и карри','Ужин','Пряная курица с карри и ароматным рисом для сытного ужина.'],
       ['garlic-butter-pasta','Паста с чесночным маслом','Паста','Быстрая паста с ароматным чесноком, сливочным маслом и пармезаном.'],
       ['lemon-herb-lentil-salad','Салат из чечевицы с лимоном и зеленью','Салат','Чечевица, огурец, помидоры и зелень с яркой лимонной заправкой.'],
       ['roasted-chickpea-bowl','Боул с запечённым нутом','Вегетарианский обед','Хрустящий нут, крупа, овощи и лимонно-тахинный соус.'],

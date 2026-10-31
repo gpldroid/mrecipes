@@ -900,6 +900,26 @@ html[dir="rtl"] .home-primary,html[dir="rtl"] .home-sidebar{direction:rtl}
 
 
 /* Latest Posts slider: four newest recipe cards, one compact linked card per slide. */
+/* Homepage latest-recipes rail: three category-diverse cards with touch scrolling. */
+.homepage-latest-slider{margin:0 0 1.5rem;min-width:0}
+.homepage-latest-slider[hidden]{display:none}
+.homepage-latest-slider-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.85rem}
+.homepage-latest-slider-heading h3{margin:0;font-size:clamp(1.1rem,2vw,1.45rem);line-height:1.35}
+.homepage-latest-slider-heading p{margin:.25rem 0 0;color:var(--muted);font-size:.9rem}
+.homepage-latest-slider-controls{display:flex;gap:.45rem;flex-shrink:0}
+.homepage-latest-slider-arrow{display:grid;place-items:center;width:2.35rem;height:2.35rem;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-size:1.35rem;line-height:1;cursor:pointer}
+.homepage-latest-slider-arrow:hover{background:var(--green);border-color:var(--green);color:#fff}
+.homepage-latest-slider-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:0 0 .5rem}
+.homepage-latest-slider-track{display:grid;grid-auto-flow:column;grid-auto-columns:calc(33.333% - .667rem);gap:1rem;align-items:stretch}
+.homepage-latest-slider-card{min-width:0;scroll-snap-align:start}
+.homepage-latest-slider-card .recipe-image{aspect-ratio:4/3;overflow:hidden}
+.homepage-latest-slider-card .recipe-image img{width:100%;height:100%;object-fit:cover}
+.homepage-latest-slider-card .recipe-content{padding:1rem}
+.homepage-latest-slider-card .recipe-content h3{font-size:1rem;line-height:1.4}
+.homepage-latest-slider-card .recipe-content p{font-size:.9rem}
+@media(max-width:760px){.homepage-latest-slider-track{grid-auto-columns:calc(50% - .375rem);gap:.75rem}.homepage-latest-slider-heading p{font-size:.82rem}}
+@media(max-width:520px){.homepage-latest-slider-track{grid-auto-columns:minmax(0, 86%)}.homepage-latest-slider-heading{align-items:flex-start}.homepage-latest-slider-heading p{max-width:28ch}}
+@media(prefers-reduced-motion:reduce){.homepage-latest-slider-viewport{scroll-behavior:auto}}
 .latest-slider{min-width:0}
 .latest-slider-viewport{overflow:hidden;direction:ltr;border-radius:14px}
 .latest-slider-track{display:flex;align-items:stretch;transition:transform .32s ease;will-change:transform}
@@ -1176,4 +1196,53 @@ html[lang="ar"] :where(h1, h2, h3, h4, h5, h6),
 html[lang="ar"] .content-page :where(p, li, blockquote),
 html[lang="ar"] .page-hero :where(h1, p) {
   letter-spacing: normal;
+}
+
+
+/* Accessible three-card horizontal latest-recipes slider */
+.latest-slider{margin:0 0 2rem;padding:1.1rem 0 0;border-top:1px solid var(--line)}
+.latest-slider-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.25rem 1rem;margin-bottom:1rem}
+.latest-slider-heading h3{margin:0;font-size:clamp(1.15rem,2vw,1.45rem)}
+.latest-slider-heading p{grid-column:1;margin:0;color:var(--muted);font-size:.9rem}
+.latest-slider-controls{grid-column:2;grid-row:1 / span 2;display:flex;gap:.5rem;align-self:center}
+.latest-slider-controls button{display:grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-size:1.5rem;line-height:1}
+.latest-slider-controls button:disabled{opacity:.35;cursor:default}
+.latest-slider-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scroll-padding-inline:1px;padding:2px 1px 1rem}
+.latest-slider-track{display:grid;grid-auto-columns:calc((100% - 2rem)/3);grid-auto-flow:column;gap:1rem}
+.latest-slider-track>.recipe-card{min-width:0;scroll-snap-align:start}
+.latest-slider-track .recipe-image{aspect-ratio:16/10;overflow:hidden;background:var(--line)}
+.latest-slider-track .recipe-image img{width:100%;height:100%;object-fit:cover}
+@media(max-width:760px){.latest-slider-track{grid-auto-columns:calc((100% - 1rem)/2);gap:1rem}}
+@media(max-width:480px){.latest-slider-track{grid-auto-columns:84%;gap:.75rem}.latest-slider-heading p{font-size:.82rem}}
+@media(prefers-reduced-motion:reduce){.latest-slider-viewport{scroll-behavior:auto}}
+
+
+/* Homepage latest-recipes carousel: the older sidebar slider used the same class names.
+   Scope these rules to the homepage rail so the three recipe cards remain horizontally scrollable. */
+[data-latest-slider] { min-width: 0; margin: 0 0 1.5rem; }
+[data-latest-slider] .latest-slider-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.85rem; }
+[data-latest-slider] .latest-slider-heading h3 { margin:0; font-size:clamp(1.1rem,2vw,1.45rem); line-height:1.35; }
+[data-latest-slider] .latest-slider-heading p { margin:.25rem 0 0; color:var(--muted); font-size:.9rem; }
+[data-latest-slider] .latest-slider-controls { display:flex; align-items:center; gap:.45rem; margin:0; padding:0; border:0; flex-shrink:0; }
+[data-latest-slider] .latest-slider-controls button { display:grid; place-items:center; width:2.35rem; height:2.35rem; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--surface); color:var(--ink); font-size:1.35rem; line-height:1; cursor:pointer; }
+[data-latest-slider] .latest-slider-controls button:hover:not(:disabled) { background:var(--green); border-color:var(--green); color:#fff; }
+[data-latest-slider] .latest-slider-controls button:disabled { opacity:.4; cursor:not-allowed; }
+[data-latest-slider] .latest-slider-viewport { overflow-x:auto; overflow-y:hidden; direction:ltr; overscroll-behavior-inline:contain; scroll-snap-type:x mandatory; scrollbar-width:thin; scrollbar-color:var(--line) transparent; border-radius:14px; padding:0 0 .5rem; }
+[data-latest-slider] .latest-slider-track { display:flex; align-items:stretch; gap:1rem; width:100%; transition:none; will-change:scroll-position; }
+[data-latest-slider] .latest-slider-track > .recipe-card { flex:0 0 calc((100% - 2rem)/3); min-width:0; scroll-snap-align:start; }
+[data-latest-slider] .recipe-image { overflow:hidden; }
+[data-latest-slider] .recipe-image img { width:100%; height:100%; object-fit:cover; }
+[data-latest-slider] .latest-slider-image-fallback { display:grid; place-items:center; width:100%; height:100%; min-height:140px; background:linear-gradient(135deg,#e3ebd3,#f4d5b7); font-size:2.5rem; }
+@media(max-width:760px) {
+  [data-latest-slider] .latest-slider-track { gap:.75rem; }
+  [data-latest-slider] .latest-slider-track > .recipe-card { flex-basis:calc((100% - .75rem)/2); }
+  [data-latest-slider] .latest-slider-heading p { font-size:.82rem; }
+}
+@media(max-width:520px) {
+  [data-latest-slider] .latest-slider-track > .recipe-card { flex-basis:86%; }
+  [data-latest-slider] .latest-slider-heading { align-items:flex-start; }
+  [data-latest-slider] .latest-slider-heading p { max-width:28ch; }
+}
+@media(prefers-reduced-motion:reduce) {
+  [data-latest-slider] .latest-slider-viewport { scroll-behavior:auto; }
 }
