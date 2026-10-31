@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  // Load AdSense once and mount two responsive placements on every published page.
+  // Load AdSense once and mount placements only inside meaningful content areas.
   const initializeAdsense = () => {
     const publisher = 'ca-pub-6996931662051674';
     const loaderUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + publisher;
@@ -28,20 +28,14 @@
       const wrapper = document.createElement('aside');
       wrapper.className = 'adsense-placement adsense-' + kind;
       wrapper.setAttribute('aria-label', 'Advertisement');
-      wrapper.style.cssText = 'display:block;clear:both;width:100%;max-width:' + (kind === 'in-article' ? '760px' : '300px') + ';margin:28px auto;padding:0;text-align:center;overflow:hidden;';
+      wrapper.style.cssText = 'display:block;clear:both;width:100%;max-width:100%;margin:32px auto;padding:0;text-align:center;overflow:hidden;';
       const unit = document.createElement('ins');
       unit.className = 'adsbygoogle';
-      unit.style.cssText = kind === 'in-article'
-        ? 'display:block;text-align:center;width:100%;max-width:760px;min-height:100px;'
-        : 'display:block;width:250px;height:125px;max-width:100%;margin:0 auto;';
+      unit.style.cssText = 'display:block;width:100%;min-height:100px;';
       unit.setAttribute('data-ad-client', publisher);
       unit.setAttribute('data-ad-slot', slot);
-      if (kind === 'in-article') {
-        unit.setAttribute('data-ad-format', 'fluid');
-        unit.setAttribute('data-ad-layout', 'in-article');
-      } else {
-        unit.setAttribute('data-ad-format', 'rectangle');
-      }
+      unit.setAttribute('data-ad-format', 'auto');
+      unit.setAttribute('data-full-width-responsive', 'true');
       wrapper.appendChild(unit);
       const push = document.createElement('script');
       push.text = '(adsbygoogle = window.adsbygoogle || []).push({});';
@@ -49,45 +43,44 @@
       return wrapper;
     };
 
-    const firstAd = createPlacement('5806370724', 'in-article');
-    const secondAd = createPlacement('1190274186', 'display');
-    const article = main.querySelector('article');
-    if (article) {
-      const heading = article.querySelector('h1');
-      const intro = heading?.parentElement?.querySelector('p') ||
-        (heading ? [...article.querySelectorAll('p')].find(p => heading.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING) : null);
-      if (intro?.parentNode) intro.parentNode.insertBefore(firstAd, intro.nextSibling);
-      else article.insertBefore(firstAd, article.firstChild);
+    const inArticleAd = createPlacement('5806370724', 'in-article');
+    const displayAd = createPlacement('1190274186', 'display');
 
-      const paragraphs = [...article.querySelectorAll('p')];
-      const author = paragraphs.find(p => /recipe content by|mrecipes|وصفات/i.test(p.textContent || '') && p !== intro);
-      if (author?.parentNode) author.parentNode.insertBefore(secondAd, author);
-      else article.appendChild(secondAd);
+    // The homepage has a single full-width placement after its recipe feed,
+    // never between the hero, navigation, slider, or recipe cards.
+    const homeFeed = main.querySelector('.home-content-layout');
+    if (homeFeed) {
+      homeFeed.insertAdjacentElement('afterend', inArticleAd);
       return;
     }
 
-    const sections = [...main.querySelectorAll(':scope > section')];
-    if (sections.length) {
-      sections[0].after(firstAd);
-      if (sections.length > 1) {
-        sections[Math.min(1, sections.length - 1)].after(secondAd);
-      } else {
-        const content = main.querySelector('.content-page');
-        if (content && content.children.length > 1) {
-          content.children[Math.floor(content.children.length / 2)].after(secondAd);
-        } else {
-          main.appendChild(secondAd);
-        }
+    const article = main.querySelector('.content-page article, article.recipe-article, article');
+    if (article) {
+      const heading = article.querySelector('h1');
+      const paragraphs = [...article.querySelectorAll('p')].filter(p => p.textContent.trim().length > 80);
+      const intro = paragraphs.find(p => !heading || (heading.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING));
+      if (intro?.parentNode) intro.parentNode.insertBefore(inArticleAd, intro.nextSibling);
+      else if (heading?.parentNode) heading.parentNode.insertBefore(inArticleAd, heading.nextSibling);
+      else article.insertBefore(inArticleAd, article.firstChild);
+
+      if (paragraphs.length >= 6) {
+        const middleParagraph = paragraphs[Math.floor(paragraphs.length * 0.6)];
+        if (middleParagraph?.parentNode) middleParagraph.parentNode.insertBefore(displayAd, middleParagraph.nextSibling);
       }
       return;
     }
 
-    const paragraphs = [...main.querySelectorAll('p')];
-    if (paragraphs.length) {
-      paragraphs[0].after(firstAd);
-      paragraphs[Math.floor(paragraphs.length / 2)].after(secondAd);
-    } else {
-      main.append(firstAd, secondAd);
+    // On informational pages, keep ads within the actual reading column and
+    // only show them when there is enough text to separate them from controls.
+    const content = main.querySelector('.content-page, .article-body, .post-body, .entry-content');
+    if (content) {
+      const paragraphs = [...content.querySelectorAll('p')].filter(p => p.textContent.trim().length > 80);
+      if (paragraphs.length >= 3) {
+        paragraphs[0].after(inArticleAd);
+        if (paragraphs.length >= 7) {
+          paragraphs[Math.floor(paragraphs.length * 0.65)].after(displayAd);
+        }
+      }
     }
   };
 
@@ -96,8 +89,6 @@
   } else {
     initializeAdsense();
   }
-
-
 
   // Keep homepage card imagery in sync with the image authored in each recipe article.
   if (!document.querySelector('script[data-mrecipes-article-images]')) {
@@ -108,7 +99,7 @@
     document.head.appendChild(imageSyncScript);
   }
 
-  const PAGE_SIZE = 6;
+  const PAGE_SIZE = 8;
   const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/';
   const locale = ['ar', 'es', 'fr', 'ru'].find(code => path === `/${code}` || path.startsWith(`/${code}/`)) || 'en';
   const isHomePage = path === '/' || ['ar', 'es', 'fr', 'ru', 'en'].some(code => path === `/${code}`);
