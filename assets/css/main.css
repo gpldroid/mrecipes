@@ -229,7 +229,7 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   background: var(--surface); box-shadow: 0 3px 14px rgba(48, 37, 69, .025);
   transition: transform .2s ease, box-shadow .2s ease;
 }
-.recipe-card[hidden] { display: none; }
+.recipe-card[hidden], [data-recipe-card][hidden] { display: none !important; }
 .recipe-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 .recipe-image {
   display: grid; flex: 0 0 auto; place-items: center; width: 100%; min-width: 0;
@@ -755,7 +755,7 @@ pre, code, table { overflow-wrap: anywhere; }
   font: inherit;
   cursor: pointer;
 }
-.load-more-button[hidden], .pagination-status[hidden] { display: none; }
+.load-more-button[hidden], .pagination-status[hidden] { display: none !important; }
 .pagination-status {
   margin: .5rem 0 0;
   color: var(--muted);
