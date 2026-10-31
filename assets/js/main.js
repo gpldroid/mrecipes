@@ -514,3 +514,17 @@
   updateVisibility();
 })();
 
+/* Load recipe-matched Clip Recipe video recommendations on recipe detail pages. */
+(() => {
+  'use strict';
+  const path = window.location.pathname.replace(/\\/+$/, '');
+  const isRecipePage = /\\/(recipes|article)\\/[^/]+\\.html$/i.test(path);
+  if (!isRecipePage || /recipe-template\\.html$/i.test(path)) return;
+  if (document.querySelector('script[data-clip-recipe-videos]')) return;
+  const script = document.createElement('script');
+  script.src = '/assets/js/clip-recipe-videos.js';
+  script.defer = true;
+  script.dataset.clipRecipeVideos = 'true';
+  script.onerror = () => console.error('Clip Recipe recommendations could not be loaded.');
+  document.head.appendChild(script);
+})();
