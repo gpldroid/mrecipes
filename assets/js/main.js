@@ -138,7 +138,7 @@
 
 
   // Build the desktop sidebar from the same recipe cards as the main feed.
-  // This keeps links, titles, categories, and images in sync with static or Supabase content.
+  // This keeps links, titles, categories, and images in sync with static HTML content.
   const sidebarLabels = {
     en: { all: 'View all', empty: 'More recipes coming soon' },
     ar: { all: 'عرض الكل', empty: 'وصفات جديدة قريبًا' },
@@ -430,7 +430,7 @@
 
   // Recipe listings use the recipe cards authored in the HTML files.
   // No remote database or client-side data service is required.
-})(););
+})();
 
 /* Accessible floating controls for scrolling to the top or bottom of any page. */
 (() => {
