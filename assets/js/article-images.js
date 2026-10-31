@@ -139,6 +139,22 @@
     } catch (_) {}
   };
 
+
+
+  // Use the exact image URL authored in the recipe page. Do not rebuild a
+  // guessed local WebP path: many recipes use remote or differently named assets.
+  const setCardImageFromArticle = (img, articleImage) => {
+    const assetSlug = recipeAssetSlugFromUrl(articleImage);
+    const source = assetSlug && fallbackImages[assetSlug] ? fallbackImages[assetSlug] : articleImage;
+    const picture = img.closest('picture');
+    picture?.querySelectorAll('source').forEach(node => node.remove());
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.src = source;
+    img.decoding = 'async';
+    img.loading = 'lazy';
+  };
+
   const optimizeImage = (img, slug, priority = false) => {
     addResponsiveSources(img, slug);
     img.decoding = 'async';
@@ -188,22 +204,7 @@
       const articleImage = await articleImageForCard(link.getAttribute('href'));
       if (!img.isConnected) return;
       if (articleImage) {
-        const assetSlug = recipeAssetSlugFromUrl(articleImage);
-        if (assetSlug && fallbackImages[assetSlug]) {
-          const picture = img.closest('picture');
-          picture?.querySelectorAll('source').forEach(source => source.remove());
-          img.removeAttribute('srcset');
-          img.removeAttribute('sizes');
-          applyRemoteResponsive(img, fallbackImages[assetSlug]);
-        } else if (assetSlug) {
-          addResponsiveSources(img, assetSlug, 'card');
-        } else {
-          const picture = img.closest('picture');
-          picture?.querySelectorAll('source').forEach(source => source.remove());
-          img.removeAttribute('srcset');
-          img.removeAttribute('sizes');
-          applyRemoteResponsive(img, articleImage);
-        }
+        setCardImageFromArticle(img, articleImage);
         attachImageFallback(img, slugFromHref(link.href));
       }
       img.dataset.mrecipesImageSync = 'done';
@@ -220,22 +221,7 @@
       if (!link) return;
       const articleImage = await articleImageForCard(link.getAttribute('href'));
       if (!articleImage || new URL(articleImage, location.origin).href === img.src) return;
-      const assetSlug = recipeAssetSlugFromUrl(articleImage);
-      if (assetSlug && fallbackImages[assetSlug]) {
-        const picture = img.closest('picture');
-        picture?.querySelectorAll('source').forEach(source => source.remove());
-        img.removeAttribute('srcset');
-        img.removeAttribute('sizes');
-        applyRemoteResponsive(img, fallbackImages[assetSlug]);
-      } else if (assetSlug) {
-        addResponsiveSources(img, assetSlug, 'card');
-      } else {
-        const picture = img.closest('picture');
-        picture?.querySelectorAll('source').forEach(source => source.remove());
-        img.removeAttribute('srcset');
-        img.removeAttribute('sizes');
-        applyRemoteResponsive(img, articleImage);
-      }
+      setCardImageFromArticle(img, articleImage);
     };
     const attach = root => {
       root.querySelectorAll('.recipe-card a[href] img').forEach(img => {
