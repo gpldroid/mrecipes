@@ -364,7 +364,7 @@
       }
       const initialCount = Math.max(1, Number(grid.dataset.initialCount) || PAGE_SIZE);
       const pageSize = Math.max(1, Number(grid.dataset.pageSize) || PAGE_SIZE);
-      if (!grid.id) grid.id = 'homepage-recipe-grid';
+      if (!grid.id) grid.id = isHomePage ? 'homepage-recipe-grid' : 'recipes-page-grid';
       button.setAttribute('aria-controls', grid.id);
       button.textContent = labels.more;
       button.addEventListener('click', () => {
@@ -403,7 +403,6 @@
   };
 
   const updateAllGrids = () => {
-    if (!isHomePage) return;
     document.querySelectorAll('[data-supabase-recipes]').forEach(updateGrid);
   };
 
@@ -422,7 +421,7 @@
     updateAllGrids();
   };
 
-  if (isHomePage) document.querySelectorAll('[data-supabase-recipes]').forEach(getGridState);
+  document.querySelectorAll('[data-supabase-recipes]').forEach(getGridState);
   applySearch();
   renderSidebar();
   buildHomepageLatestSlider();
