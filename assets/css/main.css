@@ -1246,3 +1246,14 @@ html[lang="ar"] .page-hero :where(h1, p) {
 @media(prefers-reduced-motion:reduce) {
   [data-latest-slider] .latest-slider-viewport { scroll-behavior:auto; }
 }
+
+
+/* Recipe category links sit immediately above the global footer. */
+.footer-category-section{padding:2rem 1.25rem;background:color-mix(in srgb,var(--lime) 34%,var(--paper));border-top:1px solid var(--line)}
+.footer-category-inner{width:min(var(--content),100%);margin-inline:auto}
+.footer-category-inner h2{margin:0 0 1rem;font-size:clamp(1.15rem,2vw,1.45rem)}
+.footer-category-links{display:flex;flex-wrap:wrap;gap:.65rem}
+.footer-category-links a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:.5rem .9rem;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font-size:.875rem;font-weight:650;text-decoration:none;transition:background-color .2s ease,border-color .2s ease,color .2s ease,transform .2s ease}
+.footer-category-links a:hover{transform:translateY(-2px);border-color:var(--green);background:var(--green);color:#fff}
+.footer-category-links a:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+@media(max-width:600px){.footer-category-section{padding:1.5rem 1rem}.footer-category-links{gap:.5rem}.footer-category-links a{min-height:38px;padding:.45rem .75rem;font-size:.82rem}}
