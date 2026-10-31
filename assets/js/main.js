@@ -54,7 +54,7 @@
       return;
     }
 
-    const article = main.querySelector('.content-page article, article.recipe-article, article');
+    const article = main.querySelector('article.content-page, .content-page article, article.recipe-article, article.post-content');
     if (article) {
       const heading = article.querySelector('h1');
       const paragraphs = [...article.querySelectorAll('p')].filter(p => p.textContent.trim().length > 80);
