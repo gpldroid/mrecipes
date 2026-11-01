@@ -9,33 +9,43 @@
     document.head.appendChild(stylesheet);
   }
 
+  // Exact recipe-to-video matches. No broad category fallbacks: a page only shows
+  // videos whose Clip Recipe title matches that recipe.
   const videos = {
-    chicken: [
-      { title: 'Chicken recipe video', cuisine: 'Quick home cooking', time: '40 min', image: 'https://img.cliprecipe.com/images/1473fb0824a64c88ab810cac90f8bdf4_1677726734tplv-tiktokx-origin.image', recipe: 'https://www.cliprecipe.com/recipe/0fbb5f64-1ca8-4501-85a9-2e49891e23a9?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZP8fHsLAA/' },
-      { title: 'Thai-style chicken', cuisine: 'Thai', image: 'https://img.cliprecipe.com/thumbnails/FxPqMSgeZNULkwKHs8aAf8.jpg', recipe: 'https://www.cliprecipe.com/recipe/2d2c6268-009b-417d-bc46-647808857e8a?utm_source=mrecipes', video: 'https://www.instagram.com/reel/DMITsttTqoR/' },
-      { title: 'Chicken 65', cuisine: 'Indian', time: '15 min', image: 'https://img.cliprecipe.com/thumbnails/An5giH4FaDYmkDav9RF2fm.jpg', recipe: 'https://www.cliprecipe.com/recipe/314f080a-5317-4322-841a-e4680879e24b?utm_source=mrecipes', video: 'https://vt.tiktok.com/ZSyH8MLtj/' }
+    'marry-me-chicken': [
+      { title: 'Marry Me Chicken', cuisine: 'Italian', image: 'https://img.cliprecipe.com/thumbs/da7ddd3a-0bad-4cb6-9165-6b59c896051a.jpg', recipe: 'https://www.cliprecipe.com/recipe/612d325e-b2ad-48de-8ec1-c7816575e66a?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZTUEnurxS/' }
     ],
-    pasta: [
-      { title: 'Italian pasta video', cuisine: 'Italian', image: 'https://img.cliprecipe.com/thumbnails/3WLZfLTLzpgQqunCaQPXvS.jpg', recipe: 'https://www.cliprecipe.com/recipe/0869db0f-d1e9-43c0-9d48-acbe80eed946?utm_source=mrecipes', video: 'https://www.instagram.com/reel/DUEKmuOjFUP/' },
-      { title: 'Pasta video inspiration', cuisine: 'Recipe inspiration', image: 'https://img.cliprecipe.com/thumbnails/HAT8b75kmaQqrHZrUVNYYd.webp', recipe: 'https://www.cliprecipe.com/recipe/5523a99e-ce97-4786-a99e-e69ecf74be0f?utm_source=mrecipes', video: 'https://youtube.com/shorts/WHFVTDWaFCU' },
-      { title: 'Ouzi pasta', cuisine: 'Middle Eastern', time: '15 min', image: 'https://img.cliprecipe.com/images/osDECAMJiiAwR6AwII3BKpdTwHHAe70WWA8PBqtplv-tiktokx-origin.image', recipe: 'https://www.cliprecipe.com/recipe/e1626a56-5aba-44d4-802b-921beb454f2d?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZTkbGn5nC/' }
+    'creamy-garlic-chicken': [
+      { title: 'Creamy Garlic Chicken', cuisine: 'American', image: 'https://img.cliprecipe.com/thumbs/d13e02b5-c949-4b87-b64f-1a35537261a1.jpg', recipe: 'https://www.cliprecipe.com/recipe/c2a24986-7cc6-4fc1-a2b0-8014989acc63?utm_source=mrecipes', video: 'https://www.facebook.com/share/r/1EoPwGnQFn/?mibextid=wwXIfr' },
+      { title: 'Creamy garlic chicken', cuisine: 'Italian', image: 'https://img.cliprecipe.com/images/628416974_18096966784933444_6212405180105697792_n.jpg', recipe: 'https://www.cliprecipe.com/recipe/a58df30b-86d7-4745-910e-fbc6a37bd6fa?utm_source=mrecipes', video: 'https://www.instagram.com/reel/DUYB9epjRKj/' }
     ],
-    baking: [
-      { title: 'Soft cookies', cuisine: 'American', time: '11 min', image: 'https://img.cliprecipe.com/images/ooAVHIYUkEfB5jQIjAIfCFrEYDwzcVItIWysfAtplv-tiktokx-origin.image', recipe: 'https://www.cliprecipe.com/recipe/1208b2b6-93cf-46fa-ab39-eff2cac2812f?utm_source=mrecipes', video: 'https://vm.tiktok.com/ZNRnuKGwh/' },
-      { title: 'Classic cookies', cuisine: 'American', time: '34 min', image: 'https://img.cliprecipe.com/thumbnails/ABiySQk9eqHjAuXSsynvXq.jpg', recipe: 'https://www.cliprecipe.com/recipe/0f4ceac0-c698-4aa2-a2f2-e24eed5dfdb7?utm_source=mrecipes', video: 'https://www.instagram.com/reel/CwfksGns-Vf/' },
-      { title: 'New York cookies', cuisine: 'American', time: '10 min', image: 'https://img.cliprecipe.com/thumbnails/GBrNEXLtmarE3NWkcfefu9.webp', recipe: 'https://www.cliprecipe.com/recipe/4fa85b71-a832-4345-9b90-8e59add6517c?utm_source=mrecipes', video: 'https://youtu.be/P1gqm9CG8sw' }
+    'garlic-butter-pasta': [
+      { title: 'Garlic Butter Pasta', cuisine: 'Italian', image: 'https://img.cliprecipe.com/thumbs/e63c7c24-eb09-47e7-b25b-bc18a1071f4b.jpg', recipe: 'https://www.cliprecipe.com/recipe/bb58bcc5-11c6-4b39-97f7-41bc139fdd5d?utm_source=mrecipes', video: 'https://www.facebook.com/watch?v=1259586506183820' },
+      { title: 'Garlic Butter Pasta', cuisine: 'Italian', time: '20 min', image: 'https://img.cliprecipe.com/thumbnails/bxiLseXhZikvWQTwczxcwS.jpg', recipe: 'https://www.cliprecipe.com/recipe/09d3e85a-e3b8-4761-afc1-95c8bf419a85?utm_source=mrecipes', video: 'https://www.instagram.com/reel/DJ98gwmyI8g/' }
+    ],
+    'easy-shakshuka': [
+      { title: 'Shakshuka', cuisine: 'Middle Eastern', image: 'https://img.cliprecipe.com/images/maxresdefault.jpg', recipe: 'https://www.cliprecipe.com/recipe/03702d35-b499-433a-b8e6-262c2f74ca71?utm_source=mrecipes', video: 'https://m.youtube.com/shorts/-DQIVg2aKks' },
+      { title: 'Shakshuka', cuisine: 'Middle Eastern', time: '30 min', image: 'https://img.cliprecipe.com/thumbnails/X2N8BGqPdzFopHsaSBiqmo.jpg', recipe: 'https://www.cliprecipe.com/recipe/a30742a8-dfef-4b41-bd03-6cb1df13356d?utm_source=mrecipes', video: 'https://www.instagram.com/reel/DJ4azmGJRIy/' }
+    ],
+    'classic-pancakes': [
+      { title: 'Classic American Pancakes', cuisine: 'American', image: 'https://img.cliprecipe.com/images/maxresdefault.webp', recipe: 'https://www.cliprecipe.com/recipe/13999f8e-c97f-4d02-aa9b-034a66243457?utm_source=mrecipes', video: 'https://www.youtube.com/watch?v=RTExkuPgxlI' }
+    ],
+    'chocolate-chip-cookies': [
+      { title: 'Chocolate Chip Cookies', cuisine: 'American', image: 'https://img.cliprecipe.com/thumbs/c4735328-67cd-4ed3-89e5-5c32bb79a952.jpg', recipe: 'https://www.cliprecipe.com/recipe/85effd2f-ff0e-4ac5-976b-d2433649782d?utm_source=mrecipes', video: 'https://www.instagram.com/reel/Dcht-KwxR1o/' },
+      { title: 'Chocolate Chip Cookies', cuisine: 'American', image: 'https://img.cliprecipe.com/thumbs/a423ce25-4f90-4507-ad6b-c049ebb176cc.jpg', recipe: 'https://www.cliprecipe.com/recipe/44605d4a-3dbf-4896-93ee-eb34145e1663?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZTyppB1D1/' },
+      { title: 'Chocolate Chip Cookies', cuisine: 'American', time: '9 min', image: 'https://img.cliprecipe.com/images/o4MamwiIIBw1RPCfsFipSBgupxq7iCASBAQIC9tplv-tiktokx-origin.image', recipe: 'https://www.cliprecipe.com/recipe/475b90c6-f26f-48c1-aafc-be96ad7bd02a?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZP8ptoWwJ/' }
+    ],
+    'miso-glazed-salmon': [
+      { title: 'Miso Glazed Salmon', cuisine: 'Japanese', time: '30 min', image: 'https://img.cliprecipe.com/thumbnails/8KAkA9ifpGa6QaHsq5BXy4.jpg', recipe: 'https://www.cliprecipe.com/recipe/591eca1a-1c28-4cc3-a9db-c63a7f6a63df?utm_source=mrecipes', video: 'https://www.tiktok.com/t/ZT215YRME/' }
+    ],
+    'beef-vegetable-stir-fry': [
+      { title: 'Beef Stir Fry', cuisine: 'Chinese', image: 'https://img.cliprecipe.com/thumbnails/Wutzx7y3vTmCs8v82cJif6.jpg', recipe: 'https://www.cliprecipe.com/recipe/a27d7bdc-7fe0-4508-9230-c766b8c095f2?utm_source=mrecipes', video: 'https://pin.it/51nM3A8jG' }
     ]
   };
 
-  const slug = decodeURIComponent(window.location.pathname.split('/').pop() || '').replace(/\\.html$/i, '').toLowerCase();
-  const category = /chicken|tandoori|shakshuka|taco|beef|stir-fry/.test(slug)
-    ? 'chicken'
-    : /pasta|spaghetti|tortellini|orzo/.test(slug)
-      ? 'pasta'
-      : /cookie|brownie|muffin|banana-bread|crumble|baking/.test(slug)
-        ? 'baking'
-        : null;
-  if (!category || !videos[category]) return;
+  const slug = decodeURIComponent(window.location.pathname.split('/').pop() || '').replace(/\.html$/i, '').toLowerCase();
+  const matchedVideos = videos[slug];
+  if (!matchedVideos || !matchedVideos.length) return;
 
   const locale = (document.documentElement.lang || 'en').toLowerCase().split('-')[0];
   const labels = {
@@ -63,7 +73,7 @@
   const grid = document.createElement('div');
   grid.className = 'clip-recipe-videos-grid';
 
-  videos[category].forEach(item => {
+  matchedVideos.forEach(item => {
     const card = document.createElement('article');
     card.className = 'clip-recipe-video-card';
     const imageLink = document.createElement('a');
