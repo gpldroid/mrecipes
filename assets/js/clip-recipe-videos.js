@@ -40,6 +40,15 @@
     ],
     'beef-vegetable-stir-fry': [
       { title: 'Beef Stir Fry', cuisine: 'Chinese', image: 'https://img.cliprecipe.com/thumbnails/Wutzx7y3vTmCs8v82cJif6.jpg', recipe: 'https://www.cliprecipe.com/recipe/a27d7bdc-7fe0-4508-9230-c766b8c095f2?utm_source=mrecipes', video: 'https://pin.it/51nM3A8jG' }
+    ],
+    'chicken-fried-rice': [
+      { title: 'Chicken Fried Rice', cuisine: 'Chinese', image: 'https://img.cliprecipe.com/thumbs/4d4db6f2-d538-464a-b53e-ffc0faae4f6e.jpg', recipe: 'https://www.cliprecipe.com/recipe/1110a540-5576-4372-9878-9dc004f8fcd3?utm_source=mrecipes', video: 'https://www.youtube.com/watch?v=0Ec1H-7mgZw' }
+    ],
+    'easy-chickpea-curry': [
+      { title: 'Chickpea Curry', cuisine: 'Indian', time: '30 min', image: 'https://img.cliprecipe.com/thumbnails/mjVEGmUs8H4hj88z2fyvgr.jpg', recipe: 'https://www.cliprecipe.com/recipe/f5c51ed8-c7b8-46ca-927e-84e972980760?utm_source=mrecipes', video: 'https://vm.tiktok.com/ZNRJBdUru/' }
+    ],
+    'ground-beef-tacos': [
+      { title: 'Crispy Ground Beef Tacos', cuisine: 'Mexican', image: 'https://img.cliprecipe.com/thumbnails/WgiRzhxxEsEhryZcY6zSxZ.jpg', recipe: 'https://www.cliprecipe.com/recipe/a130a48d-35ad-4b79-8d3f-35c38ffbb293?utm_source=mrecipes', video: 'https://pin.it/5FYF4pBSa' }
     ]
   };
 
