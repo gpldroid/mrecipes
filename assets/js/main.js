@@ -346,6 +346,8 @@
       clone.hidden = false;
       clone.classList.add('homepage-latest-slider-card');
       clone.querySelectorAll('[hidden]').forEach(el => el.hidden = false);
+      // Keep the homepage category slider compact: descriptions stay on the full recipe cards.
+      clone.querySelectorAll('.recipe-content > p').forEach(description => description.remove());
       return clone;
     }));
     section.hidden = selected.length === 0;
