@@ -49,6 +49,12 @@
     ],
     'ground-beef-tacos': [
       { title: 'Crispy Ground Beef Tacos', cuisine: 'Mexican', image: 'https://img.cliprecipe.com/thumbnails/WgiRzhxxEsEhryZcY6zSxZ.jpg', recipe: 'https://www.cliprecipe.com/recipe/a130a48d-35ad-4b79-8d3f-35c38ffbb293?utm_source=mrecipes', video: 'https://pin.it/5FYF4pBSa' }
+    ],
+    'stuffed-bell-peppers': [
+      { title: 'Easy Stuffed Bell Peppers', cuisine: 'American', time: '60 min', image: 'https://img.cliprecipe.com/thumbnails/h7NZvANemDaiSvQQBGGxhi.jpg', recipe: 'https://www.cliprecipe.com/recipe/790e41cf-5f91-42fd-b4e5-db318265832f?utm_source=mrecipes', video: 'https://www.facebook.com/share/v/1BLJXqQVAn/?mibextid=wwXIfr' }
+    ],
+    'moist-banana-bread': [
+      { title: 'Moist Banana Bread', cuisine: 'American', time: '50 min', image: 'https://img.cliprecipe.com/thumbnails/XcET4mvLpyxCLYoZAA4vtz.jpg', recipe: 'https://www.cliprecipe.com/recipe/16ac7dc3-4585-4461-b301-51bf84dd3562?utm_source=mrecipes', video: 'https://www.instagram.com/reel/C_g0qjOsPvB/?igsh=ZWdyMnQ0cHFrenFi' }
     ]
   };
 
