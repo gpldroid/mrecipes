@@ -1289,3 +1289,136 @@ html[lang="ar"] .page-hero :where(h1, p) {
 .load-more-btn:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
 .load-more-btn[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){.load-more-btn{transition:none}}
+
+
+/* Refined Video Recipes gallery — aligned with the MRecipes Culinary Studio theme. */
+.video-recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: stretch;
+}
+.video-recipes-grid .video-recipe-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(40, 48, 35, .055);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.video-recipes-grid .video-recipe-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--green) 38%, var(--line));
+  box-shadow: 0 14px 32px rgba(40, 48, 35, .11);
+}
+.video-recipes-grid .video-card-media,
+.video-recipes-grid .video-frame,
+.video-recipes-grid .video-search-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 17px 17px 0 0;
+  background: #171717;
+}
+.video-recipes-grid .video-frame iframe,
+.video-recipes-grid .video-search-thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+.video-recipes-grid .recipe-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(.9rem, 1.5vw, 1.2rem);
+}
+.video-recipes-grid .recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: .55rem;
+}
+.video-recipes-grid .recipe-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--green) 10%, var(--surface));
+  color: var(--green-dark);
+  font-size: .72rem;
+  font-weight: 750;
+}
+.video-recipes-grid .recipe-content h2 {
+  margin: 0 0 .25rem;
+  font-size: clamp(1rem, 1.3vw, 1.12rem);
+  line-height: 1.4;
+  text-wrap: balance;
+}
+.video-recipes-grid .recipe-content h2 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.video-recipes-grid .recipe-content h2 a:hover {
+  color: var(--green-dark);
+}
+.video-recipes-grid .video-credit {
+  margin: .35rem 0 .9rem;
+  font-size: .82rem;
+  line-height: 1.5;
+}
+.video-recipes-grid .video-card-actions {
+  width: 100%;
+  margin-top: auto;
+  padding-top: .15rem;
+}
+.video-recipes-grid .video-watch-link,
+.video-recipes-grid .video-recipe-link {
+  min-height: 42px;
+  font-size: .8rem;
+}
+.video-recipes-grid .video-watch-link {
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--green) 18%, transparent);
+}
+.video-recipes-grid .video-search-thumbnail img {
+  transition: transform .45s ease;
+}
+.video-recipes-grid .video-search-thumbnail:hover img {
+  transform: scale(1.045);
+}
+.video-recipes-grid .video-play-mark {
+  background: linear-gradient(0deg, rgba(0,0,0,.28), rgba(0,0,0,.04));
+}
+.video-recipes-grid .video-play-mark i {
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  padding-left: .18rem;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 50%;
+  background: rgba(20, 25, 20, .68);
+  box-shadow: 0 5px 18px rgba(0,0,0,.2);
+  font-size: 1.15rem;
+  backdrop-filter: blur(6px);
+}
+.video-recipes-grid .video-recipe-card[hidden] { display: none !important; }
+@media (max-width: 980px) {
+  .video-recipes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .video-recipes-grid { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .video-recipes-grid .recipe-content { padding: 1rem; }
+  .video-recipes-grid .video-card-actions > a { flex: 1 1 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .video-recipes-grid .video-recipe-card,
+  .video-recipes-grid .video-search-thumbnail img { transition: none; }
+  .video-recipes-grid .video-recipe-card:hover { transform: none; }
+}
