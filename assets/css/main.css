@@ -506,7 +506,7 @@ html[data-theme="dark"] .article-content img { box-shadow: 0 8px 26px rgba(0, 0,
   .footer-bottom > span { flex-basis: 100%; }
   .mobile-tab-bar {
     position: fixed; z-index: 120; right: 0; bottom: 0; left: 0;
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
     padding: .5rem .5rem calc(.5rem + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 96%, transparent);
     -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
@@ -1281,3 +1281,11 @@ html[lang="ar"] .page-hero :where(h1, p) {
 .video-seo-faq p{max-width:850px;line-height:1.75}
 @media(max-width:700px){.video-recipes-intro{display:block}.video-recipes-count{margin-top:.6rem}.video-card-actions>a{flex:1 1 auto}}
 @media(prefers-reduced-motion:reduce){.video-play-mark{transition:none}}
+
+/* Video directory pagination controls */
+.load-more-wrap{display:flex;justify-content:center;margin:2rem 0 0}
+.load-more-btn{display:inline-flex;align-items:center;justify-content:center;min-width:190px;min-height:48px;padding:.75rem 1.4rem;border:1px solid var(--green);border-radius:999px;background:var(--green);color:#fff;font:inherit;font-weight:800;cursor:pointer;transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease}
+.load-more-btn:hover{transform:translateY(-2px);background:var(--green-dark);box-shadow:0 8px 22px rgba(48,37,69,.14)}
+.load-more-btn:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.load-more-btn[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.load-more-btn{transition:none}}
