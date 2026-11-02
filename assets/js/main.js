@@ -133,6 +133,13 @@
     }
     if (consent.marketing) initializeAdsense();
     else {
+      if (typeof window.gtag === 'function') {
+        window.gtag('consent', 'update', {
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied'
+        });
+      }
       document.querySelectorAll('.adsense-placement').forEach(placement => placement.remove());
       const main = document.querySelector('main');
       if (main) delete main.dataset.adsenseInitialized;
