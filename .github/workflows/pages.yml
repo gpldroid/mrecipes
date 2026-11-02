@@ -113,7 +113,7 @@ jobs:
               robots=p.meta.get('robots','').lower()
               if 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
               if len(p.canon)!=1 or not p.canon[0].startswith('https://mrecipes.online/'): errors.append(f'{label}: invalid canonical')
-              if page.parent.name=='recipes' and page.name!='recipe-template.html' and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
+              if page.parent.name=='recipes' and page.name not in ('recipe-template.html','index.html') and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
               if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in page.read_text(encoding='utf-8'):
                   errors.append(f'{label}: AdSense loader must be consent-gated, not embedded in HTML')
               for href in p.links:
