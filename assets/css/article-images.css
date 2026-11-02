@@ -3,7 +3,7 @@
    Images reserve their aspect-ratio to reduce layout shift (CLS).
 */
 .content-page {
-  width: min(100%, 820px) !important;
+  width: min(100%, 1024px) !important;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -16,7 +16,7 @@
 .content-page img {
   display: block !important;
   width: 100% !important;
-  max-width: 820px !important;
+  max-width: 1024px !important;
   height: auto !important;
   margin: 24px auto !important;
   border-radius: 14px;
@@ -31,13 +31,13 @@
 .article-content figure,
 .content-page figure.recipe-image {
   width: 100% !important;
-  max-width: 820px !important;
+  max-width: 1024px !important;
   margin: 24px auto !important;
 }
 
 /* Featured image: 16:9 on desktop/tablet, with a stable box before the image loads. */
 .content-page > figure.recipe-image {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1024 / 550 !important;
   overflow: hidden;
   background: #f2f1eb;
 }
@@ -79,7 +79,7 @@
   .content-page > figure.recipe-image {
     margin: 18px auto 24px !important;
     border-radius: 12px;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 10 !important;
   }
 
   .content-page > figure.recipe-image img {
@@ -97,7 +97,7 @@
   .entry-content img,
   .article-content img,
   .content-page figure.recipe-image {
-    max-width: 820px !important;
+    max-width: 1024px !important;
   }
 }
 
