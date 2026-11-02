@@ -1,1 +1,0 @@
-window.MRECIPES_YOUTUBE_API_KEY = "AIzaSyBn3v7xKTXMKIeskOIjzrsaN4BfmLtTnNI";
