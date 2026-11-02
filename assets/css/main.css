@@ -1422,3 +1422,103 @@ html[lang="ar"] .page-hero :where(h1, p) {
   .video-recipes-grid .video-search-thumbnail img { transition: none; }
   .video-recipes-grid .video-recipe-card:hover { transform: none; }
 }
+
+
+/* Keep homepage recipe-category panels beside the feed on compact screens. */
+@media (max-width: 900px) {
+  .home-content-layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 2.25fr) minmax(112px, .9fr);
+    align-items: start;
+    gap: clamp(.55rem, 1.8vw, 1rem);
+  }
+  .home-primary {
+    min-width: 0;
+  }
+  .home-primary .recipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .7rem;
+  }
+  .home-sidebar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .55rem;
+    min-width: 0;
+    align-self: start;
+  }
+  /* The main content already has a latest-recipes rail; use this column for categories. */
+  .home-sidebar > .sidebar-panel {
+    display: none;
+  }
+  .sidebar-categories {
+    display: grid;
+    gap: .55rem;
+    min-width: 0;
+  }
+  .sidebar-category-panel {
+    min-width: 0;
+    padding: .55rem;
+    border-radius: 12px;
+  }
+  .sidebar-category-heading {
+    align-items: flex-start;
+    gap: .25rem;
+    margin-bottom: .4rem;
+  }
+  .sidebar-category-heading h2 {
+    font-size: .72rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .sidebar-category-heading a {
+    font-size: .58rem;
+  }
+  .sidebar-category-cards {
+    gap: .35rem;
+  }
+  .sidebar-category-cards .sidebar-recipe-card {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: .35rem;
+    padding-bottom: .35rem;
+  }
+  .sidebar-category-cards .sidebar-recipe-image {
+    width: 38px;
+    border-radius: 7px;
+  }
+  .sidebar-category-cards .sidebar-recipe-copy h3 {
+    font-size: .62rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 560px) {
+  .home-content-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(104px, .72fr);
+    gap: .45rem;
+  }
+  .home-primary .recipe-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .65rem;
+  }
+  .sidebar-category-panel {
+    padding: .45rem;
+  }
+  .sidebar-category-cards .sidebar-recipe-card {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: .3rem;
+  }
+  .sidebar-category-cards .sidebar-recipe-image {
+    width: 32px;
+  }
+  .sidebar-category-cards .sidebar-recipe-copy h3 {
+    font-size: .58rem;
+  }
+}
+@media (max-width: 380px) {
+  .home-content-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
