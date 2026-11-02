@@ -1868,3 +1868,92 @@ html[lang="ar"] .page-hero :where(h1, p) {
     transition: none !important;
   }
 }
+
+
+/* MRecipes local recipe and embedded-video search */
+.recipe-search-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .65rem;
+  margin: 0 0 1.25rem;
+}
+.recipe-search-form input[type="search"] {
+  flex: 1 1 260px;
+  min-width: 0;
+  min-height: 46px;
+  padding: .7rem .9rem;
+  border: 1px solid var(--line, #ded8cd);
+  border-radius: .7rem;
+  background: var(--surface, #fff);
+  color: var(--ink, #29251f);
+  font: inherit;
+}
+.recipe-search-form input[type="search"]:focus-visible,
+.recipe-search-form button:focus-visible {
+  outline: 3px solid var(--green-dark, #58783d);
+  outline-offset: 2px;
+}
+.video-unavailable-media {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  padding: 1rem;
+  background: var(--surface-soft, #f4f1ea);
+  color: var(--muted, #665f70);
+  text-align: center;
+  font-size: .9rem;
+  font-weight: 600;
+}
+.video-unavailable-label { color: var(--muted, #665f70); }
+@media (max-width: 520px) {
+  .recipe-search-form { align-items: stretch; }
+  .recipe-search-form input[type="search"] { flex-basis: 100%; }
+  .recipe-search-form button { flex: 1 1 auto; }
+}
+
+
+/* YouTube Data API search results: in-page playback without external redirects. */
+.video-search-results[hidden] { display: none !important; }
+.video-search-results .video-frame { position: relative; overflow: hidden; }
+.video-search-results .video-frame > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video-search-play-button {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  width: 100%;
+  place-items: center;
+  border: 0;
+  background: rgb(0 0 0 / 18%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.video-search-play-button span {
+  padding: .7rem 1.1rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 78%);
+}
+.video-search-play-button:focus-visible {
+  outline: 3px solid var(--green-dark, #58783d);
+  outline-offset: -5px;
+}
+.video-search-empty { grid-column: 1 / -1; padding: 1.25rem; text-align: center; }
+
+
+/* Dedicated YouTube video search page */
+.video-search-heading { margin: 2rem 0 1.25rem; }
+.video-search-heading h2 { margin-bottom: .4rem; }
+.video-search-heading p, .video-search-disclaimer { color: var(--muted); }
+.video-search-results-grid { margin-top: 1.25rem; }
+.video-search-results-grid .video-card-media { min-width: 0; overflow: hidden; }
+.video-search-results-grid .video-frame { position: relative; }
+.video-search-results-grid .video-frame > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video-search-results-grid .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+.video-search-play-button { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; height: 100%; border: 0; background: rgba(0,0,0,.22); color: #fff; font: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background .2s ease; }
+.video-search-play-button:hover { background: rgba(0,0,0,.42); }
+.video-search-play-button:focus-visible { outline: 3px solid var(--orange); outline-offset: -5px; }
+.video-search-disclaimer { margin-top: 1.5rem; font-size: .9rem; }
+.video-search-empty { grid-column: 1 / -1; padding: 1.25rem; color: var(--muted); text-align: center; }
+@media(prefers-reduced-motion:reduce) { .video-search-play-button { transition: none; } }

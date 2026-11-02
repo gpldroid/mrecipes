@@ -164,7 +164,7 @@
   const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/+$/, '') || '/';
   const locale = ['ar', 'es', 'fr', 'ru'].find(code => path === `/${code}` || path.startsWith(`/${code}/`)) || 'en';
   const isHomePage = path === '/' || ['ar', 'es', 'fr', 'ru', 'en'].some(code => path === `/${code}`);
-  const search = new URLSearchParams(location.search).get('search')?.trim().toLowerCase() || '';
+  let search = new URLSearchParams(location.search).get('search')?.trim().toLowerCase() || '';
   const input = document.querySelector('#header-search-input');
   if (input && search) input.value = search;
 
@@ -391,11 +391,31 @@
       if (matches) count++;
     });
     const status = document.querySelector('[data-search-status]');
-    if (status && search) {
-      status.textContent = count ? `${count} recipe${count === 1 ? '' : 's'} found for “${search}”.` : `No recipes found for “${search}”. Try another search.`;
-    }
+    const messages = {
+      en: { all: 'Browse all recipes below, or search by recipe name or keyword.', found: (n, q) => n + ' recipe' + (n === 1 ? '' : 's') + ' found for “' + q + '”.', none: q => 'No recipes found for “' + q + '”. Try another search.' },
+      ar: { all: 'تصفح جميع الوصفات أو ابحث باسم الوصفة أو كلمة مفتاحية.', found: (n, q) => 'تم العثور على ' + n + ' وصفة لعبارة «' + q + '».', none: q => 'لم نعثر على وصفات تطابق «' + q + '». جرّب عبارة أخرى.' },
+      es: { all: 'Explora todas las recetas o busca por nombre o palabra clave.', found: (n, q) => 'Se encontraron ' + n + ' recetas para “' + q + '”.', none: q => 'No se encontraron recetas para “' + q + '”. Prueba otra búsqueda.' },
+      fr: { all: 'Parcourez les recettes ou recherchez par nom ou mot-clé.', found: (n, q) => n + ' recette' + (n === 1 ? '' : 's') + ' trouvée' + (n === 1 ? '' : 's') + ' pour « ' + q + ' ».', none: q => 'Aucune recette trouvée pour « ' + q + ' ». Essayez une autre recherche.' },
+      ru: { all: 'Просматривайте рецепты или ищите по названию или ключевому слову.', found: (n, q) => 'По запросу «' + q + '» найдено: ' + n + '.', none: q => 'По запросу «' + q + '» рецепты не найдены. Попробуйте другой запрос.' }
+    }[locale];
+    if (status) status.textContent = search ? (count ? messages.found(count, search) : messages.none(search)) : messages.all;
     updateAllGrids();
   };
+
+  const recipeSearchForm = document.querySelector('[data-recipe-search-form]');
+  const recipeSearchInput = recipeSearchForm?.querySelector('[data-recipe-search-input]');
+  if (recipeSearchInput && search) recipeSearchInput.value = search;
+  if (recipeSearchForm && recipeSearchInput) {
+    recipeSearchForm.addEventListener('submit', event => {
+      event.preventDefault();
+      search = recipeSearchInput.value.trim().toLowerCase();
+      applySearch();
+    });
+    recipeSearchForm.addEventListener('reset', () => {
+      search = '';
+      applySearch();
+    });
+  }
 
   document.querySelectorAll('[data-supabase-recipes]').forEach(getGridState);
   applySearch();

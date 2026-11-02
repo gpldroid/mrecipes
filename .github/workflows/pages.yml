@@ -22,6 +22,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Generate browser YouTube API configuration
+        shell: bash
+        env:
+          YOUTUBE_API_KEY: ${{ github.event_name == 'pull_request' && '' || secrets.YOUTUBE_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            test -n "$YOUTUBE_API_KEY" || { echo "Missing YOUTUBE_API_KEY repository secret"; exit 1; }
+          fi
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          key = os.environ.get("YOUTUBE_API_KEY", "")
+          Path("assets/js/youtube-config.js").write_text(
+              "window.MRECIPES_YOUTUBE_API_KEY = " + json.dumps(key) + ";\n",
+              encoding="utf-8"
+          )
+          PY
       - name: Import licensed public-domain recipe photography
         shell: bash
         run: |
@@ -66,13 +84,37 @@ jobs:
           python3 -m venv /tmp/mrecipes-image-venv
           /tmp/mrecipes-image-venv/bin/pip install --disable-pip-version-check Pillow
           /tmp/mrecipes-image-venv/bin/python scripts/optimize-responsive-images.py
-      - name: Validate shared JavaScript syntax
+      - name: Validate shared and video-search JavaScript syntax
         shell: bash
         run: |
           set -euo pipefail
           node --check assets/js/components/header.js
           node --check assets/js/components/footer.js
           node --check assets/js/main.js
+          python3 <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Scripts(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.scripts=[]; self.current=None
+              def handle_starttag(self, tag, attrs):
+                  if tag == "script":
+                      attrs=dict(attrs)
+                      self.current=[] if not attrs.get("src") and attrs.get("type") != "application/ld+json" else None
+              def handle_data(self, data):
+                  if self.current is not None: self.current.append(data)
+              def handle_endtag(self, tag):
+                  if tag == "script" and self.current is not None:
+                      self.scripts.append("".join(self.current)); self.current=None
+          parser=Scripts(); parser.feed(Path("video-recipes.html").read_text(encoding="utf-8"))
+          if not parser.scripts: raise SystemExit("No inline video search script found")
+          Path("/tmp/mrecipes-video-search.js").write_text(parser.scripts[-1], encoding="utf-8")
+          parser=Scripts(); parser.feed(Path("video-search.html").read_text(encoding="utf-8"))
+          if not parser.scripts: raise SystemExit("No inline dedicated video-search script found")
+          Path("/tmp/mrecipes-dedicated-video-search.js").write_text(parser.scripts[-1], encoding="utf-8")
+          PY
+          node --check /tmp/mrecipes-video-search.js
+          node --check /tmp/mrecipes-dedicated-video-search.js
       - name: Validate site structure, SEO and local links
         shell: bash
         run: |
