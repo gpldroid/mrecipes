@@ -915,7 +915,7 @@ html[data-theme="dark"] .cookie-choice { border-color: #443a32; }
     border-radius: 1.1rem;
   }
   .cookie-consent__main { grid-template-columns: 64px minmax(0, 1fr); gap: .35rem .8rem; }
-  .cookie-consent__illustration { width: 62px; height: 62px; border-radius: .85rem; }
+  .cookie-consent__illustration { grid-row: 1; width: 62px; height: 62px; border-radius: .85rem; }
   .cookie-consent__illustration svg { width: 58px; height: 58px; }
   .cookie-consent__main > .cookie-consent__actions { grid-column: 1 / -1; justify-content: stretch; margin-top: .65rem; }
   .cookie-consent__actions button { flex: 1 1 8rem; }
