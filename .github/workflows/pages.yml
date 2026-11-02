@@ -66,6 +66,13 @@ jobs:
           python3 -m venv /tmp/mrecipes-image-venv
           /tmp/mrecipes-image-venv/bin/pip install --disable-pip-version-check Pillow
           /tmp/mrecipes-image-venv/bin/python scripts/optimize-responsive-images.py
+      - name: Validate shared JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check assets/js/components/header.js
+          node --check assets/js/components/footer.js
+          node --check assets/js/main.js
       - name: Validate site structure, SEO and local links
         shell: bash
         run: |
