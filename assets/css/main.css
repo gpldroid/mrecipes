@@ -1911,3 +1911,32 @@ html[lang="ar"] .page-hero :where(h1, p) {
   .recipe-search-form input[type="search"] { flex-basis: 100%; }
   .recipe-search-form button { flex: 1 1 auto; }
 }
+
+
+/* YouTube Data API search results: in-page playback without external redirects. */
+.video-search-results[hidden] { display: none !important; }
+.video-search-results .video-frame { position: relative; overflow: hidden; }
+.video-search-results .video-frame > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.video-search-play-button {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  width: 100%;
+  place-items: center;
+  border: 0;
+  background: rgb(0 0 0 / 18%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.video-search-play-button span {
+  padding: .7rem 1.1rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 78%);
+}
+.video-search-play-button:focus-visible {
+  outline: 3px solid var(--green-dark, #58783d);
+  outline-offset: -5px;
+}
+.video-search-empty { grid-column: 1 / -1; padding: 1.25rem; text-align: center; }
