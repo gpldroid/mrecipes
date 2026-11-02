@@ -96,7 +96,8 @@
     "analyticsDesc": "Autoriser Google Analytics à mesurer l’utilisation de MRecipes par les visiteurs.",
     "marketingDesc": "Autoriser Google AdSense à afficher des annonces et à utiliser le stockage associé.",
     "functional": "Fonctionnels",
-    "functionalDesc": "Mémoriser des choix utiles, comme votre thème d’affichage préféré."
+    "functionalDesc": "Mémoriser des choix utiles, comme votre thème d’affichage préféré.",
+    "alwaysOn": "Toujours activé"
   },
   "pages": {
     "privacy": "Politique de confidentialité",
