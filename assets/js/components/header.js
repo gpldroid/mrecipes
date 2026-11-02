@@ -133,7 +133,7 @@ root.innerHTML = `
     <button class="theme-toggle" type="button" aria-label="${t.theme}" aria-pressed="false" title="${t.theme}"><span aria-hidden="true">☾</span></button>
   </div>
 </header>
-<nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }) => { const mobileHref = label === t.recipes ? l.home : href; const mobileLabel = label === videoRecipesLabel ? (localeKey === "ar" ? "فيديو" : "Videos") : label; const icon = label === t.home ? "fa-house" : label === t.recipes ? "fa-utensils" : label === videoRecipesLabel ? "fa-circle-play" : label === t.about ? "fa-circle-info" : "fa-envelope"; return `<a href="${mobileHref}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${icon}" aria-hidden="true"></i><small>${mobileLabel}</small></a>`; }).join('')}</nav>`;
+<nav class="mobile-tab-bar" aria-label="${t.nav}">${nav.map(({ href, label }) => { const mobileHref = label === t.recipes ? (localeKey === 'en' ? '/recipes' : l.recipes) : href; const mobileLabel = label === videoRecipesLabel ? (localeKey === "ar" ? "فيديو" : "Videos") : label; const icon = label === t.home ? "fa-house" : label === t.recipes ? "fa-utensils" : label === videoRecipesLabel ? "fa-circle-play" : label === t.about ? "fa-circle-info" : "fa-envelope"; return `<a href="${mobileHref}"${active(href) ? ' aria-current="page"' : ''}><i class="fa-solid ${icon}" aria-hidden="true"></i><small>${mobileLabel}</small></a>`; }).join('')}</nav>`;
 const searchInput = root.querySelector('#header-search-input');
 if (searchInput && querySearch) searchInput.value = querySearch;
 
