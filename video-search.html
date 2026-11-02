@@ -50,7 +50,6 @@
     <div class="load-more-wrap">
       <button class="load-more-btn" id="youtube-load-more" type="button" hidden>Loading More</button>
     </div>
-    <p class="video-search-disclaimer">Videos are hosted by their original YouTube creators and displayed using YouTube's privacy-enhanced embedded player. Availability depends on the creator's embedding settings and regional restrictions.</p>
     <p><a href="/video-recipes.html">Browse the complete MRecipes video collection</a> · <a href="/recipes.html">Explore written recipes</a></p>
   </div>
 </section>
@@ -134,9 +133,20 @@
     return card;
   }
 
+  function showNoResults() {
+    results.replaceChildren();
+    var empty = document.createElement("p");
+    empty.className = "video-search-empty";
+    empty.textContent = "No videos found for this recipe. Try another search.";
+    results.appendChild(empty);
+    more.hidden = true;
+    setStatus("No videos found. Please try another search.");
+  }
+
   async function loadVideos(append) {
-    if (loading || !API_KEY) {
-      if (!API_KEY) setStatus("Video search is not configured. Check the YouTube API key setup in GitHub Actions.");
+    if (loading) return;
+    if (!API_KEY) {
+      showNoResults();
       return;
     }
     loading = true;
@@ -173,16 +183,14 @@
       more.disabled = false;
       more.textContent = "Loading More";
       if (!results.children.length) {
-        var empty = document.createElement("p");
-        empty.className = "video-search-empty";
-        empty.textContent = "No embeddable cooking videos were found. Try a different recipe title.";
-        results.appendChild(empty);
+        showNoResults();
       }
-      setStatus("Showing " + results.querySelectorAll(".video-recipe-card").length + " videos. Select Play video to watch here on MRecipes.");
+      if (results.querySelectorAll(".video-recipe-card").length) {
+        setStatus("Showing " + results.querySelectorAll(".video-recipe-card").length + " videos. Select Play video to watch here on MRecipes.");
+      }
     } catch (error) {
       console.error("YouTube Data API search failed:", error);
-      setStatus("Unable to load videos: " + error.message + ". Check that YouTube Data API v3 is enabled and the API key allows requests from mrecipes.online.");
-      more.hidden = true;
+      showNoResults();
     } finally {
       loading = false;
       more.disabled = false;
