@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+<title id="title">Marry Me Chickpeas</title>
+<desc id="desc">An editorial illustration of a bowl of creamy chickpeas with spinach and sun-dried tomatoes.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7f0e4"/><stop offset="1" stop-color="#f5e7d7"/></linearGradient>
+ <linearGradient id="bowl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf8"/><stop offset="1" stop-color="#d8d2c8"/></linearGradient>
+ <radialGradient id="sauce"><stop offset="0" stop-color="#f5d9a1"/><stop offset="1" stop-color="#d99050"/></radialGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1200" height="675" rx="38" fill="url(#bg)"/>
+<circle cx="1010" cy="120" r="110" fill="#fff" opacity=".28"/>
+<ellipse cx="610" cy="548" rx="340" ry="45" fill="#6e5c49" opacity=".18" filter="url(#shadow)"/>
+<path d="M285 300 Q600 650 915 300 Q875 565 600 570 Q325 565 285 300Z" fill="url(#bowl)" stroke="#c7beb1" stroke-width="10"/>
+<ellipse cx="600" cy="302" rx="318" ry="178" fill="#fffaf0" stroke="#c7beb1" stroke-width="13"/>
+<ellipse cx="600" cy="305" rx="285" ry="147" fill="url(#sauce)"/>
+<g fill="#f0d49a" stroke="#c27c3c" stroke-width="4">
+ <circle cx="405" cy="280" r="28"/><circle cx="490" cy="220" r="27"/><circle cx="590" cy="275" r="29"/><circle cx="705" cy="220" r="28"/><circle cx="790" cy="300" r="27"/><circle cx="520" cy="365" r="26"/><circle cx="675" cy="365" r="28"/><circle cx="600" cy="190" r="23"/><circle cx="750" cy="385" r="22"/><circle cx="425" cy="380" r="22"/>
+</g>
+<g fill="#286d49" stroke="#194c36" stroke-width="4">
+ <path d="M370 315 Q330 245 400 240 Q445 285 370 315Z"/><path d="M530 300 Q490 220 560 220 Q600 270 530 300Z"/><path d="M650 280 Q640 190 710 210 Q720 265 650 280Z"/><path d="M735 345 Q730 265 795 275 Q805 330 735 345Z"/><path d="M470 390 Q440 320 510 325 Q535 375 470 390Z"/>
+</g>
+<g fill="#a94332"><path d="M450 245 l35 -18 28 20 -16 35 -40 -2Z"/><path d="M690 330 l38 -18 26 25 -18 34 -42 -5Z"/><path d="M555 390 l35 -17 25 22 -15 32 -40 -3Z"/><path d="M785 250 l30 -12 20 22 -14 29 -34 -5Z"/></g>
+<g fill="none" stroke="#fff7e8" stroke-width="7" stroke-linecap="round" opacity=".8"><path d="M510 125 q-25 -35 0 -60"/><path d="M600 115 q-20 -38 5 -70"/><path d="M690 130 q-20 -35 8 -62"/></g>
+<text x="70" y="105" font-family="Georgia,serif" font-size="30" fill="#365c48" letter-spacing="5">MRECIPES · ONE-PAN DINNER</text>
+<text x="70" y="185" font-family="Georgia,serif" font-size="58" font-weight="bold" fill="#263b31">Marry Me</text>
+<text x="70" y="245" font-family="Georgia,serif" font-size="58" font-weight="bold" fill="#263b31">Chickpeas</text>
+<text x="75" y="600" font-family="Arial,sans-serif" font-size="24" fill="#496453">Creamy · Savory · Ready in 30 minutes</text>
+</svg>
