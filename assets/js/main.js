@@ -392,11 +392,11 @@
     });
     const status = document.querySelector('[data-search-status]');
     const messages = {
-      en: { all: 'Browse all recipes below, or search by name or ingredient.', found: (n, q) => n + ' recipe' + (n === 1 ? '' : 's') + ' found for “' + q + '”.', none: q => 'No recipes found for “' + q + '”. Try another search.' },
-      ar: { all: 'تصفح جميع الوصفات أو ابحث باسم الوصفة أو أحد مكوناتها.', found: (n, q) => 'تم العثور على ' + n + ' وصفة لعبارة «' + q + '».', none: q => 'لم نعثر على وصفات تطابق «' + q + '». جرّب عبارة أخرى.' },
-      es: { all: 'Explora todas las recetas o busca por nombre o ingrediente.', found: (n, q) => 'Se encontraron ' + n + ' recetas para “' + q + '”.', none: q => 'No se encontraron recetas para “' + q + '”. Prueba otra búsqueda.' },
-      fr: { all: 'Parcourez les recettes ou recherchez par nom ou ingrédient.', found: (n, q) => n + ' recette' + (n === 1 ? '' : 's') + ' trouvée' + (n === 1 ? '' : 's') + ' pour « ' + q + ' ».', none: q => 'Aucune recette trouvée pour « ' + q + ' ». Essayez une autre recherche.' },
-      ru: { all: 'Просматривайте рецепты или ищите по названию и ингредиентам.', found: (n, q) => 'По запросу «' + q + '» найдено: ' + n + '.', none: q => 'По запросу «' + q + '» рецепты не найдены. Попробуйте другой запрос.' }
+      en: { all: 'Browse all recipes below, or search by recipe name or keyword.', found: (n, q) => n + ' recipe' + (n === 1 ? '' : 's') + ' found for “' + q + '”.', none: q => 'No recipes found for “' + q + '”. Try another search.' },
+      ar: { all: 'تصفح جميع الوصفات أو ابحث باسم الوصفة أو كلمة مفتاحية.', found: (n, q) => 'تم العثور على ' + n + ' وصفة لعبارة «' + q + '».', none: q => 'لم نعثر على وصفات تطابق «' + q + '». جرّب عبارة أخرى.' },
+      es: { all: 'Explora todas las recetas o busca por nombre o palabra clave.', found: (n, q) => 'Se encontraron ' + n + ' recetas para “' + q + '”.', none: q => 'No se encontraron recetas para “' + q + '”. Prueba otra búsqueda.' },
+      fr: { all: 'Parcourez les recettes ou recherchez par nom ou mot-clé.', found: (n, q) => n + ' recette' + (n === 1 ? '' : 's') + ' trouvée' + (n === 1 ? '' : 's') + ' pour « ' + q + ' ».', none: q => 'Aucune recette trouvée pour « ' + q + ' ». Essayez une autre recherche.' },
+      ru: { all: 'Просматривайте рецепты или ищите по названию или ключевому слову.', found: (n, q) => 'По запросу «' + q + '» найдено: ' + n + '.', none: q => 'По запросу «' + q + '» рецепты не найдены. Попробуйте другой запрос.' }
     }[locale];
     if (status) status.textContent = search ? (count ? messages.found(count, search) : messages.none(search)) : messages.all;
     updateAllGrids();
