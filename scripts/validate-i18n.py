@@ -224,7 +224,10 @@ def main() -> int:
             if alternate_url not in {DOMAIN + p for p in sitemap_paths}:
                 errors.append(f"{path}: hreflang={alternate_locale!r} points outside the sitemap: {alternate_url}.")
 
-    # Every locale must expose the same recipe and policy/page slug inventory.
+    # Localized recipe coverage may lag the English-first publishing schedule.
+    # A locale may omit an untranslated recipe, but it must not publish a recipe
+    # slug that has no English source. Shared navigation and policy pages remain
+    # required in every supported locale.
     base = pages_by_locale.get("en", {})
     for locale in LOCALES:
         if locale not in pages_by_locale:
@@ -233,6 +236,14 @@ def main() -> int:
         for kind in ("home", "recipes_index", "recipe", "page"):
             expected = base.get(kind, set())
             actual = pages_by_locale[locale].get(kind, set())
+            if kind == "recipe":
+                extra = sorted(actual - expected)
+                if extra:
+                    errors.append(
+                        f"Locale {locale}: recipe inventory contains slugs without "
+                        f"an English source; extra={extra}."
+                    )
+                continue
             if actual != expected:
                 missing = sorted(expected - actual)
                 extra = sorted(actual - expected)
