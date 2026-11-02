@@ -2,7 +2,13 @@
   'use strict';
 
   // Load AdSense once and mount placements only inside meaningful content areas.
+  const consentAllows = category => {
+    const consent = window.MRecipesConsent && window.MRecipesConsent.get ? window.MRecipesConsent.get() : null;
+    return !!(consent && consent.version === 2 && consent[category] === true);
+  };
+
   const initializeAdsense = () => {
+    if (!consentAllows('marketing')) return;
     const publisher = 'ca-pub-6996931662051674';
     const loaderUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + publisher;
     if (!document.querySelector('meta[name="google-adsense-account"]')) {
@@ -93,11 +99,49 @@
     }
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAdsense, { once: true });
-  } else {
-    initializeAdsense();
-  }
+  const initializeAnalytics = () => {
+    if (!consentAllows('analytics')) return;
+    if (window.__mrecipesAnalyticsLoaded) {
+      window.gtag('consent', 'update', { analytics_storage: 'granted' });
+      return;
+    }
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied'
+    });
+    window.gtag('consent', 'update', { analytics_storage: 'granted' });
+    window.gtag('js', new Date());
+    window.gtag('config', 'G-VK85QYQKMB', { anonymize_ip: true });
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-VK85QYQKMB';
+    script.dataset.mrecipesAnalytics = 'true';
+    document.head.appendChild(script);
+    window.__mrecipesAnalyticsLoaded = true;
+  };
+
+  const synchronizeConsent = () => {
+    const consent = window.MRecipesConsent && window.MRecipesConsent.get ? window.MRecipesConsent.get() : null;
+    if (!consent || consent.version !== 2) return;
+    if (consent.analytics) initializeAnalytics();
+    else if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', { analytics_storage: 'denied' });
+    }
+    if (consent.marketing) initializeAdsense();
+    else {
+      document.querySelectorAll('.adsense-placement').forEach(placement => placement.remove());
+      const main = document.querySelector('main');
+      if (main) delete main.dataset.adsenseInitialized;
+    }
+  };
+
+  window.addEventListener('mrecipes:consent-ready', synchronizeConsent);
+  window.addEventListener('mrecipes:consent-updated', synchronizeConsent);
+  synchronizeConsent();
 
   // Keep homepage card imagery in sync with the image authored in each recipe article.
   if (!document.querySelector('script[data-mrecipes-article-images]')) {
