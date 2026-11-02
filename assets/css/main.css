@@ -1522,3 +1522,16 @@ html[lang="ar"] .page-hero :where(h1, p) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+/* Homepage recipe feed spacing and category-sidebar visibility. */
+.home-primary .recipe-grid {
+  column-gap: clamp(1rem, 1.8vw, 1.4rem);
+  row-gap: clamp(1.2rem, 2vw, 1.65rem);
+}
+.home-primary .recipe-grid > .recipe-card {
+  min-width: 0;
+}
+.home-sidebar .sidebar-categories {
+  display: none !important;
+}
