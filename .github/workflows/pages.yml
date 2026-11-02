@@ -40,6 +40,12 @@ jobs:
               encoding="utf-8"
           )
           PY
+          test -s assets/js/youtube-config.js
+          grep -q '^window\\.MRECIPES_YOUTUBE_API_KEY = ' assets/js/youtube-config.js
+          if git ls-files --error-unmatch assets/js/youtube-config.js >/dev/null 2>&1; then
+            echo "Generated YouTube configuration must never be tracked in Git."
+            exit 1
+          fi
       - name: Import licensed public-domain recipe photography
         shell: bash
         run: |
