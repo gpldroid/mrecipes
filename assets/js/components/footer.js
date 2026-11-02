@@ -25,7 +25,7 @@ const fallbackCopy = ar ? {
   title: 'إشعار صغير حول ملفات تعريف الارتباط',
   body: 'نستخدم التخزين الضروري لتشغيل MRecipes. وبموافقتك، يمكن تفعيل خيارات اختيارية لحفظ التفضيلات وقياس استخدام الموقع وعرض الإعلانات.',
   accept: 'قبول الكل', reject: 'رفض الاختيارية', customize: 'إدارة التفضيلات', save: 'حفظ اختياراتي', back: 'رجوع',
-  essential: 'ضرورية', essentialDesc: 'مطلوبة لتشغيل الموقع وحفظ اختيار الموافقة.',
+  alwaysOn: 'مفعّلة دائماً', essential: 'ضرورية', essentialDesc: 'مطلوبة لتشغيل الموقع وحفظ اختيار الموافقة.',
   functional: 'وظيفية', functionalDesc: 'تذكّر اختيارات مفيدة مثل نمط العرض المفضل.',
   analytics: 'التحليلات', analyticsDesc: 'السماح لـ Google Analytics بقياس كيفية استخدام الزوار للموقع.',
   marketing: 'التسويق والإعلانات', marketingDesc: 'السماح لـ Google AdSense بعرض الإعلانات واستخدام التخزين المرتبط بها.'
@@ -33,7 +33,7 @@ const fallbackCopy = ar ? {
   title: 'A little cookie note!',
   body: 'We use essential storage to keep MRecipes working. With your permission, optional settings can remember preferences, measure site usage, and support advertising.',
   accept: 'Accept all', reject: 'Reject optional', customize: 'Customize preferences', save: 'Save my choices', back: 'Back',
-  essential: 'Strictly necessary', essentialDesc: 'Required for core site functions and saving your consent choice.',
+  alwaysOn: 'Always on', essential: 'Strictly necessary', essentialDesc: 'Required for core site functions and saving your consent choice.',
   functional: 'Functional', functionalDesc: 'Remember helpful choices, such as your preferred display theme.',
   analytics: 'Analytics', analyticsDesc: 'Allow Google Analytics to measure how visitors use MRecipes.',
   marketing: 'Marketing & advertising', marketingDesc: 'Allow Google AdSense to display ads and use related storage.'
@@ -41,7 +41,7 @@ const fallbackCopy = ar ? {
 const copy = catalog ? {
   title: catalog.consent.title, body: catalog.consent.body, accept: catalog.consent.accept,
   reject: catalog.consent.reject, customize: catalog.consent.customize, save: catalog.consent.save,
-  back: catalog.consent.back, essential: catalog.consent.essential,
+  back: catalog.consent.back, alwaysOn: catalog.consent.alwaysOn, essential: catalog.consent.essential,
   essentialDesc: catalog.consent.essentialDesc, functional: catalog.consent.functional,
   functionalDesc: catalog.consent.functionalDesc, analytics: catalog.consent.analytics,
   analyticsDesc: catalog.consent.analyticsDesc, marketing: catalog.consent.marketing,
@@ -84,7 +84,7 @@ banner.innerHTML = `
       <div><span class="cookie-consent__eyebrow">MRECIPES · PRIVACY</span><h3>${copy.customize}</h3></div>
       <p>${copy.body}</p>
     </div>
-    <label class="cookie-choice"><input type="checkbox" checked disabled><span><strong>${copy.essential}</strong><small>${copy.essentialDesc}</small></span><em>Always on</em></label>
+    <label class="cookie-choice"><input type="checkbox" checked disabled><span><strong>${copy.essential}</strong><small>${copy.essentialDesc}</small></span><em>${copy.alwaysOn}</em></label>
     <label class="cookie-choice"><input type="checkbox" role="switch" data-cookie-functional><span><strong>${copy.functional}</strong><small>${copy.functionalDesc}</small></span></label>
     <label class="cookie-choice"><input type="checkbox" role="switch" data-cookie-analytics><span><strong>${copy.analytics}</strong><small>${copy.analyticsDesc}</small></span></label>
     <label class="cookie-choice"><input type="checkbox" role="switch" data-cookie-marketing><span><strong>${copy.marketing}</strong><small>${copy.marketingDesc}</small></span></label>
