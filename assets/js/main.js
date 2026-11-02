@@ -275,84 +275,6 @@
   };
 
   // Show three recent recipes from different categories in a horizontal homepage rail.
-  const buildHomepageLatestSlider = () => {
-    if (!isHomePage) return;
-    const grid = document.querySelector('[data-supabase-recipes]');
-    const container = grid?.parentElement;
-    if (!grid || !container) return;
-    let section = container.querySelector(':scope > .homepage-latest-slider');
-    if (!section) {
-      section = document.createElement('section');
-      section.className = 'homepage-latest-slider';
-      section.setAttribute('aria-label', ({
-        en: 'Latest recipes from different categories',
-        ar: 'أحدث الوصفات من تصنيفات متنوعة',
-        es: 'Últimas recetas de distintas categorías',
-        fr: 'Les dernières recettes de catégories variées',
-        ru: 'Новые рецепты разных категорий'
-      })[locale] || 'Latest recipes');
-      section.innerHTML = '<div class="homepage-latest-slider-heading"><div><h3></h3><p></p></div><div class="homepage-latest-slider-controls"></div></div><div class="homepage-latest-slider-viewport" tabindex="0"><div class="homepage-latest-slider-track"></div></div>';
-      const copy = {
-        en: { title: 'Latest recipes · varied categories', desc: 'Three fresh ideas from different parts of the menu.', previous: 'Scroll to previous recipes', next: 'Scroll to next recipes' },
-        ar: { title: 'أحدث الوصفات · تصنيفات متنوعة', desc: 'ثلاث أفكار شهية من تصنيفات مختلفة.', previous: 'عرض الوصفات السابقة', next: 'عرض الوصفات التالية' },
-        es: { title: 'Últimas recetas · categorías variadas', desc: 'Tres ideas recientes de distintas categorías.', previous: 'Ver recetas anteriores', next: 'Ver recetas siguientes' },
-        fr: { title: 'Dernières recettes · catégories variées', desc: 'Trois idées récentes issues de catégories différentes.', previous: 'Voir les recettes précédentes', next: 'Voir les recettes suivantes' },
-        ru: { title: 'Новые рецепты · разные категории', desc: 'Три свежие идеи из разных категорий.', previous: 'Показать предыдущие рецепты', next: 'Показать следующие рецепты' }
-      }[locale] || { title: 'Latest recipes', desc: 'Three recent recipes.', previous: 'Previous recipes', next: 'Next recipes' };
-      section.querySelector('h3').textContent = copy.title;
-      section.querySelector('p').textContent = copy.desc;
-      const controls = section.querySelector('.homepage-latest-slider-controls');
-      const makeArrow = (symbol, label, direction) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'homepage-latest-slider-arrow';
-        button.textContent = symbol;
-        button.setAttribute('aria-label', label);
-        button.addEventListener('click', () => {
-          const viewport = section.querySelector('.homepage-latest-slider-viewport');
-          const rtl = document.documentElement.dir === 'rtl';
-          viewport.scrollBy({ left: direction * (rtl ? -1 : 1) * Math.max(240, viewport.clientWidth * .8), behavior: 'smooth' });
-        });
-        return button;
-      };
-      controls.append(makeArrow('‹', copy.previous, -1), makeArrow('›', copy.next, 1));
-      grid.insertAdjacentElement('beforebegin', section);
-    }
-    // The slider's localized heading replaces the generic heading above the same feed.
-    container.querySelector(':scope > .section-heading')?.remove();
-    const track = section.querySelector('.homepage-latest-slider-track');
-    const cards = [...grid.querySelectorAll('[data-recipe-card]')];
-    const categoryOf = card => {
-      const spans = [...card.querySelectorAll('.recipe-meta span')];
-      return (spans.length > 1 ? spans[spans.length - 1] : spans[0])?.textContent?.trim().toLocaleLowerCase() || '';
-    };
-    const selected = [];
-    const usedCategories = new Set();
-    cards.forEach(card => {
-      if (selected.length >= 3) return;
-      const category = categoryOf(card);
-      if (category && usedCategories.has(category)) return;
-      selected.push(card);
-      if (category) usedCategories.add(category);
-    });
-    if (selected.length < 3) {
-      cards.forEach(card => {
-        if (selected.length >= 3 || selected.includes(card)) return;
-        selected.push(card);
-      });
-    }
-    track.replaceChildren(...selected.map(card => {
-      const clone = card.cloneNode(true);
-      clone.hidden = false;
-      clone.classList.add('homepage-latest-slider-card');
-      clone.querySelectorAll('[hidden]').forEach(el => el.hidden = false);
-      // Keep the homepage category slider compact: descriptions stay on the full recipe cards.
-      clone.querySelectorAll('.recipe-content > p').forEach(description => description.remove());
-      return clone;
-    }));
-    section.hidden = selected.length === 0;
-  };
-
   const gridState = new WeakMap();
 
   const getGridState = grid => {
@@ -426,7 +348,6 @@
   document.querySelectorAll('[data-supabase-recipes]').forEach(getGridState);
   applySearch();
   renderSidebar();
-  buildHomepageLatestSlider();
   document.querySelectorAll('[data-current-year]').forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll('[data-scroll-top]').forEach(button => button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })));
 
