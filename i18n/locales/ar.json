@@ -96,7 +96,8 @@
     "analyticsDesc": "السماح لـ Google Analytics بقياس كيفية استخدام الزوار لموقع MRecipes.",
     "marketingDesc": "السماح لـ Google AdSense بعرض الإعلانات واستخدام التخزين المرتبط بها.",
     "functional": "وظيفية",
-    "functionalDesc": "تذكّر اختيارات مفيدة مثل نمط العرض المفضل."
+    "functionalDesc": "تذكّر اختيارات مفيدة مثل نمط العرض المفضل.",
+    "alwaysOn": "مفعّلة دائماً"
   },
   "pages": {
     "privacy": "سياسة الخصوصية",
