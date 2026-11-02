@@ -9,14 +9,17 @@
 
   const initializeAdsense = () => {
     if (!consentAllows('marketing')) return;
+
     const publisher = 'ca-pub-6996931662051674';
     const loaderUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + publisher;
+
     if (!document.querySelector('meta[name="google-adsense-account"]')) {
       const account = document.createElement('meta');
       account.name = 'google-adsense-account';
       account.content = publisher;
       document.head.appendChild(account);
     }
+
     if (!window.__mrecipesAdsenseLoaded && !document.querySelector('script[src*="pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]')) {
       window.__mrecipesAdsenseLoaded = true;
       const loader = document.createElement('script');
@@ -34,15 +37,17 @@
       const wrapper = document.createElement('aside');
       wrapper.className = 'adsense-placement adsense-' + kind;
       wrapper.setAttribute('aria-label', 'Advertisement');
-      wrapper.style.cssText = 'display:block;clear:both;width:100%;max-width:100%;margin:32px auto;padding:0;text-align:center;overflow:hidden;';
+      wrapper.dataset.adPlacement = kind;
+
       const unit = document.createElement('ins');
       unit.className = 'adsbygoogle';
-      unit.style.cssText = 'display:block;width:100%;min-height:100px;';
+      unit.style.display = 'block';
       unit.setAttribute('data-ad-client', publisher);
       unit.setAttribute('data-ad-slot', slot);
       unit.setAttribute('data-ad-format', 'auto');
       unit.setAttribute('data-full-width-responsive', 'true');
       wrapper.appendChild(unit);
+
       const push = document.createElement('script');
       push.text = '(adsbygoogle = window.adsbygoogle || []).push({});';
       wrapper.appendChild(push);
@@ -52,8 +57,7 @@
     const inArticleAd = createPlacement('5806370724', 'in-article');
     const displayAd = createPlacement('1190274186', 'display');
 
-    // Keep the homepage display unit below the complete recipe feed and
-    // above the newsletter, away from navigation, slider controls, and cards.
+    // A single display unit follows the complete homepage feed, never its cards or controls.
     const homeFeed = main.querySelector('.home-content-layout');
     if (homeFeed) {
       homeFeed.insertAdjacentElement('afterend', displayAd);
@@ -61,40 +65,29 @@
     }
 
     const article = main.querySelector('article.content-page, .content-page article, article.recipe-article, article.post-content');
-    if (article) {
-      const paragraphs = [...article.querySelectorAll('p')].filter(p => p.textContent.trim().length > 80);
+    const content = article
+      ? article.querySelector('.article-body, .post-body, .recipe-body, .entry-content, .article-content') || article
+      : main.querySelector('.article-body, .post-body, .recipe-body, .entry-content, .article-content, .content-page');
 
-      // Start the first in-article unit after the opening context, not directly
-      // below the hero image or recipe-at-a-glance line.
-      if (paragraphs.length >= 3) {
-        paragraphs[1].insertAdjacentElement('afterend', inArticleAd);
-      }
+    if (!content) return;
 
-      // A second unit is only useful on long articles. Keep it well separated
-      // from the first placement and within the article reading column.
-      if (paragraphs.length >= 7) {
-        const middleIndex = Math.min(paragraphs.length - 1, Math.floor(paragraphs.length * 0.65));
-        const middleParagraph = paragraphs[middleIndex];
-        if (middleParagraph && middleParagraph !== paragraphs[1]) {
-          middleParagraph.insertAdjacentElement('afterend', displayAd);
-        }
-      }
-      return;
+    // Exclude recipe cards, figures, navigation, author/related blocks, and paragraphs
+    // containing links or controls so ads never resemble or sit beside a call to action.
+    const excluded = 'figure, aside, nav, footer, .recipe-card, .recipe-summary, .recipe-at-a-glance, .ingredients, .instructions, .recipe-ingredients, .recipe-instructions, .author-box, .related-posts, .related-recipes, .cta, [data-no-ads]';
+    const paragraphs = [...content.querySelectorAll('p')].filter(paragraph =>
+      paragraph.textContent.trim().length > 100 &&
+      !paragraph.closest(excluded) &&
+      !paragraph.querySelector('a, button, input, select, textarea')
+    );
+
+    // One unit for a substantial article; a second only for genuinely long-form content.
+    if (paragraphs.length >= 5) {
+      paragraphs[3].insertAdjacentElement('afterend', inArticleAd);
     }
-
-    // Informational pages receive fewer placements than recipe articles.
-    // Ads stay inside the reading column and away from short utility pages.
-    const content = main.querySelector('.content-page, .article-body, .post-body, .entry-content');
-    if (content) {
-      const paragraphs = [...content.querySelectorAll('p')].filter(p => p.textContent.trim().length > 100);
-      if (paragraphs.length >= 4) {
-        paragraphs[1].insertAdjacentElement('afterend', inArticleAd);
-        if (paragraphs.length >= 8) {
-          const middleParagraph = paragraphs[Math.floor(paragraphs.length * 0.65)];
-          if (middleParagraph && middleParagraph !== paragraphs[1]) {
-            middleParagraph.insertAdjacentElement('afterend', displayAd);
-          }
-        }
+    if (paragraphs.length >= 12) {
+      const secondParagraph = paragraphs[9];
+      if (secondParagraph && secondParagraph !== paragraphs[3]) {
+        secondParagraph.insertAdjacentElement('afterend', displayAd);
       }
     }
   };
