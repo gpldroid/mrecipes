@@ -351,8 +351,9 @@
 
   // Add a recipe-category sidebar to individual recipe articles, not the homepage.
   const renderRecipeArticleSidebar = async () => {
-    const path = window.location.pathname.replace(/\\/+$/, '');
-    if (!/^\\/(recipes|article)\\/[^/]+\\.html$/i.test(path) || /recipe-template\\.html$/i.test(path)) return;
+    const path = window.location.pathname;
+    const routeParts = path.split('/').filter(Boolean);
+    if (routeParts.length !== 2 || !['recipes', 'article'].includes(routeParts[0]) || !routeParts[1].endsWith('.html') || routeParts[1] === 'recipe-template.html') return;
     const article = document.querySelector('main article.content-page');
     if (!article || article.dataset.sidebarLayout === 'true') return;
     try {
