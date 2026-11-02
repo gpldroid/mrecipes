@@ -176,3 +176,105 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+  deploy-youtube-search-worker:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.DEPLOY_YOUTUBE_SEARCH_WORKER == 'true'
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    steps:
+      - name: Validate deployment secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID secret"; exit 1; }
+          test -n "$YOUTUBE_API_KEY" || { echo "Missing YOUTUBE_API_KEY secret"; exit 1; }
+      - name: Create temporary Worker deployment source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mrecipes-youtube-worker
+          cat > /tmp/mrecipes-youtube-worker/index.js <<WORKER
+          const ALLOWED_ORIGINS = new Set(["https://mrecipes.online", "https://www.mrecipes.online"]);
+          const LANGUAGES = new Set(["en", "ar", "es", "fr", "ru"]);
+          const REGIONS = new Set(["US", "MA", "ES", "FR", "RU"]);
+          function json(data, status, origin) {
+            const headers = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=300", "Vary": "Origin", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "Accept" };
+            if (origin && ALLOWED_ORIGINS.has(origin)) headers["Access-Control-Allow-Origin"] = origin;
+            return new Response(JSON.stringify(data), { status: status || 200, headers });
+          }
+          export default {
+            async fetch(request, env, ctx) {
+              const url = new URL(request.url);
+              const origin = request.headers.get("Origin") || "";
+              if (origin && !ALLOWED_ORIGINS.has(origin)) return json({ error: "Origin not allowed" }, 403, "");
+              if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": origin || "https://mrecipes.online", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "Accept", "Access-Control-Max-Age": "86400", "Vary": "Origin" } });
+              if (request.method !== "GET") return json({ error: "Method not allowed" }, 405, origin);
+              if (url.pathname !== "/api/youtube-search") return json({ error: "Not found" }, 404, origin);
+              if (url.searchParams.get("health") === "1") return json({ ok: true, service: "mrecipes-youtube-search" }, 200, origin);
+              const query = (url.searchParams.get("q") || "").trim();
+              if (query.length < 2 || query.length > 100) return json({ error: "Search query must be between 2 and 100 characters." }, 400, origin);
+              if (!env.YOUTUBE_API_KEY) return json({ error: "Search service is not configured." }, 503, origin);
+              const langValue = (url.searchParams.get("lang") || "en").toLowerCase();
+              const regionValue = (url.searchParams.get("region") || "US").toUpperCase();
+              const lang = LANGUAGES.has(langValue) ? langValue : "en";
+              const region = REGIONS.has(regionValue) ? regionValue : "US";
+              const pageToken = url.searchParams.get("pageToken") || "";
+              if (pageToken.length > 512 || !/^[A-Za-z0-9_=-]*$/.test(pageToken)) return json({ error: "Invalid pagination token." }, 400, origin);
+              const cacheUrl = new URL(url.origin + url.pathname);
+              cacheUrl.searchParams.set("q", query.toLowerCase()); cacheUrl.searchParams.set("lang", lang); cacheUrl.searchParams.set("region", region);
+              if (pageToken) cacheUrl.searchParams.set("pageToken", pageToken);
+              cacheUrl.searchParams.set("__origin", origin || "same-origin");
+              const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
+              const cache = caches.default; const cached = await cache.match(cacheKey);
+              if (cached) return cached;
+              const apiUrl = new URL("https://www.googleapis.com/youtube/v3/search");
+              apiUrl.searchParams.set("part", "snippet"); apiUrl.searchParams.set("type", "video"); apiUrl.searchParams.set("q", query);
+              apiUrl.searchParams.set("maxResults", "12"); apiUrl.searchParams.set("order", "relevance"); apiUrl.searchParams.set("safeSearch", "strict");
+              apiUrl.searchParams.set("videoEmbeddable", "true"); apiUrl.searchParams.set("videoSyndicated", "true");
+              apiUrl.searchParams.set("relevanceLanguage", lang); apiUrl.searchParams.set("regionCode", region); apiUrl.searchParams.set("key", env.YOUTUBE_API_KEY);
+              if (pageToken) apiUrl.searchParams.set("pageToken", pageToken);
+              try {
+                const upstream = await fetch(apiUrl.toString(), { headers: { "Accept": "application/json" } });
+                if (!upstream.ok) { const status = upstream.status === 403 ? 429 : 502; return json({ error: status === 429 ? "YouTube search quota or API permission limit reached." : "YouTube search is temporarily unavailable." }, status, origin); }
+                const payload = await upstream.json();
+                const items = (payload.items || []).map((item) => {
+                  const videoId = item.id && item.id.videoId; const snippet = item.snippet || {};
+                  if (!videoId || !/^[A-Za-z0-9_-]{11}$/.test(videoId)) return null;
+                  const thumbnails = snippet.thumbnails || {}; const thumbnail = (thumbnails.high || thumbnails.medium || thumbnails.default || {}).url || "";
+                  return { videoId, title: String(snippet.title || "Untitled video").slice(0, 250), description: String(snippet.description || "").slice(0, 500), channelTitle: String(snippet.channelTitle || "").slice(0, 120), publishedAt: snippet.publishedAt || "", thumbnail };
+                }).filter(Boolean);
+                const response = json({ items, nextPageToken: payload.nextPageToken || "" }, 200, origin);
+                response.headers.set("Cache-Control", "public, max-age=300"); ctx.waitUntil(cache.put(cacheKey, response.clone())); return response;
+              } catch (error) { return json({ error: "YouTube search is temporarily unavailable." }, 502, origin); }
+            }
+          }
+          WORKER
+          cat > /tmp/mrecipes-youtube-worker/wrangler.jsonc <<CONFIG
+          {
+            "name": "mrecipes-youtube-search",
+            "main": "index.js",
+            "compatibility_date": "2026-11-02",
+            "workers_dev": false,
+            "routes": [{ "pattern": "mrecipes.online/api/youtube-search*", "zone_name": "mrecipes.online" }]
+          }
+          CONFIG
+      - name: Deploy YouTube search Worker
+        shell: bash
+        run: npx --yes wrangler@4 deploy --config /tmp/mrecipes-youtube-worker/wrangler.jsonc
+      - name: Store YouTube API key as a Worker runtime secret
+        shell: bash
+        run: printf '%s' "$YOUTUBE_API_KEY" | npx --yes wrangler@4 secret put YOUTUBE_API_KEY --name mrecipes-youtube-search --config /tmp/mrecipes-youtube-worker/wrangler.jsonc
+      - name: Verify Worker health endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --silent --show-error "https://mrecipes.online/api/youtube-search?health=1"; then exit 0; fi
+            sleep 5
+          done
+          echo "Worker health check failed."
+          exit 1
