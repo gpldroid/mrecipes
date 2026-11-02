@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fffdf8">
+<title>Search Cooking Videos | MRecipes</title>
+<meta name="description" content="Search for any recipe and discover the latest embeddable cooking videos. Watch YouTube cooking tutorials directly on MRecipes.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://mrecipes.online/video-search.html">
+<link rel="alternate" hreflang="en" href="https://mrecipes.online/video-search.html">
+<link rel="alternate" hreflang="x-default" href="https://mrecipes.online/video-search.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MRecipes">
+<meta property="og:title" content="Search Cooking Videos | MRecipes">
+<meta property="og:description" content="Find cooking tutorials and watch videos directly on MRecipes.">
+<meta property="og:url" content="https://mrecipes.online/video-search.html">
+<meta property="og:image" content="https://mrecipes.online/assets/images/recipes/creamy-garlic-parmesan-chicken.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Search Cooking Videos | MRecipes">
+<meta name="twitter:description" content="Find cooking tutorials and watch videos directly on MRecipes.">
+<meta name="twitter:image" content="https://mrecipes.online/assets/images/recipes/creamy-garlic-parmesan-chicken.webp">
+<link rel="preconnect" href="https://www.googleapis.com">
+<link rel="preconnect" href="https://www.youtube-nocookie.com">
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="/assets/css/mobile-nav.css">
+</head>
+<body>
+<div data-site-header></div>
+<main id="main-content">
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Watch and learn</span>
+    <h1>Cooking Video Search</h1>
+    <p>Find the latest cooking tutorials for any recipe and watch them here without leaving MRecipes.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <form class="recipe-search-form video-search-form" id="youtube-video-search-form" action="/video-search.html" method="get" role="search">
+      <label class="visually-hidden" for="youtube-video-query">Search for a recipe or cooking video</label>
+      <input id="youtube-video-query" name="q" type="search" placeholder="What recipe are you looking for?" autocomplete="off" required>
+      <button class="button" type="submit">Search videos</button>
+    </form>
+    <div class="video-search-heading">
+      <h2 id="video-search-title">Latest cooking videos</h2>
+      <p id="video-search-status" role="status" aria-live="polite">Loading the latest cooking videos…</p>
+    </div>
+    <div class="recipe-grid video-recipes-grid video-search-results-grid" id="youtube-video-results" aria-live="polite"></div>
+    <div class="load-more-wrap">
+      <button class="load-more-btn" id="youtube-load-more" type="button" hidden>Loading More</button>
+    </div>
+    <p class="video-search-disclaimer">Videos are hosted by their original YouTube creators and displayed using YouTube's privacy-enhanced embedded player. Availability depends on the creator's embedding settings and regional restrictions.</p>
+    <p><a href="/video-recipes.html">Browse the complete MRecipes video collection</a> · <a href="/recipes.html">Explore written recipes</a></p>
+  </div>
+</section>
+</main>
+<div data-site-footer></div>
+<script src="/assets/js/youtube-config.js"></script>
+<script>
+(function () {
+  "use strict";
+  var API_KEY = window.MRECIPES_YOUTUBE_API_KEY || "";
+  var form = document.getElementById("youtube-video-search-form");
+  var input = document.getElementById("youtube-video-query");
+  var title = document.getElementById("video-search-title");
+  var status = document.getElementById("video-search-status");
+  var results = document.getElementById("youtube-video-results");
+  var more = document.getElementById("youtube-load-more");
+  var params = new URLSearchParams(window.location.search);
+  var query = (params.get("q") || "").trim();
+  var nextPageToken = "";
+  var loading = false;
+  var language = (document.documentElement.lang || "en").toLowerCase().split("-")[0];
+  var regions = { en: "US", ar: "MA", es: "ES", fr: "FR", ru: "RU" };
+  var region = regions[language] || "US";
+
+  if (query) {
+    input.value = query;
+    title.textContent = "Video results for “" + query + "”";
+  } else {
+    query = "cooking recipes";
+    title.textContent = "Latest cooking videos";
+  }
+
+  function setStatus(message) { status.textContent = message; }
+  function createVideoCard(item) {
+    var card = document.createElement("article");
+    card.className = "recipe-card video-recipe-card";
+    var media = document.createElement("div");
+    media.className = "video-card-media";
+    var frame = document.createElement("div");
+    frame.className = "video-frame";
+    var thumbnail = document.createElement("img");
+    thumbnail.src = item.snippet.thumbnails.high && item.snippet.thumbnails.high.url ||
+      item.snippet.thumbnails.medium && item.snippet.thumbnails.medium.url ||
+      item.snippet.thumbnails.default && item.snippet.thumbnails.default.url || "";
+    thumbnail.alt = "Video thumbnail: " + item.snippet.title;
+    thumbnail.loading = "lazy";
+    thumbnail.decoding = "async";
+    var play = document.createElement("button");
+    play.type = "button";
+    play.className = "video-search-play-button";
+    play.textContent = "Play video";
+    play.setAttribute("aria-label", "Play " + item.snippet.title + " on MRecipes");
+    play.addEventListener("click", function () {
+      var player = document.createElement("iframe");
+      player.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(item.id.videoId) + "?rel=0";
+      player.title = item.snippet.title;
+      player.loading = "lazy";
+      player.referrerPolicy = "strict-origin-when-cross-origin";
+      player.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      player.allowFullscreen = true;
+      frame.replaceChildren(player);
+    });
+    frame.append(thumbnail, play);
+    media.appendChild(frame);
+    var content = document.createElement("div");
+    content.className = "recipe-content";
+    var meta = document.createElement("div");
+    meta.className = "recipe-meta";
+    var badge = document.createElement("span");
+    badge.textContent = "YouTube cooking video";
+    meta.appendChild(badge);
+    var heading = document.createElement("h2");
+    heading.textContent = item.snippet.title;
+    var credit = document.createElement("p");
+    credit.className = "video-credit";
+    credit.textContent = "By " + (item.snippet.channelTitle || "YouTube creator");
+    var actions = document.createElement("div");
+    actions.className = "video-card-actions";
+    var watch = document.createElement("span");
+    watch.className = "video-watch-link";
+    watch.textContent = "Watch on this page";
+    actions.appendChild(watch);
+    content.append(meta, heading, credit, actions);
+    card.append(media, content);
+    return card;
+  }
+
+  async function loadVideos(append) {
+    if (loading || !API_KEY) {
+      if (!API_KEY) setStatus("Video search is not configured. Check the YouTube API key setup in GitHub Actions.");
+      return;
+    }
+    loading = true;
+    more.disabled = true;
+    more.textContent = "Loading…";
+    setStatus(append ? "Loading more cooking videos…" : "Searching YouTube for the latest cooking videos…");
+    try {
+      var url = new URL("https://www.googleapis.com/youtube/v3/search");
+      url.searchParams.set("part", "snippet");
+      url.searchParams.set("type", "video");
+      url.searchParams.set("q", query);
+      url.searchParams.set("maxResults", "5");
+      url.searchParams.set("order", "date");
+      url.searchParams.set("safeSearch", "strict");
+      url.searchParams.set("videoEmbeddable", "true");
+      url.searchParams.set("videoSyndicated", "true");
+      url.searchParams.set("relevanceLanguage", language);
+      url.searchParams.set("regionCode", region);
+      url.searchParams.set("key", API_KEY);
+      if (append && nextPageToken) url.searchParams.set("pageToken", nextPageToken);
+      var response = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+      var data = await response.json();
+      if (!response.ok) {
+        var apiMessage = data.error && data.error.message ? data.error.message : "YouTube API request failed.";
+        throw new Error(apiMessage);
+      }
+      var items = Array.isArray(data.items) ? data.items : [];
+      if (!append) results.replaceChildren();
+      items.forEach(function (item) {
+        if (item.id && item.id.videoId && /^[A-Za-z0-9_-]{11}$/.test(item.id.videoId) && item.snippet) {
+          results.appendChild(createVideoCard(item));
+        }
+      });
+      nextPageToken = data.nextPageToken || "";
+      more.hidden = !nextPageToken;
+      more.disabled = false;
+      more.textContent = "Loading More";
+      if (!results.children.length) {
+        var empty = document.createElement("p");
+        empty.className = "video-search-empty";
+        empty.textContent = "No embeddable cooking videos were found. Try a different recipe title.";
+        results.appendChild(empty);
+      }
+      setStatus("Showing " + results.querySelectorAll(".video-recipe-card").length + " videos. Select Play video to watch here on MRecipes.");
+    } catch (error) {
+      console.error("YouTube Data API search failed:", error);
+      setStatus("Unable to load videos: " + error.message + ". Check that YouTube Data API v3 is enabled and the API key allows requests from mrecipes.online.");
+      more.hidden = true;
+    } finally {
+      loading = false;
+      more.disabled = false;
+      if (!more.hidden) more.textContent = "Loading More";
+    }
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var nextQuery = input.value.trim();
+    if (!nextQuery) return;
+    window.location.href = "/video-search.html?q=" + encodeURIComponent(nextQuery);
+  });
+  more.addEventListener("click", function () { if (nextPageToken) loadVideos(true); });
+  loadVideos(false);
+})();
+</script>
+<script src="/assets/js/components/header.js" defer></script>
+<script src="/assets/js/components/footer.js" defer></script>
+</body>
+</html>
