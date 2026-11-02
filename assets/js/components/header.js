@@ -261,6 +261,12 @@ if (mobileToolsQuery.addEventListener) mobileToolsQuery.addEventListener('change
 else mobileToolsQuery.addListener(placeHeaderTools);
 
 const themeIcon = themeButton.querySelector('span');
+const hasFunctionalConsent = () => {
+  try {
+    const consent = JSON.parse(localStorage.getItem('mrecipes-cookie-consent') || 'null');
+    return !!(consent && consent.version === 2 && consent.functional === true);
+  } catch (_) { return false; }
+};
 const setTheme = (theme, persist = false) => {
   const dark = theme === 'dark';
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
@@ -271,12 +277,29 @@ const setTheme = (theme, persist = false) => {
   let meta = document.querySelector('meta[name="theme-color"]');
   if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
   meta.content = dark ? '#171420' : '#fcf9ff';
-  if (persist) try { localStorage.setItem('mrecipes-theme', dark ? 'dark' : 'light'); } catch (_) {}
+  if (persist) try {
+    if (hasFunctionalConsent()) localStorage.setItem('mrecipes-theme', dark ? 'dark' : 'light');
+    else localStorage.removeItem('mrecipes-theme');
+  } catch (_) {}
 };
 let initial = 'light';
-try { const s = localStorage.getItem('mrecipes-theme'); if (s === 'dark' || s === 'light') initial = s; } catch (_) {}
+try {
+  if (hasFunctionalConsent()) {
+    const s = localStorage.getItem('mrecipes-theme');
+    if (s === 'dark' || s === 'light') initial = s;
+  }
+} catch (_) {}
 setTheme(initial);
 themeButton.addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true));
+window.addEventListener('mrecipes:consent-updated', event => {
+  try {
+    if (event.detail && event.detail.functional === true) {
+      localStorage.setItem('mrecipes-theme', document.documentElement.dataset.theme || 'light');
+    } else {
+      localStorage.removeItem('mrecipes-theme');
+    }
+  } catch (_) {}
+});
 
 const closeLanguage = () => { languageMenu.classList.remove('is-open'); languageTrigger.setAttribute('aria-expanded', 'false'); };
 const openLanguage = () => { languageMenu.classList.add('is-open'); languageTrigger.setAttribute('aria-expanded', 'true'); };

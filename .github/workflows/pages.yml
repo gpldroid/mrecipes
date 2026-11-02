@@ -59,39 +59,6 @@ jobs:
           set -euo pipefail
           python3 scripts/audit-i18n-content.py > /tmp/i18n-content-audit.md
           sed -n '/## Summary/,$p' /tmp/i18n-content-audit.md
-      - name: Add AdSense code to every HTML page
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 <<'PY'
-          from pathlib import Path
-
-          ADSENSE = '''<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6996931662051674"
-               crossorigin="anonymous"></script>'''
-          root = Path('.')
-          updated = 0
-          skipped = 0
-
-          for page in sorted(root.rglob('*.html')):
-              if '.git' in page.parts or page.name == '404.html':
-                  skipped += 1
-                  continue
-
-              text = page.read_text(encoding='utf-8')
-              if 'ca-pub-6996931662051674' in text:
-                  continue
-
-              marker = '</head>'
-              if marker not in text.lower():
-                  raise SystemExit(f'Missing </head> in {page}')
-
-              idx = text.lower().index(marker)
-              text = text[:idx] + '  ' + ADSENSE + '\n' + text[idx:]
-              page.write_text(text, encoding='utf-8')
-              updated += 1
-
-          print(f'AdSense code added to {updated} HTML pages; skipped {skipped} files.')
-          PY
       - name: Generate responsive WebP images and JPEG fallbacks
         shell: bash
         run: |
@@ -99,6 +66,13 @@ jobs:
           python3 -m venv /tmp/mrecipes-image-venv
           /tmp/mrecipes-image-venv/bin/pip install --disable-pip-version-check Pillow
           /tmp/mrecipes-image-venv/bin/python scripts/optimize-responsive-images.py
+      - name: Validate shared JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check assets/js/components/header.js
+          node --check assets/js/components/footer.js
+          node --check assets/js/main.js
       - name: Validate site structure, SEO and local links
         shell: bash
         run: |
@@ -139,9 +113,9 @@ jobs:
               robots=p.meta.get('robots','').lower()
               if 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
               if len(p.canon)!=1 or not p.canon[0].startswith('https://mrecipes.online/'): errors.append(f'{label}: invalid canonical')
-              if page.parent.name=='recipes' and page.name!='recipe-template.html' and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
-              if 'ca-pub-6996931662051674' not in page.read_text(encoding='utf-8'):
-                  errors.append(f'{label}: missing AdSense code')
+              if page.parent.name=='recipes' and page.name not in ('recipe-template.html','index.html') and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
+              if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in page.read_text(encoding='utf-8'):
+                  errors.append(f'{label}: AdSense loader must be consent-gated, not embedded in HTML')
               for href in p.links:
                   if href.startswith(('#','mailto:','tel:','javascript:','data:','http://','https://','//')): continue
                   clean=urlparse(href).path; target=root/clean.lstrip('/') if clean.startswith('/') else (page.parent/clean).resolve()
@@ -167,7 +141,7 @@ jobs:
               for extra in sorted(actual-expected): errors.append(f'sitemap: URL has no eligible HTML page {extra}')
           except Exception as exc: errors.append(f'sitemap parse error: {exc}')
           if errors: print('\n'.join('ERROR: '+e for e in errors)); sys.exit(1)
-          print(f'Validation passed: {len(html_files)} HTML files, metadata, robots, canonical, JSON-LD, AdSense code, local links and sitemap.')
+          print(f'Validation passed: {len(html_files)} HTML files, metadata, robots, canonical, JSON-LD, consent-gated advertising, local links and sitemap.')
           PY
       - name: Persist generated sitemap on main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

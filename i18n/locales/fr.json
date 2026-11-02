@@ -79,22 +79,25 @@
     "siteFooter": "Pied de page"
   },
   "consent": {
-    "title": "Nous respectons votre vie privée",
+    "title": "Un petit mot sur les cookies !",
     "acceptAll": "Tout accepter",
     "rejectOptional": "Refuser les options",
     "manage": "Gérer les préférences",
     "save": "Enregistrer mes choix",
     "essential": "Essentiels",
     "analytics": "Analytique",
-    "marketing": "Marketing",
-    "body": "Nous utilisons un stockage essentiel pour faire fonctionner le site et mémoriser votre choix. Les cookies facultatifs ne seront pas activés sans votre consentement.",
+    "marketing": "Marketing et publicité",
+    "body": "Nous utilisons le stockage nécessaire au fonctionnement de MRecipes. Avec votre accord, les options facultatives peuvent mémoriser vos préférences, mesurer l’utilisation du site et permettre la publicité.",
     "accept": "Tout accepter",
     "reject": "Refuser les options",
     "customize": "Gérer les préférences",
     "back": "Retour",
     "essentialDesc": "Nécessaire au fonctionnement du site et à l’enregistrement de votre choix.",
-    "analyticsDesc": "Autoriser les cookies qui nous aident à comprendre l’utilisation du site.",
-    "marketingDesc": "Autoriser les cookies de personnalisation et de publicité."
+    "analyticsDesc": "Autoriser Google Analytics à mesurer l’utilisation de MRecipes par les visiteurs.",
+    "marketingDesc": "Autoriser Google AdSense à afficher des annonces et à utiliser le stockage associé.",
+    "functional": "Fonctionnels",
+    "functionalDesc": "Mémoriser des choix utiles, comme votre thème d’affichage préféré.",
+    "alwaysOn": "Toujours activé"
   },
   "pages": {
     "privacy": "Politique de confidentialité",
