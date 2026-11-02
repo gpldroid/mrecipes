@@ -36,7 +36,7 @@ jobs:
           from pathlib import Path
           key = os.environ.get("YOUTUBE_API_KEY", "")
           Path("assets/js/youtube-config.js").write_text(
-              "window.MRECIPES_YOUTUBE_API_KEY = " + json.dumps(key) + ";\\n",
+              "window.MRECIPES_YOUTUBE_API_KEY = " + json.dumps(key) + ";\n",
               encoding="utf-8"
           )
           PY
