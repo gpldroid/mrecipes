@@ -144,6 +144,14 @@
       const main = document.querySelector('main');
       if (main) delete main.dataset.adsenseInitialized;
     }
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        analytics_storage: consent.analytics ? 'granted' : 'denied',
+        ad_storage: consent.marketing ? 'granted' : 'denied',
+        ad_user_data: consent.marketing ? 'granted' : 'denied',
+        ad_personalization: consent.marketing ? 'granted' : 'denied'
+      });
+    }
   };
 
   window.addEventListener('mrecipes:consent-ready', synchronizeConsent);
