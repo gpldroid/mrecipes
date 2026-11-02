@@ -71,10 +71,6 @@
   var query = (params.get("q") || "").trim();
   var nextPageToken = "";
   var loading = false;
-  var language = (document.documentElement.lang || "en").toLowerCase().split("-")[0];
-  var regions = { en: "US", ar: "MA", es: "ES", fr: "FR", ru: "RU" };
-  var region = regions[language] || "US";
-
   if (query) {
     input.value = query;
     title.textContent = "Video results for “" + query + "”";
@@ -157,8 +153,6 @@
       url.searchParams.set("safeSearch", "strict");
       url.searchParams.set("videoEmbeddable", "true");
       url.searchParams.set("videoSyndicated", "true");
-      url.searchParams.set("relevanceLanguage", language);
-      url.searchParams.set("regionCode", region);
       url.searchParams.set("key", API_KEY);
       if (append && nextPageToken) url.searchParams.set("pageToken", nextPageToken);
       var response = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
