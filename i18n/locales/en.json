@@ -96,7 +96,8 @@
     "analyticsDesc": "Allow Google Analytics to measure how visitors use MRecipes.",
     "marketingDesc": "Allow Google AdSense to display ads and use related storage.",
     "functional": "Functional",
-    "functionalDesc": "Remember helpful choices, such as your preferred display theme."
+    "functionalDesc": "Remember helpful choices, such as your preferred display theme.",
+    "alwaysOn": "Always on"
   },
   "pages": {
     "privacy": "Privacy policy",
