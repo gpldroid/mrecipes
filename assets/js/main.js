@@ -348,6 +348,110 @@
   document.querySelectorAll('[data-supabase-recipes]').forEach(getGridState);
   applySearch();
   renderSidebar();
+
+  // Add a recipe-category sidebar to individual recipe articles, not the homepage.
+  const renderRecipeArticleSidebar = async () => {
+    const path = window.location.pathname.replace(/\\/+$/, '');
+    if (!/^\\/(recipes|article)\\/[^/]+\\.html$/i.test(path) || /recipe-template\\.html$/i.test(path)) return;
+    const article = document.querySelector('main article.content-page');
+    if (!article || article.dataset.sidebarLayout === 'true') return;
+    try {
+      const response = await fetch('/recipes.html', { credentials: 'same-origin' });
+      if (!response.ok) return;
+      const documentText = await response.text();
+      const parsed = new DOMParser().parseFromString(documentText, 'text/html');
+      const sourceCards = [...parsed.querySelectorAll('[data-recipe-card]')];
+      if (!sourceCards.length) return;
+
+      const locale = (document.documentElement.lang || 'en').toLowerCase().split('-')[0];
+      const labels = {
+        en: { title: 'Explore categories', all: 'View all' },
+        ar: { title: 'استكشف التصنيفات', all: 'عرض الكل' },
+        fr: { title: 'Explorer les catégories', all: 'Tout voir' },
+        es: { title: 'Explorar categorías', all: 'Ver todo' },
+        ru: { title: 'Категории рецептов', all: 'Все' }
+      }[locale] || { title: 'Explore categories', all: 'View all' };
+
+      const groups = new Map();
+      sourceCards.forEach(card => {
+        const title = card.querySelector('.recipe-content h3 a');
+        if (!title) return;
+        const meta = [...card.querySelectorAll('.recipe-meta span')];
+        const category = (meta[1]?.textContent || 'Recipes').trim();
+        if (!groups.has(category)) groups.set(category, []);
+        if (groups.get(category).length < 3) {
+          const image = card.querySelector('.recipe-image img');
+          groups.get(category).push({
+            title: title.textContent.trim(),
+            href: new URL(title.getAttribute('href'), window.location.origin).pathname,
+            image: image ? new URL(image.getAttribute('src'), window.location.origin).pathname : '',
+            alt: image?.getAttribute('alt') || title.textContent.trim()
+          });
+        }
+      });
+
+      const layout = document.createElement('div');
+      layout.className = 'recipe-article-layout';
+      const sidebar = document.createElement('aside');
+      sidebar.className = 'recipe-article-sidebar';
+      sidebar.setAttribute('aria-label', labels.title);
+      const heading = document.createElement('h2');
+      heading.className = 'recipe-article-sidebar-title';
+      heading.textContent = labels.title;
+      sidebar.appendChild(heading);
+
+      groups.forEach((items, category) => {
+        const panel = document.createElement('section');
+        panel.className = 'sidebar-category-panel';
+        const panelHeading = document.createElement('div');
+        panelHeading.className = 'sidebar-category-heading';
+        const title = document.createElement('h3');
+        title.textContent = category;
+        const more = document.createElement('a');
+        more.href = '/recipes.html';
+        more.textContent = labels.all;
+        panelHeading.append(title, more);
+        const list = document.createElement('div');
+        list.className = 'sidebar-category-cards';
+        items.forEach(item => {
+          const row = document.createElement('article');
+          row.className = 'sidebar-recipe-card';
+          const imageLink = document.createElement('a');
+          imageLink.className = 'sidebar-recipe-image';
+          imageLink.href = item.href;
+          imageLink.setAttribute('aria-label', item.title);
+          if (item.image) {
+            const img = document.createElement('img');
+            img.src = item.image;
+            img.alt = item.alt;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            imageLink.appendChild(img);
+          }
+          const copy = document.createElement('div');
+          copy.className = 'sidebar-recipe-copy';
+          const h = document.createElement('h4');
+          const link = document.createElement('a');
+          link.href = item.href;
+          link.textContent = item.title;
+          h.appendChild(link);
+          copy.appendChild(h);
+          row.append(imageLink, copy);
+          list.appendChild(row);
+        });
+        panel.append(panelHeading, list);
+        sidebar.appendChild(panel);
+      });
+
+      const parent = article.parentElement;
+      parent.insertBefore(layout, article);
+      layout.append(article, sidebar);
+      article.dataset.sidebarLayout = 'true';
+    } catch (error) {
+      console.error('Recipe category sidebar could not be rendered.', error);
+    }
+  };
+  renderRecipeArticleSidebar();
   document.querySelectorAll('[data-current-year]').forEach(el => el.textContent = new Date().getFullYear());
   document.querySelectorAll('[data-scroll-top]').forEach(button => button.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })));
 
