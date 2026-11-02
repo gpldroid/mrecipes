@@ -92,10 +92,10 @@ jobs:
           if not parser.scripts: raise SystemExit("No inline video search script found")
           Path("/tmp/mrecipes-video-search.js").write_text(parser.scripts[-1], encoding="utf-8")
           workflow=Path(".github/workflows/pages.yml").read_text(encoding="utf-8")
-          start=workflow.index("          cat > /tmp/mrecipes-youtube-worker/index.js <<WORKER\\n")+len("          cat > /tmp/mrecipes-youtube-worker/index.js <<WORKER\\n")
-          end=workflow.index("\\n          WORKER", start)
+          start=workflow.index("          cat > /tmp/mrecipes-youtube-worker/index.js <<WORKER" + chr(10))+len("          cat > /tmp/mrecipes-youtube-worker/index.js <<WORKER" + chr(10))
+          end=workflow.index(chr(10) + "          WORKER", start)
           source=workflow[start:end]
-          source="\\n".join(line[10:] if line.startswith("          ") else line for line in source.splitlines())
+          source=chr(10).join(line[10:] if line.startswith("          ") else line for line in source.splitlines())
           Path("/tmp/mrecipes-youtube-worker.mjs").write_text(source, encoding="utf-8")
           PY
           node --check /tmp/mrecipes-video-search.js
