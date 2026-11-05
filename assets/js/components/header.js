@@ -1,6 +1,15 @@
 (async () => {
 'use strict';
 
+// Apply the shared MRecipes SVG favicon on every page using this header.
+if (!document.querySelector('link[ rel~="icon"]')) {
+  const favicon = document.createElement('link');
+  favicon.rel = 'icon';
+  favicon.type = 'image/svg+xml';
+  favicon.href = '/assets/images/mrecipes-favicon.svg';
+  document.head.appendChild(favicon);
+}
+
 const path = location.pathname.replace(/\/index\.html$/, '/').replace(/\/{2,}/g, '/');
 const locales = {
   en: { prefix: '', dir: 'ltr', home: '/', recipes: '/recipes.html', pages: '/pages/', label: 'EN', name: 'English' },
@@ -117,7 +126,7 @@ root.innerHTML = `
 <a class="skip-link" href="#main-content">${t.skip}</a>
 <header class="site-header">
   <div class="header-inner">
-    <a class="brand" href="${l.home}" aria-label="MRecipes ${t.home}"><span class="brand-mark" aria-hidden="true">M</span><span>MRecipes<span class="brand-dot">.</span></span></a>
+    <a class="brand" href="${l.home}" aria-label="MRecipes ${t.home}"><img class="brand-logo" src="/assets/images/mrecipes-logo.svg" alt="MRecipes" width="184" height="48"></a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="${localeKey === 'ar' ? 'فتح القائمة' : 'Open navigation'}"><span></span><span></span><span></span></button>
     <nav class="primary-nav" id="primary-nav" aria-label="${t.nav}">${navHtml}<div class="language-menu">
       <button class="language-trigger" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="language-options" aria-label="${t.openLanguage}" title="${t.language}">
