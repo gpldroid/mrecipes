@@ -132,11 +132,10 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   line-height: 1.2; letter-spacing: -.05em; text-decoration: none; white-space: nowrap;
 }
 .brand:hover { color: var(--ink); }
-.brand-mark {
-  display: grid; flex: 0 0 auto; place-items: center;
-  width: 2.375rem; height: 2.375rem; border-radius: .8rem;
-  background: var(--green); color: #fff; font-family: var(--font-display);
-  font-size: 1.4rem; line-height: 1;
+.brand-logo {
+  display: block; flex: 0 0 auto;
+  width: clamp(9.25rem, 14vw, 11.5rem); height: auto;
+  max-height: 3rem; object-fit: contain;
 }
 .brand-dot { color: var(--orange); }
 .primary-nav {
