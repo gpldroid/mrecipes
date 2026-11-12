@@ -114,6 +114,7 @@ jobs:
           node --check assets/js/components/header.js
           node --check assets/js/components/footer.js
           node --check assets/js/main.js
+          node --check assets/js/ar-recipes.js
           python3 <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
