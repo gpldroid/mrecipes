@@ -139,6 +139,7 @@ def main() -> int:
     print("| Slug | Locale | Visible text chars | vs EN | Ingredients | Steps | Findings |")
     print("|---|---|---:|---:|---:|---:|---|")
     missing_pages = 0
+    quarantined_pages = 0
     low_text_pages = 0
     residue_pages = 0
     schema_mismatch_pages = 0
@@ -153,6 +154,20 @@ def main() -> int:
 
         for locale in LOCALES:
             rel = recipe_paths[slug].get(locale)
+            if not rel and locale in {"fr", "es", "ru"}:
+                # These current article copies are intentionally excluded from the
+                # sitemap until their body text is translated; verify their noindex
+                # and English canonical instead of reporting them as missing files.
+                quarantined_path = ROOT / route_for(locale, slug)
+                if quarantined_path.is_file():
+                    quarantined_html = quarantined_path.read_text(encoding="utf-8")
+                    robots = get_attr(quarantined_html, r'<meta[^>]*name=["\']robots["\'][^>]*content=["\']([^"\']+)')
+                    canonical = get_attr(quarantined_html, r'<link[^>]*rel=["\']canonical["\'][^>]*href=["\']([^"\']+)')
+                    expected_canonical = DOMAIN + "/recipes/" + slug + ".html"
+                    if "noindex" in robots.lower() and canonical == expected_canonical:
+                        quarantined_pages += 1
+                        print(f"| {slug} | {locale.upper()} | {len(visible_text(quarantined_html))} | — | 0 | 0 | QUARANTINED English duplicate; noindex, canonical EN |")
+                        continue
             if not rel:
                 missing_pages += 1
                 issues.append((f"{locale.upper()} {slug}", "missing page from sitemap mapping"))
@@ -209,6 +224,7 @@ def main() -> int:
     print("## Summary")
     print()
     print(f"- Missing article pages/files: **{missing_pages}**")
+    print(f"- Existing FR/ES/RU English duplicates correctly quarantined from indexing: **{quarantined_pages}**")
     print(f"- Localized bodies below {MIN_TEXT_RATIO:.0%} of the English visible-text length: **{low_text_pages}**")
     print(f"- Localized pages with known English-residue patterns: **{residue_pages}**")
     print(f"- Recipe JSON-LD ingredient/step count mismatches: **{schema_mismatch_pages}**")
