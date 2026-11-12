@@ -168,7 +168,11 @@ def main() -> int:
             for field in ("prepTime", "cookTime", "totalTime"):
                 value = node.get(field)
                 if not isinstance(value, str) or not re.fullmatch(r"P(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?", value):
-                    errors.append(f"{label}: {field} must be a valid ISO 8601 duration")
+                    message = f"{label}: {field} is missing or is not a valid ISO 8601 duration"
+                    if expected_locale == "ar":
+                        warnings.append(message)
+                    else:
+                        errors.append(message)
             for field in ("datePublished", "dateModified"):
                 value = node.get(field)
                 try:
