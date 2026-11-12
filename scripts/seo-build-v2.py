@@ -113,11 +113,11 @@ for page in allp:
   # Keep them usable for visitors but consolidate search indexing on the real EN page.
   slug=path.rsplit('/',1)[-1]
   canonical=DOMAIN+'/recipes/'+slug
-  raw=re.sub(r'<meta\\s+[^>]*name=["\\']robots["\\'][^>]*>','',raw,flags=re.I)
+  raw=re.sub(r'<meta\s+[^>]*name=["\']robots["\'][^>]*>','',raw,flags=re.I)
   raw=meta(raw,'robots','noindex,follow')
-  raw=re.sub(r'<html\\b[^>]*>', '<html lang="en" dir="ltr">', raw, count=1, flags=re.I)
+  raw=re.sub(r'<html\b[^>]*>', '<html lang="en" dir="ltr">', raw, count=1, flags=re.I)
   raw=link(raw,'canonical',canonical)
-  raw=re.sub(r'\\s*<link\\s+[^>]*rel=["\\']alternate["\\'][^>]*hreflang=["\\'][^"\\']+["\\'][^>]*>','',raw,flags=re.I)
+  raw=re.sub(r'\s*<link\s+[^>]*rel=["\']alternate["\'][^>]*hreflang=["\'][^"\']+["\'][^>]*>','',raw,flags=re.I)
   raw=prop(raw,'og:url',canonical)
   page.write_text(raw,encoding='utf-8')
   continue
