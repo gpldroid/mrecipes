@@ -176,7 +176,13 @@ jobs:
               if not p.title: errors.append(f'{label}: missing title')
               if not 50 <= len(p.meta.get('description','')) <= 160: errors.append(f'{label}: meta description must be 50-160 characters')
               robots=p.meta.get('robots','').lower()
-              if 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
+              quarantined=page.as_posix().startswith(('fr/article/','es/article/','ru/article/'))
+              if quarantined:
+                  expected_duplicate_canonical='https://mrecipes.online/recipes/'+page.name
+                  if 'noindex' not in robots or 'follow' not in robots: errors.append(f'{label}: untranslated duplicate must be noindex,follow')
+                  if p.canon != [expected_duplicate_canonical]: errors.append(f'{label}: untranslated duplicate must canonicalize to {expected_duplicate_canonical}')
+              elif 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots:
+                  errors.append(f'{label}: robots must allow index,follow')
               if len(p.canon)!=1 or not p.canon[0].startswith('https://mrecipes.online/'): errors.append(f'{label}: invalid canonical')
               if page.parent.name=='recipes' and page.name not in ('recipe-template.html','index.html') and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
               if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in page.read_text(encoding='utf-8'):
@@ -200,7 +206,7 @@ jobs:
                   if rel=='index.html': return '/'
                   if rel.endswith('/index.html'): return '/'+rel[:-10].strip('/')+'/'
                   return '/'+rel
-              expected={page_url_path(p) for p in html_files if p.name!='404.html' and p.as_posix()!='recipes/recipe-template.html'}
+              expected={page_url_path(p) for p in html_files if p.name!='404.html' and p.as_posix()!='recipes/recipe-template.html' and not p.as_posix().startswith(('fr/article/','es/article/','ru/article/'))}
               actual=set(urls)
               for missing in sorted(expected-actual): errors.append(f'sitemap: missing eligible HTML page {missing}')
               for extra in sorted(actual-expected): errors.append(f'sitemap: URL has no eligible HTML page {extra}')
