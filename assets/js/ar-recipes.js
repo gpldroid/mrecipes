@@ -59,7 +59,7 @@ const schema={
 'mainEntityOfPage':canonical,
 'recipeCategory':r.category,
 'recipeIngredient':r.ingredients,
-'recipeInstructions':r.instructions.map((text,index)=>({'@type':'HowToStep','position':index+1,'text'}))
+'recipeInstructions':r.instructions.map((text,index)=>({'@type':'HowToStep','position':index+1,'text':text}))
 };
 let recipeSchema=document.getElementById('ar-recipe-jsonld');
 if(!recipeSchema){recipeSchema=document.createElement('script');recipeSchema.id='ar-recipe-jsonld';recipeSchema.type='application/ld+json';document.head.appendChild(recipeSchema);}
