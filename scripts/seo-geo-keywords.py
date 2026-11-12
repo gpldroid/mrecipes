@@ -179,7 +179,35 @@ def main():
             html = replace_meta(html, "keywords", keywords)
             landing_count += 1
         page.write_text(html, encoding="utf-8")
-    print(f"SEO/GEO keyword localization complete: {recipe_count} recipe pages and {landing_count} landing/index pages across en, ar, fr, es, ru.")
+    # Fail the build if any localized recipe page is missing locale-specific GEO signals.
+    checked = 0
+    locale_counts = {code: 0 for code in sorted(LOCALES)}
+    for page in pages:
+        relative = page.relative_to(ROOT)
+        locale = locale_for(relative)
+        check = PageParser()
+        rendered = page.read_text(encoding="utf-8")
+        check.feed(rendered)
+        nodes = [node for schema in check.schemas for node in recipe_nodes(schema)]
+        if not nodes:
+            continue
+        checked += 1
+        locale_counts[locale] += 1
+        for node in nodes:
+            if node.get("inLanguage") != locale:
+                raise SystemExit(f"{page}: Recipe inLanguage does not match {locale}")
+            if not isinstance(node.get("keywords"), str) or not node["keywords"].strip():
+                raise SystemExit(f"{page}: missing localized Recipe keywords")
+            author = node.get("author", {})
+            if not isinstance(author, dict) or author.get("name") != "Imad Limrani":
+                raise SystemExit(f"{page}: missing named Recipe author")
+        meta_match = re.search(r'<meta\\b(?=[^>]*\\bname=["\\']keywords["\\'])[^>]*\\bcontent=["\\']([^"\\']*)["\\']', rendered, re.I)
+        if not meta_match or not meta_match.group(1).strip():
+            raise SystemExit(f"{page}: missing localized page keyword metadata")
+    missing_locales = [code for code, count in locale_counts.items() if count == 0]
+    if missing_locales:
+        raise SystemExit("No localized Recipe pages found for: " + ", ".join(missing_locales))
+    print(f"SEO/GEO keyword localization and validation passed: {checked} recipe pages and {landing_count} landing/index pages; locale coverage: {locale_counts}.")
 
 if __name__ == "__main__":
     main()
