@@ -72,7 +72,7 @@ def walk(value):
 def recipe_page(path: Path) -> bool:
     rel = path.relative_to(ROOT).as_posix()
     return (rel.startswith("recipes/") and rel.endswith(".html")
-            and rel != "recipes/recipe-template.html") or rel.startswith("ar/article/") and rel.endswith(".html")
+            and rel not in ("recipes/recipe-template.html", "recipes/index.html")) or rel.startswith("ar/article/") and rel.endswith(".html")
 
 def main() -> int:
     errors: list[str] = []
