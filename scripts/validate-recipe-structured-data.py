@@ -194,7 +194,7 @@ def main() -> int:
         for error in errors:
             print(" - " + error)
         return 1
-    print(f"Recipe structured-data validation passed: {count} recipe pages checked across five locales.")
+    print(f"Recipe structured-data validation passed: {count} eligible English and Arabic recipe pages; FR/ES/RU English duplicates excluded from indexing.")
     return 0
 
 if __name__ == "__main__":
