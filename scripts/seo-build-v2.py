@@ -32,6 +32,8 @@ class P(HTMLParser):
   if self.it: self.buf.append(d)
 
 def pages(): return sorted(p for p in ROOT.rglob('*.html') if '.git' not in p.parts and p.name!='404.html')
+def untranslated_duplicate(path):
+ return any(path.startswith(f'/{k}/article/') for k in ('fr','es','ru'))
 def pathof(p):
  r=p.relative_to(ROOT).as_posix()
  if r=='index.html': return '/'
@@ -103,9 +105,30 @@ def toc(html,p,k):
  nav=f'<nav class="table-of-contents" aria-label="{escape(title)}"><strong>{escape(title)}</strong><ol>{"".join(rows)}</ol></nav>'
  return re.sub(r'(<article\b[^>]*>)',nav+'\n\\1',html,count=1,flags=re.I) if re.search(r'<article\b',html,re.I) else re.sub(r'(<main\b[^>]*>)',r'\\1\n'+nav,html,count=1,flags=re.I)
 
-allp=pages(); existing={pathof(p) for p in allp}
+allp=pages(); existing={pathof(p) for p in allp if not untranslated_duplicate(pathof(p))}
 for page in allp:
- raw=page.read_text(encoding='utf-8'); p=P(); p.feed(raw); path=pathof(page); k=locale(path); kind,slug=info(path,k)
+ raw=page.read_text(encoding='utf-8'); path=pathof(page)
+ if untranslated_duplicate(path):
+  # FR/ES/RU recipe URLs currently contain English source content, not translations.
+  # Keep them usable for visitors but consolidate search indexing on the real EN page.
+  slug=path.rsplit('/',1)[-1]
+  canonical=DOMAIN+'/recipes/'+slug
+  source_path=ROOT/'recipes'/slug
+  source_parser=P()
+  if source_path.is_file(): source_parser.feed(source_path.read_text(encoding='utf-8'))
+  description=trim(source_parser.desc or 'Read the original English recipe with ingredients and step-by-step instructions on MRecipes.')
+  raw=re.sub(r'<meta\s+[^>]*name=["\']robots["\'][^>]*>','',raw,flags=re.I)
+  raw=meta(raw,'robots','noindex,follow')
+  raw=re.sub(r'<html\b[^>]*>', '<html lang="en" dir="ltr">', raw, count=1, flags=re.I)
+  raw=meta(raw,'description',description)
+  raw=link(raw,'canonical',canonical)
+  raw=re.sub(r'\s*<link\s+[^>]*rel=["\']alternate["\'][^>]*hreflang=["\'][^"\']+["\'][^>]*>','',raw,flags=re.I)
+  raw=prop(raw,'og:url',canonical)
+  raw=prop(raw,'og:description',description)
+  raw=meta(raw,'twitter:description',description)
+  page.write_text(raw,encoding='utf-8')
+  continue
+ p=P(); p.feed(raw); k=locale(path); kind,slug=info(path,k)
  raw=re.sub(r'<meta\s+[^>]*name=["\']robots["\'][^>]*>','',raw,flags=re.I); raw=meta(raw,'robots','index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1')
  raw=re.sub(r'<html\b[^>]*>',f'<html lang="{k}" dir="{LOCALES[k][3]}">',raw,count=1,flags=re.I)
  title=trim(p.title or p.h1 or ('MRecipes — Easy Recipes' if kind in ('home','recipes') else 'MRecipes'), 60)
@@ -129,7 +152,7 @@ for page in allp:
 urls=[]
 for p in allp:
  path=pathof(p)
- if path=='/recipes/recipe-template.html':continue
+ if path=='/recipes/recipe-template.html' or untranslated_duplicate(path):continue
  urls.append(path)
 today=datetime.date.today().isoformat(); out=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
 for u in sorted(set(urls)): out += ['  <url>',f'    <loc>{DOMAIN}{escape(u)}</loc>',f'    <lastmod>{today}</lastmod>','  </url>']

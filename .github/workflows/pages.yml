@@ -72,7 +72,23 @@ jobs:
           python3 scripts/seo-build-v2.py
           python3 scripts/seo-description-fix.py
           python3 scripts/seo-geo-keywords.py
+          python3 scripts/enhance-recipe-schema.py
+          python3 scripts/validate-recipe-structured-data.py
           python3 scripts/validate-i18n.py
+      - name: Validate webmaster verification helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/site-verification.py
+      - name: Apply Search Console and Bing verification tokens
+        if: github.event_name != 'pull_request'
+        env:
+          GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
+          BING_SITE_VERIFICATION: ${{ secrets.BING_SITE_VERIFICATION }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/site-verification.py
       - name: Add Imad Limrani author attribution beneath page summaries
         shell: bash
         run: |
@@ -98,6 +114,7 @@ jobs:
           node --check assets/js/components/header.js
           node --check assets/js/components/footer.js
           node --check assets/js/main.js
+          node --check assets/js/ar-recipes.js
           python3 <<'PY'
           from html.parser import HTMLParser
           from pathlib import Path
@@ -160,7 +177,13 @@ jobs:
               if not p.title: errors.append(f'{label}: missing title')
               if not 50 <= len(p.meta.get('description','')) <= 160: errors.append(f'{label}: meta description must be 50-160 characters')
               robots=p.meta.get('robots','').lower()
-              if 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots: errors.append(f'{label}: robots must allow index,follow')
+              quarantined=page.as_posix().startswith(('fr/article/','es/article/','ru/article/'))
+              if quarantined:
+                  expected_duplicate_canonical='https://mrecipes.online/recipes/'+page.name
+                  if 'noindex' not in robots or 'follow' not in robots: errors.append(f'{label}: untranslated duplicate must be noindex,follow')
+                  if p.canon != [expected_duplicate_canonical]: errors.append(f'{label}: untranslated duplicate must canonicalize to {expected_duplicate_canonical}')
+              elif 'noindex' in robots or 'nofollow' in robots or 'index' not in robots or 'follow' not in robots:
+                  errors.append(f'{label}: robots must allow index,follow')
               if len(p.canon)!=1 or not p.canon[0].startswith('https://mrecipes.online/'): errors.append(f'{label}: invalid canonical')
               if page.parent.name=='recipes' and page.name not in ('recipe-template.html','index.html') and not p.schema: errors.append(f'{label}: missing JSON-LD Recipe schema')
               if 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js' in page.read_text(encoding='utf-8'):
@@ -184,7 +207,7 @@ jobs:
                   if rel=='index.html': return '/'
                   if rel.endswith('/index.html'): return '/'+rel[:-10].strip('/')+'/'
                   return '/'+rel
-              expected={page_url_path(p) for p in html_files if p.name!='404.html' and p.as_posix()!='recipes/recipe-template.html'}
+              expected={page_url_path(p) for p in html_files if p.name!='404.html' and p.as_posix()!='recipes/recipe-template.html' and not p.as_posix().startswith(('fr/article/','es/article/','ru/article/'))}
               actual=set(urls)
               for missing in sorted(expected-actual): errors.append(f'sitemap: missing eligible HTML page {missing}')
               for extra in sorted(actual-expected): errors.append(f'sitemap: URL has no eligible HTML page {extra}')
