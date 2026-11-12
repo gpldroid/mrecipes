@@ -68,6 +68,10 @@ class PageParser(HTMLParser):
 
 def locale_for(path):
     parts = path.parts
+    # These FR/ES/RU article URLs currently serve English duplicate content.
+    # Keep their HTML and Recipe schema language truthful until real translations ship.
+    if len(parts) > 1 and parts[0] in {"fr", "es", "ru"} and parts[1] == "article":
+        return "en"
     return parts[0] if parts and parts[0] in {"ar","fr","es","ru"} else "en"
 
 def text_content(value):
@@ -208,10 +212,15 @@ def main():
                 raise SystemExit(f"{page}: missing named Recipe author")
         if not check.meta_keywords:
             raise SystemExit(f"{page}: missing localized page keyword metadata")
-    missing_locales = [code for code, count in locale_counts.items() if count == 0]
+    required_recipe_locales = {"en", "ar"}
+    missing_locales = [code for code in sorted(required_recipe_locales) if locale_counts.get(code, 0) == 0]
     if missing_locales:
-        raise SystemExit("No localized Recipe pages found for: " + ", ".join(missing_locales))
-    print(f"SEO/GEO keyword localization and validation passed: {checked} recipe pages and {landing_count} landing/index pages; locale coverage: {locale_counts}.")
+        raise SystemExit("No source Recipe pages found for: " + ", ".join(missing_locales))
+    print(
+        f"SEO/GEO keyword localization and validation passed: {checked} eligible Recipe pages "
+        f"and {landing_count} landing/index pages; source Recipe locales: EN and AR. "
+        f"FR/ES/RU English duplicates remain noindex until translated; counters: {locale_counts}."
+    )
 
 if __name__ == "__main__":
     main()
