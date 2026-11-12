@@ -40,10 +40,7 @@ def locale_for(path: Path) -> str:
 def is_recipe_page(path: Path) -> bool:
     rel = path.relative_to(ROOT).as_posix()
     return (rel.startswith("recipes/") and rel.endswith(".html")
-            and rel != "recipes/recipe-template.html") or any(
-        rel.startswith(f"{locale}/article/") and rel.endswith(".html")
-        for locale in LOCALES
-    )
+            and rel != "recipes/recipe-template.html") or rel.startswith("ar/article/") and rel.endswith(".html")
 
 def main() -> None:
     updated_pages = 0
@@ -90,7 +87,25 @@ def main() -> None:
         page.write_text(html, encoding="utf-8")
         updated_pages += 1
         updated_nodes += page_nodes
-    print(f"Recipe schema identity/publisher enhancement passed: {updated_nodes} Recipe nodes across {updated_pages} pages.")
+    # Arabic recipe pages inject JSON-LD from this shared browser-side generator.
+    # Enrich that generator instead of falsely expecting a static script in each HTML file.
+    arabic_js = ROOT / "assets" / "js" / "ar-recipes.js"
+    if not arabic_js.is_file():
+        raise SystemExit("Missing Arabic dynamic Recipe JSON-LD generator: assets/js/ar-recipes.js")
+    js = arabic_js.read_text(encoding="utf-8")
+    marker = "'author':{'@type':'Person','name':'Imad Limrani'},\n'inLanguage':'ar',"
+    replacement = (
+        "'author':{'@type':'Person','name':'Imad Limrani'},\n"
+        "'publisher':{'@type':'Organization','@id':DOMAIN_PLACEHOLDER,'name':'MRecipes','url':'https://mrecipes.online/'},\n"
+        "'url':canonical,\n"
+        "'inLanguage':'ar',"
+    ).replace("DOMAIN_PLACEHOLDER", "'https://mrecipes.online/#organization'")
+    if marker in js:
+        js = js.replace(marker, replacement, 1)
+        arabic_js.write_text(js, encoding="utf-8")
+    elif "'publisher':{'@type':'Organization'" not in js or "'url':canonical" not in js:
+        raise SystemExit("Arabic dynamic Recipe JSON-LD generator has an unexpected schema shape.")
+    print(f"Recipe schema identity/publisher enhancement passed: {updated_nodes} static Recipe nodes across {updated_pages} pages; Arabic dynamic schema generator checked.")
     if updated_pages == 0:
         raise SystemExit("No recipe pages were found.")
 
