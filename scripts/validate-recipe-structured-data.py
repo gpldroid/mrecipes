@@ -72,10 +72,7 @@ def walk(value):
 def recipe_page(path: Path) -> bool:
     rel = path.relative_to(ROOT).as_posix()
     return (rel.startswith("recipes/") and rel.endswith(".html")
-            and rel != "recipes/recipe-template.html") or any(
-        rel.startswith(f"{locale}/article/") and rel.endswith(".html")
-        for locale in LOCALES
-    )
+            and rel != "recipes/recipe-template.html") or rel.startswith("ar/article/") and rel.endswith(".html")
 
 def main() -> int:
     errors: list[str] = []
@@ -92,15 +89,35 @@ def main() -> int:
             errors.append(f"{path}: {exc}")
             continue
         nodes = [node for schema in page.schemas for node in walk(schema)]
-        if not nodes:
-            errors.append(f"{path}: missing Recipe JSON-LD")
-            continue
         parts = path.relative_to(ROOT).parts
         expected_locale = parts[0] if parts[0] in LOCALES else "en"
         if page.language != expected_locale:
             errors.append(f"{path}: html lang={page.language!r}, expected {expected_locale!r}")
         if not page.canonical or not page.canonical.startswith(DOMAIN + "/"):
             errors.append(f"{path}: missing or invalid canonical")
+        if not nodes:
+            if expected_locale == "ar":
+                # Arabic article HTML is a lightweight shell; its shared JS module
+                # injects Recipe JSON-LD after loading the recipe data.
+                generator = ROOT / "assets" / "js" / "ar-recipes.js"
+                try:
+                    source = generator.read_text(encoding="utf-8")
+                except OSError:
+                    errors.append(f"{path}: missing Arabic dynamic Recipe JSON-LD generator")
+                    continue
+                required_fragments = (
+                    "'@type':'Recipe'", "'name':r.title", "'description':r.description",
+                    "'image':[imageUrl]", "'publisher':{'@type':'Organization'",
+                    "'url':canonical", "'inLanguage':'ar'",
+                    "'recipeIngredient':r.ingredients",
+                    "'recipeInstructions':r.instructions.map",
+                )
+                missing = [fragment for fragment in required_fragments if fragment not in source]
+                if missing:
+                    errors.append(f"{path}: Arabic dynamic Recipe schema is missing fields: {missing}")
+                continue
+            errors.append(f"{path}: missing Recipe JSON-LD")
+            continue
         for index, node in enumerate(nodes, 1):
             label = f"{path} Recipe[{index}]"
             for field in ("name", "description", "image"):
