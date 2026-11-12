@@ -83,6 +83,9 @@ def main() -> None:
             return match.group(1) + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + match.group(3)
         html = pattern.sub(replace, html)
         if not page_nodes:
+            if page.relative_to(ROOT).as_posix().startswith("ar/article/"):
+                # Arabic article pages generate their Recipe node in ar-recipes.js.
+                continue
             raise SystemExit(f"{page}: missing Recipe JSON-LD")
         page.write_text(html, encoding="utf-8")
         updated_pages += 1
