@@ -129,10 +129,25 @@ def main() -> int:
             publisher = node.get("publisher")
             if not isinstance(publisher, dict) or publisher.get("@type") != "Organization" or publisher.get("name") != "MRecipes":
                 errors.append(f"{label}: publisher must identify MRecipes Organization")
-            for field in ("recipeIngredient", "recipeInstructions"):
-                value = node.get(field)
-                if not isinstance(value, list) or not value:
-                    errors.append(f"{label}: {field} must be a non-empty list")
+            ingredients = node.get("recipeIngredient")
+            if not isinstance(ingredients, list) or not ingredients or any(not str(item).strip() for item in ingredients):
+                errors.append(f"{label}: recipeIngredient must be a non-empty list of ingredient text")
+            instructions = node.get("recipeInstructions")
+            if not instructions or (isinstance(instructions, list) and not instructions):
+                errors.append(f"{label}: recipeInstructions must not be empty")
+            elif isinstance(instructions, list):
+                for step in instructions:
+                    if isinstance(step, str) and step.strip():
+                        continue
+                    if not isinstance(step, dict):
+                        errors.append(f"{label}: recipeInstructions entries must be text, HowToStep, or HowToSection")
+                        continue
+                    step_type = step.get("@type")
+                    if step_type == "HowToStep" and step.get("text"):
+                        continue
+                    if step_type == "HowToSection" and step.get("name") and step.get("itemListElement"):
+                        continue
+                    errors.append(f"{label}: recipeInstructions entries must contain valid HowToStep or HowToSection content")
             for field in ("prepTime", "cookTime", "totalTime"):
                 value = node.get(field)
                 if not isinstance(value, str) or not re.fullmatch(r"P(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?", value):
@@ -147,12 +162,6 @@ def main() -> int:
                 warnings.append(f"{label}: recipeYield is missing")
             if not node.get("recipeCategory"):
                 warnings.append(f"{label}: recipeCategory is missing")
-            instructions = node.get("recipeInstructions", [])
-            if instructions and any(
-                not isinstance(step, dict) or step.get("@type") != "HowToStep" or not step.get("text")
-                for step in instructions
-            ):
-                errors.append(f"{label}: each recipeInstructions entry must be a HowToStep with text")
     if count == 0:
         errors.append("No recipe pages found.")
     if warnings:
