@@ -34,12 +34,15 @@ class PageParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.h1 = []
+        self.meta_keywords = ""
         self.in_h1 = False
         self.schemas = []
         self.in_json = False
         self.json_parts = []
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == "meta" and attrs.get("name", "").lower() == "keywords":
+            self.meta_keywords = attrs.get("content", "").strip()
         if tag == "h1":
             self.in_h1 = True
         if tag == "script" and attrs.get("type", "").lower() == "application/ld+json":
@@ -201,8 +204,7 @@ def main():
             author = node.get("author", {})
             if not isinstance(author, dict) or author.get("name") != "Imad Limrani":
                 raise SystemExit(f"{page}: missing named Recipe author")
-        meta_match = re.search(r'<meta\\b(?=[^>]*\\bname=["\\']keywords["\\'])[^>]*\\bcontent=["\\']([^"\\']*)["\\']', rendered, re.I)
-        if not meta_match or not meta_match.group(1).strip():
+        if not check.meta_keywords:
             raise SystemExit(f"{page}: missing localized page keyword metadata")
     missing_locales = [code for code, count in locale_counts.items() if count == 0]
     if missing_locales:
