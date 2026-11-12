@@ -113,12 +113,19 @@ for page in allp:
   # Keep them usable for visitors but consolidate search indexing on the real EN page.
   slug=path.rsplit('/',1)[-1]
   canonical=DOMAIN+'/recipes/'+slug
+  source_path=ROOT/'recipes'/slug
+  source_parser=P()
+  if source_path.is_file(): source_parser.feed(source_path.read_text(encoding='utf-8'))
+  description=trim(source_parser.desc or 'Read the original English recipe with ingredients and step-by-step instructions on MRecipes.')
   raw=re.sub(r'<meta\s+[^>]*name=["\']robots["\'][^>]*>','',raw,flags=re.I)
   raw=meta(raw,'robots','noindex,follow')
   raw=re.sub(r'<html\b[^>]*>', '<html lang="en" dir="ltr">', raw, count=1, flags=re.I)
+  raw=meta(raw,'description',description)
   raw=link(raw,'canonical',canonical)
   raw=re.sub(r'\s*<link\s+[^>]*rel=["\']alternate["\'][^>]*hreflang=["\'][^"\']+["\'][^>]*>','',raw,flags=re.I)
   raw=prop(raw,'og:url',canonical)
+  raw=prop(raw,'og:description',description)
+  raw=meta(raw,'twitter:description',description)
   page.write_text(raw,encoding='utf-8')
   continue
  p=P(); p.feed(raw); k=locale(path); kind,slug=info(path,k)
