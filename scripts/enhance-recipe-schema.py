@@ -44,18 +44,18 @@ def is_recipe_page(path: Path) -> bool:
             and rel not in ("recipes/recipe-template.html", "recipes/index.html")) or rel.startswith("ar/article/") and rel.endswith(".html")
 
 def clean_text(value: str) -> str:
-    return unescape(re.sub(r"\\s+", " ", re.sub(r"<[^>]+>", " ", value))).strip()
+    return unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", value))).strip()
 
 def list_after_heading(html: str, heading_terms: tuple[str, ...], list_tag: str) -> list[str]:
     pattern = re.compile(
-        r"<h[23]\\b[^>]*>(.*?)</h[23]>\\s*<" + re.escape(list_tag) + r"\\b[^>]*>(.*?)</" + re.escape(list_tag) + r">",
+        r"<h[23]\b[^>]*>(.*?)</h[23]>\s*<" + re.escape(list_tag) + r"\b[^>]*>(.*?)</" + re.escape(list_tag) + r">",
         re.IGNORECASE | re.DOTALL,
     )
     for match in pattern.finditer(html):
         heading = clean_text(match.group(1)).casefold()
         if not any(term.casefold() in heading for term in heading_terms):
             continue
-        items = [clean_text(item) for item in re.findall(r"<li\\b[^>]*>(.*?)</li>", match.group(2), re.I | re.S)]
+        items = [clean_text(item) for item in re.findall(r"<li\b[^>]*>(.*?)</li>", match.group(2), re.I | re.S)]
         items = [item for item in items if item]
         if items:
             return items
@@ -73,26 +73,26 @@ def enrich_from_visible_content(node: dict, html: str, page: Path) -> None:
                 {"@type": "HowToStep", "position": index + 1, "text": step}
                 for index, step in enumerate(steps)
             ]
-    meta = re.search(r'<[^>]+class=["\\'][^"\\']*recipe-meta[^"\\']*["\\'][^>]*>(.*?)</div>', html, re.I | re.S)
+    meta = re.search(r"<[^>]+class=['\"][^'\"]*recipe-meta[^'\"]*['\"][^>]*>(.*?)</div>", html, re.I | re.S)
     meta_text = clean_text(meta.group(1)) if meta else ""
     if not node.get("prepTime"):
-        match = re.search(r"(?:prep(?:aration)?\\s*:?\\s*)(\\d+)\\s*(?:min|minutes?)", meta_text, re.I)
+        match = re.search(r"(?:prep(?:aration)?\s*:?\s*)(\d+)\s*(?:min|minutes?)", meta_text, re.I)
         if match:
             node["prepTime"] = f"PT{match.group(1)}M"
     if not node.get("cookTime"):
-        match = re.search(r"(?:cook(?:ing)?\\s*:?\\s*)(\\d+)\\s*(?:min|minutes?)", meta_text, re.I)
+        match = re.search(r"(?:cook(?:ing)?\s*:?\s*)(\d+)\s*(?:min|minutes?)", meta_text, re.I)
         if match:
             node["cookTime"] = f"PT{match.group(1)}M"
     if not node.get("totalTime") and node.get("prepTime") and node.get("cookTime"):
-        prep = int(re.search(r"(\\d+)", node["prepTime"]).group(1))
-        cook = int(re.search(r"(\\d+)", node["cookTime"]).group(1))
+        prep = int(re.search(r"(\d+)", node["prepTime"]).group(1))
+        cook = int(re.search(r"(\d+)", node["cookTime"]).group(1))
         node["totalTime"] = f"PT{prep + cook}M"
     if not node.get("recipeYield"):
-        match = re.search(r"(?:serves|yield|makes)\\s*:?\\s*(\\d+)", meta_text, re.I)
+        match = re.search(r"(?:serves|yield|makes)\s*:?\s*(\d+)", meta_text, re.I)
         if match:
             node["recipeYield"] = f"{match.group(1)} servings"
     if not node.get("recipeCategory"):
-        eyebrow = re.search(r'<span[^>]*class=["\\'][^"\\']*eyebrow[^"\\']*["\\'][^>]*>(.*?)</span>', html, re.I | re.S)
+        eyebrow = re.search(r"<span[^>]*class=['\"][^'\"]*eyebrow[^'\"]*['\"][^>]*>(.*?)</span>", html, re.I | re.S)
         if eyebrow:
             category = clean_text(eyebrow.group(1)).split("·", 1)[0].strip()
             if category:
