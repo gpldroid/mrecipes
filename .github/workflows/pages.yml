@@ -72,7 +72,23 @@ jobs:
           python3 scripts/seo-build-v2.py
           python3 scripts/seo-description-fix.py
           python3 scripts/seo-geo-keywords.py
+          python3 scripts/enhance-recipe-schema.py
+          python3 scripts/validate-recipe-structured-data.py
           python3 scripts/validate-i18n.py
+      - name: Validate webmaster verification helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/site-verification.py
+      - name: Apply Search Console and Bing verification tokens
+        if: github.event_name != 'pull_request'
+        env:
+          GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
+          BING_SITE_VERIFICATION: ${{ secrets.BING_SITE_VERIFICATION }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/site-verification.py
       - name: Add Imad Limrani author attribution beneath page summaries
         shell: bash
         run: |
