@@ -88,7 +88,9 @@ def recipe_nodes(value):
                 yield from recipe_nodes(child)
 
 def phrases_for(locale, dish, category):
-    c = CATEGORY[locale].get(str(category or "").strip().lower(), "")
+    category_value = str(category or "").strip().lower()
+    localized_values = {value.lower() for value in CATEGORY[locale].values()}
+    c = CATEGORY[locale].get(category_value, category_value if category_value in localized_values else "")
     dish = re.sub(r"\s+", " ", str(dish or "")).strip(" .|—-")
     if not dish:
         return []
